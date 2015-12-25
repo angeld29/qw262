@@ -1,0 +1,65 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mhooks", "mhooks\mhooks.vcproj", "{36BC51E9-8EEA-45F5-A785-72A23D05C697}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwcl262", "qwcl262.vcproj", "{550F9395-9B59-4383-B00B-8E8440A7F72E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwsv262", "qwsv262.vcproj", "{1D973388-0333-4978-B539-F935D217C77B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		GLAuthRelease = GLAuthRelease
+		GLDebug = GLDebug
+		GLRelease = GLRelease
+		PR2Release = PR2Release
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.Debug.ActiveCfg = Debug|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.Debug.Build.0 = Debug|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLAuthRelease.ActiveCfg = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLAuthRelease.Build.0 = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLDebug.ActiveCfg = Debug|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLDebug.Build.0 = Debug|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLRelease.ActiveCfg = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.GLRelease.Build.0 = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.PR2Release.ActiveCfg = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.PR2Release.Build.0 = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.Release.ActiveCfg = Release|Win32
+		{36BC51E9-8EEA-45F5-A785-72A23D05C697}.Release.Build.0 = Release|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.Debug.ActiveCfg = GLDebug|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.Debug.Build.0 = GLDebug|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLAuthRelease.ActiveCfg = GLAuthRelease|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLAuthRelease.Build.0 = GLAuthRelease|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLDebug.ActiveCfg = GLDebug|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLDebug.Build.0 = GLDebug|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLRelease.ActiveCfg = GLRelease|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.GLRelease.Build.0 = GLRelease|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.PR2Release.ActiveCfg = Release|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.PR2Release.Build.0 = Release|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.Release.ActiveCfg = Release|Win32
+		{550F9395-9B59-4383-B00B-8E8440A7F72E}.Release.Build.0 = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.Debug.ActiveCfg = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.Debug.Build.0 = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLAuthRelease.ActiveCfg = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLAuthRelease.Build.0 = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLDebug.ActiveCfg = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLDebug.Build.0 = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLRelease.ActiveCfg = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.GLRelease.Build.0 = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.PR2Release.ActiveCfg = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.PR2Release.Build.0 = PR2Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.Release.ActiveCfg = Release|Win32
+		{1D973388-0333-4978-B539-F935D217C77B}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

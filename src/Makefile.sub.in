@@ -1,0 +1,45 @@
+#   QW262
+#   Copyright (C) 2003  [MAD]ApxuTekTop
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#   $Id: Makefile.sub.in,v 1.4 2005/04/23 20:54:07 se7en Exp $
+
+CC=@CC@
+LN=@LN@
+MKDEP=@MKDEP@
+ASMFLAGS=@ASMFLAGS@ -x assembler-with-cpp
+
+TEMP=$(SOURCES:.c=.o)
+OBJECTS=$(addprefix $(PREFIX)/,$(TEMP:.s=.o))
+
+
+all:		$(SOURCES) .depend $(TARGET)
+
+depend:
+		@$(MKDEP) $(CFLAGS) $(INCFLAGS) $(SOURCES)
+
+.depend:	depend
+
+
+$(PREFIX)/%.o: %.c
+		$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
+
+$(PREFIX)/%.o: %.s
+		$(CC) $(CFLAGS) $(INCFLAGS) $(ASMFLAGS) -c $< -o $@
+
+$(TARGET):	$(OBJECTS) $(EXTRA)
+		$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)

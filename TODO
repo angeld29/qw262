@@ -1,0 +1,12 @@
+================================================================================
+QW262 ToDo List
+--------------------------------------------------------------------------------
+$Id: TODO,v 1.2 2004/02/18 05:40:02 rzhe Exp $
+================================================================================
+
+
+1. Implement Sys_SpawnChild() for Win32, rewrite Sys_Script() to be a common
+  function using system-specific Sys_SpawnChild() implementation.
+
+2. Rewrite makefiles for using with both GNU and BSD make, move targets to the
+  top makefile.

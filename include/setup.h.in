@@ -1,0 +1,55 @@
+/*
+ *  QW262
+ *  Copyright (C) 2003  [MAD]ApxuTekTop
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *
+ *  $Id: setup.h.in,v 1.5 2005/01/11 17:52:33 borisu Exp $
+ */
+
+#ifndef __SETUP_H__
+#define __SETUP_H__
+
+
+/* Define for FreeBSD */
+#undef OS_FREEBSD
+
+/* Define for OpenBSD */
+#undef OS_OPENBSD
+
+/* Define for Linux */
+#undef OS_LINUX
+
+/* Define for Solaris */
+#undef OS_SOLARIS
+
+/* Define for Win32 */
+#undef OS_WIN32
+
+/* Define if you have the strlcpy function */
+#undef HAVE_STRLCPY
+
+/* Define if you have the strlcat function */
+#undef HAVE_STRLCAT
+
+/* Define if you have the strsep function */
+#undef HAVE_STRSEP
+
+/* Define if you use pr2 modding system  */
+#undef USE_PR2
+
+
+#endif /* !__SETUP_H__ */

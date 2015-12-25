@@ -1,0 +1,65 @@
+#   QW262
+#   Copyright (C) 2003  [MAD]ApxuTekTop
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#   $Id: Makefile.in,v 1.5 2005/01/11 17:52:33 borisu Exp $
+
+RM=@RM@
+@SET_MAKE@
+
+SUBDIRS=@SUBDIRS@
+
+all:		build
+
+build:
+		@for i in $(SUBDIRS); do \
+			echo "Building $$i";\
+			cd $$i;\
+			$(MAKE); cd ..;\
+		done
+
+install:
+		@for i in $(SUBDIRS); do \
+			echo "Installing $$i";\
+			cd $$i;\
+			$(MAKE) install; cd ..;\
+		done
+
+clean:
+		@echo "Cleaning ."
+		@$(RM) -f *~
+		@$(RM) -rf autom4te.cache
+		@cd doc; $(RM) -f *~; cd ..
+		@cd include; $(RM) -f *~; cd ..
+		@for i in $(SUBDIRS); do \
+			echo "Cleaning $$i";\
+			cd $$i;\
+			$(MAKE) clean; cd ..;\
+		done
+
+distclean:
+		@echo "Distcleaning ."
+		@$(RM) -f *~ *.orig *.rej *.tmp
+		@$(RM) -f Makefile config.log config.status
+		@$(RM) -rf autom4te.cache
+		@cd doc; $(RM) -f *~ *.orig *.rej *.tmp; cd ..
+		@cd include; $(RM) -f *~ *.orig *.rej *.tmp setup.h; cd ..
+		@for i in $(SUBDIRS); do \
+			echo "Distcleaning $$i";\
+			cd $$i;\
+			$(MAKE) distclean; cd ..;\
+		done

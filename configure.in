@@ -1,0 +1,220 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT
+AC_CONFIG_HEADER(include/setup.h)
+AC_PREFIX_DEFAULT(/usr/local)
+
+AC_ARG_ENABLE(kqueue,
+[  --enable-kqueue         enable kqueue I/O],,enable_kqueue=no)
+AC_ARG_ENABLE(poll,
+[  --enable-poll           enable poll I/O],,enable_poll=no)
+AC_ARG_ENABLE(pr2,
+[  --enable-pr2            enable pr2 modding system],,enable_pr2=no)
+AC_ARG_ENABLE(tcl,
+[  --enable-tcl            enable Tcl interpreter],,enable_tcl=no)
+AC_ARG_WITH(sv,
+[  --without-sv            do not build server],,with_sv=yes)
+AC_ARG_WITH(cl,
+[  --without-cl            do not build clients],,with_cl=yes)
+AC_ARG_WITH(cl_sw,
+[  --without-cl_soft       do not build Win32 Software client],,with_cl_soft=yes)
+AC_ARG_WITH(cl_gl,
+[  --without-cl_gl         do not build Win32 GL client],,with_cl_gl=yes)
+AC_ARG_WITH(cl_svga,
+[  --without-cl_svga       do not build SVGA client],,with_cl_svga=yes)
+AC_ARG_WITH(cl_x11,
+[  --without-cl_x11        do not build X11 client],,with_cl_x11=yes)
+AC_ARG_WITH(cl_gl_x11,
+[  --without-cl_gl_x11     do not build GL X11 client],,with_cl_gl_x11=yes)
+AC_ARG_WITH(cl_mac_gl,
+[  --without-cl_mac_gl         do not build Mac OS X GL client],,with_cl_mac_gl=yes)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_ISC_POSIX
+AC_CANONICAL_SYSTEM
+AC_AIX
+AC_PROG_MAKE_SET
+AC_PATH_PROG(RM,rm)
+AC_PATH_PROG(LN,ln)
+AC_PATH_PROG(MKDEP,mkdep,/bin/true)
+AC_PATH_PROG(MKDIR,mkdir)
+AC_PROG_INSTALL
+
+dnl Checks for header files.
+AC_HEADER_STDC
+#AC_CHECK_HEADERS(string.h ctype.h)
+
+dnl Checks for library functions.
+AC_PROG_GCC_TRADITIONAL
+AC_CHECK_FUNCS(strlcpy strlcat strsep)
+#AC_CHECK_FUNCS(
+#	strncmp strcasecmp strncasecmp \
+#	strchr strstr \
+#	strspn strcspn \
+#	snprintf strncpy toupper
+#)
+
+dnl Checks for ld functions
+AC_CHECK_LIB(dl, dlopen)
+AC_CHECK_HEADER(dlfcn.h)
+AC_CHECK_FUNCS(dlopen dlsym)
+
+dnl Checks for OS
+freebsd=no
+win32=no
+mac=no
+AC_MSG_CHECKING(operating system)
+case "$target" in
+*-freebsd*)
+	freebsd=yes
+	AC_DEFINE(OS_FREEBSD) AC_MSG_RESULT(FreeBSD) ;;
+*-openbsd*) AC_DEFINE(OS_OPENBSD) AC_MSG_RESULT(OpenBSD) ;;
+*-linux*) AC_DEFINE(OS_LINUX) AC_MSG_RESULT(Linux) ;;
+*-solaris*) AC_DEFINE(OS_SOLARIS) AC_MSG_RESULT(Solaris) ;;
+*-cygwin|*-mingw|*-mingw32|*-win32)
+	win32=yes
+	AC_DEFINE(OS_WIN32) AC_MSG_RESULT(Win32) ;;
+*-apple*)
+	mac=yes
+	AC_MSG_RESULT(MacOS) ;;
+*) AC_MSG_RESULT(nothing special required) ;;
+esac
+
+dnl CD & sound
+if test $freebsd = yes; then
+CL_CD=cd_freebsd.c
+CL_SND=snd_freebsd.c
+elif test "x$win32" = xyes; then
+    CL_CD=cd_win.c
+    CL_SND=snd_win.c
+elif test "x$mac" = xyes; then
+	CL_CD=cd_null.c
+	CL_SND=snd_mac.c
+else
+CL_CD=cd_linux.c
+CL_SND=snd_linux.c
+fi
+AC_SUBST(CL_CD)
+AC_SUBST(CL_SND)
+
+dnl Wether do kqueue or poll
+if test $enable_kqueue = yes; then
+echo "kqueue I/O enabled"
+SV_IO=sv_io_kqueue.c
+else
+if test $enable_poll = yes; then
+echo "poll I/O enabled"
+SV_IO=sv_io_poll.c
+else
+SV_IO=sv_io_select.c
+fi
+fi
+AC_SUBST(SV_IO)
+
+dnl Wether to use pr2
+if test $enable_pr2 = yes; then
+echo "pr2 modding system enabled"
+SV_PR2="pr2_cmds.c pr2_edict.c pr2_exec.c pr2_vm.c"
+AC_DEFINE(USE_PR2)
+else
+SV_PR2=""
+fi
+AC_SUBST(SV_PR2)
+
+CL_LIBS=-lpcre
+
+if test "x$enable_tcl" = "xyes"; then
+    SAVE_LIBS="$LIBS"
+    LIBS=""
+    AC_CHECK_HEADER(tcl.h,
+	[AC_SEARCH_LIBS(Tcl_CreateInterp, [tcl tcl84 tcl8.4],
+	    [EXTRA_SRC=cl_tcl.c
+	    CL_DEFS="$CL_DEFS -DEMBED_TCL"
+	    TCL_LIBS="$LIBS"
+	    LIBS=""
+	    AC_SEARCH_LIBS(Tcl_InitStubs, [tclstub tclstub84 tclstub8.4],
+		[CL_DEFS="$CL_DEFS -DUSE_TCL_STUBS"
+		TCL_LIBS="$LIBS"])],
+	    [AC_MSG_ERROR([Cannot embed Tcl, Tcl libraries not found])])],
+	[AC_MSG_ERROR([Cannot embed Tcl, Tcl includes not found])])
+    LIBS="$SAVE_LIBS"
+    CL_LIBS="$CL_LIBS $TCL_LIBS"
+else
+    EXTRA_SRC=""
+    CL_DEFS=""
+fi
+AC_SUBST(EXTRA_SRC)
+AC_SUBST(CL_DEFS)
+AC_SUBST(CL_LIBS)
+
+dnl Check for cygwin compiler
+if test "x$win32" = "xyes"; then
+AC_MSG_CHECKING([for cygwin compiler])
+AC_EGREP_CPP(cygwin_check, [
+#ifdef __CYGWIN__
+cygwin_check
+#endif
+], [cygwin=yes], [cygwin=no])
+AC_MSG_RESULT($cygwin)
+fi
+
+SUBDIRS=src
+CPPFLAGS="$CPPFLAGS -DHAVE_SETUP_H"
+
+dnl OS-dependent compilation options
+if test "x$win32" = "xyes"; then
+    SUBDIRS="res $SUBDIRS"
+    LIBS="$LIBS -lwinmm -lwsock32"
+    ASMFLAGS=""
+    SV_SYSTEM="net_wins.c sv_sys_win.c"
+    if test "x$cygwin" = "xyes"; then
+	SV_SYSTEM="$SV_SYSTEM sv_cygwin.c"
+    	CPPFLAGS="$CPPFLAGS -D_WIN32 -D_POSIX_SOURCE"
+    fi
+elif test "x$mac" = "xyes"; then
+	SV_SYSTEM="net_udp.c sv_sys_unix.c"
+else
+    LIBS="$LIBS -lm"
+    ASMFLAGS="-DELF"
+    SV_SYSTEM="net_udp.c sv_sys_unix.c"
+fi
+
+dnl Targets
+TARGETS=""
+if test $with_sv = yes; then
+TARGETS="$TARGETS sv"
+fi
+if test $with_cl = yes; then
+    if test "x$win32" = "xyes"; then
+	if test "x$with_cl_soft" = "xyes"; then
+	    TARGETS="$TARGETS cl_sw"
+	fi
+	if test "x$with_cl_gl" = "xyes"; then
+	    TARGETS="$TARGETS cl_gl"
+	fi
+    elif test "x$mac" = "xyes"; then
+	TARGETS="$TARGETS cl_mac_gl"
+    else
+if test $with_cl_svga = yes; then
+TARGETS="$TARGETS cl_svga"
+fi
+if test $with_cl_x11 = yes; then
+TARGETS="$TARGETS cl_x11"
+fi
+if test $with_cl_gl_x11 = yes; then
+TARGETS="$TARGETS cl_gl_x11"
+fi
+fi
+fi
+AC_SUBST(TARGETS)
+AC_SUBST(SV_SYSTEM)
+AC_SUBST(SUBDIRS)
+AC_SUBST(ASMFLAGS)
+
+dnl Make the files.
+AC_OUTPUT(Makefile src/Makefile src/Makefile.sub)
+
+dnl GNU make warning
+echo "----------------------------------------------------------------------"
+echo "ATTENTION: You must use GNU make for building QW."
+echo "On Linux it is just make, on other systems it might be gmake."

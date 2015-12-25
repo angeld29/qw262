@@ -1,0 +1,242 @@
+#   QW262
+#   Copyright (C) 2003  [MAD]ApxuTekTop
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#
+#   $Id: Makefile.in,v 1.12 2005/04/26 10:59:52 se7en Exp $
+
+RM=@RM@
+MKDIR=@MKDIR@
+PREFIX=@prefix@
+@SET_MAKE@
+
+COMMON_CFLAGS=@CFLAGS@ -Wall -Wno-format -funsigned-char
+COMMON_INCFLAGS=-I../include @CPPFLAGS@
+COMMON_LDFLAGS=@LDFLAGS@
+COMMON_LIBS=@LIBS@
+
+sv_ONLY_CFLAGS=-DSERVERONLY
+
+cl_ONLY_INCFLAGS=@CL_DEFS@ -I/usr/local/include -I/usr/include/pcre
+cl_ONLY_LDFLAGS=-L/usr/local/lib
+cl_ONLY_LIBS=@CL_LIBS@
+
+cl_win32_INCFLAGS=@CL_DEFS@ -I../res
+cl_win32_LDFLAGS=-Wl,--subsystem=windows
+cl_win32_LIBS=@CL_LIBS@ -lgdi32 -L/lib/w32api -ldxguid -ldinput
+
+cl_mac_INCFLAGS=@CL_DEFS@ -I/Developer/Headers/FlatCarbon -FOpenGL -FAGL
+cl_mac_LDFLAGS=
+cl_mac_LIBS=-lpng -ljpeg -lz -framework OpenGL -framework AGL -framework DrawSprocket -framework Carbon -framework ApplicationServices -framework IOKit
+
+cl_sw_ONLY_INCFLAGS=-I/usr/include/scitech
+cl_sw_ONLY_LIBS=-lmgllt -L/lib/mingw -lmsvcrt
+
+cl_gl_win32_CFLAGS=-DGLQUAKE
+cl_gl_win32_LIBS=-lpng -ljpeg -lz -lopengl32 -lglu32 -lcomctl32
+
+cl_svga_ONLY_LIBS=-lvga
+
+cl_x11_gl_x11_ONLY_INCFLAGS=-I/usr/X11R6/include
+cl_x11_gl_x11_ONLY_LDFLAGS=-L/usr/X11R6/lib
+
+cl_x11_ONLY_LIBS=-lX11 -lXext
+
+cl_gl_ONLY_CFLAGS=-DGLQUAKE -DUSE_VMODE -DUSE_HWGAMMA
+
+cl_gl_x11_ONLY_LIBS=-lpng -ljpeg -lGL -lGLU -lXxf86vm
+
+sv_CFLAGS=$(COMMON_CFLAGS) $(sv_ONLY_CFLAGS)
+sv_INCFLAGS=$(COMMON_INCFLAGS)
+sv_LDFLAGS=$(COMMON_LDFLAGS)
+sv_LIBS=$(COMMON_LIBS)
+
+cl_sw_CFLAGS=$(COMMON_CFLAGS)
+cl_sw_INCFLAGS=$(COMMON_INCFLAGS) $(cl_win32_INCFLAGS) $(cl_sw_ONLY_INCFLAGS)
+cl_sw_LDFLAGS=$(COMMON_LDFLAGS) $(cl_win32_LDFLAGS) $(cl_sw_ONLY_LDFLAGS)
+cl_sw_LIBS=$(COMMON_LIBS) $(cl_sw_ONLY_LIBS) $(cl_win32_LIBS)
+
+cl_gl_CFLAGS=$(COMMON_CFLAGS) $(cl_gl_win32_CFLAGS)
+cl_gl_INCFLAGS=$(COMMON_INCFLAGS) $(cl_win32_INCFLAGS) $(cl_gl_win32_INCFLAGS)
+cl_gl_LDFLAGS=$(COMMON_LDFLAGS) $(cl_win32_LDFLAGS) $(cl_gl_win32_LDFLAGS)
+cl_gl_LIBS=$(COMMON_LIBS) $(cl_win32_LIBS) $(cl_gl_win32_LIBS)
+
+cl_svga_CFLAGS=$(COMMON_CFLAGS)
+cl_svga_INCFLAGS=$(COMMON_INCFLAGS) $(cl_ONLY_INCFLAGS)
+cl_svga_LDFLAGS=$(COMMON_LDFLAGS) $(cl_ONLY_LDFLAGS)
+cl_svga_LIBS=$(COMMON_LIBS) $(cl_ONLY_LIBS) $(cl_svga_ONLY_LIBS)
+
+cl_x11_CFLAGS=$(COMMON_CFLAGS)
+cl_x11_INCFLAGS=$(COMMON_INCFLAGS) $(cl_ONLY_INCFLAGS) \
+	$(cl_x11_gl_x11_ONLY_INCFLAGS)
+cl_x11_LDFLAGS=$(COMMON_LDFLAGS) $(cl_ONLY_LDFLAGS) \
+	$(cl_x11_gl_x11_ONLY_LDFLAGS)
+cl_x11_LIBS=$(COMMON_LIBS) $(cl_ONLY_LIBS) $(cl_x11_ONLY_LIBS)
+
+#cl_gl_svga_CFLAGS=$(COMMON_CFLAGS) $(cl_gl_ONLY_CFLAGS)
+#cl_gl_svga_INCFLAGS=$(COMMON_INCFLAGS) $(cl_ONLY_INCFLAGS) -I/usr/X11R6/include
+#cl_gl_svga_LDFLAGS=$(COMMON_LDFLAGS) $(cl_ONLY_LDFLAGS)
+#cl_gl_svga_LIBS=$(COMMON_LIBS) $(cl_ONLY_LIBS)
+
+cl_gl_x11_CFLAGS=$(COMMON_CFLAGS) $(cl_gl_ONLY_CFLAGS)
+cl_gl_x11_INCFLAGS=$(COMMON_INCFLAGS) $(cl_ONLY_INCFLAGS) \
+	$(cl_x11_gl_x11_ONLY_INCFLAGS)
+cl_gl_x11_LDFLAGS=$(COMMON_LDFLAGS) $(cl_ONLY_LDFLAGS) \
+	$(cl_x11_gl_x11_ONLY_LDFLAGS)
+cl_gl_x11_LIBS=$(COMMON_LIBS) $(cl_ONLY_LIBS) $(cl_gl_x11_ONLY_LIBS)
+
+cl_mac_gl_CFLAGS=$(COMMON_CFLAGS) -DGLQUAKE
+cl_mac_gl_INCFLAGS=$(COMMON_INCFLAGS) $(cl_mac_INCFLAGS)
+cl_mac_gl_LDFLAGS=$(COMMON_LDFLAGS) $(cl_mac_ONLY_LDFLAGS)
+cl_mac_gl_LIBS=$(COMMON_LIBS) $(cl_ONLY_LIBS) $(cl_mac_LIBS)
+
+COMMON_SOURCES=cmd.c common.c crc.c cvar.c hash.c mathlib.c md4.c net_chan.c \
+	pmove.c pmovetst.c zone.c
+cl_COMMON_SOURCES=cl_cam.c cl_demo.c cl_ents.c cl_input.c cl_main.c \
+	cl_parse.c cl_pred.c cl_tent.c console.c keys.c \
+	locfiles.c menu.c nonintel.c sbar.c screen.c skin.c snd_dma.c \
+	snd_mem.c snd_mix.c teamplay.c triggers.c util.c view.c wad.c @EXTRA_SRC@
+cl_CD_SOURCES=@CL_CD@
+cl_SND_SOURCES=@CL_SND@
+cl_COMMON_ASM_SOURCES=math.s snd_mixa.s
+cl_linux_SOURCES=net_udp.c sys_dosa.s cl_sys_unix.c
+cl_win32_SOURCES=net_wins.c in_win.c cl_mhooks.c sys_wina.s cl_sys_win.c
+cl_mac_SOURCES=net_udp.c in_mac.c cl_sys_mac.c mac_prefs.c CarbonSndPlayDB.c
+
+sv_ONLY_SOURCES=pr_cmds.c pr_edict.c pr_exec.c sv_ccmds.c sv_demo.c \
+	sv_ents.c sv_init.c sv_io.c sv_main.c sv_model.c sv_move.c \
+	sv_nchan.c sv_phys.c sv_send.c sv_user.c world.c @SV_SYSTEM@
+sv_IO_ENGINE_SOURCES=@SV_IO@
+sv_PR_SOURCES=@SV_PR2@
+
+cl_ONLY_SOURCES=cl_model.c d_edge.c d_fill.c d_init.c d_modech.c d_part.c \
+	d_polyse.c d_scan.c d_sky.c d_sprite.c d_surf.c d_vars.c d_zpoint.c \
+	draw.c r_aclip.c r_alias.c r_bsp.c r_draw.c r_edge.c r_efrag.c \
+	r_light.c r_main.c r_misc.c r_part.c r_screen.c r_sky.c r_sprite.c \
+	r_surf.c r_vars.c
+cl_ONLY_ASM_SOURCES=d_draw.s d_draw16.s d_parta.s d_polysa.s \
+	d_scana.s d_spr8.s d_varsa.s r_aclipa.s r_drawa.s \
+	r_edgea.s r_varsa.s surf16.s surf8.s
+cl_svga_ONLY_SOURCES=d_copy.s vid_svgalib.c
+cl_x11_ONLY_SOURCES=d_copy.s vid_x.c
+cl_sw_ONLY_SOURCES=vid_win.c
+
+cl_gl_ONLY_SOURCES=gl_common.c gl_draw.c gl_flare.c gl_image.c gl_mesh.c \
+	gl_model.c gl_ngraph.c gl_refrag.c gl_rlight.c gl_rmain.c gl_rmisc.c \
+	gl_rpart.c gl_rsurf.c gl_screen.c gl_texture.c gl_warp.c
+cl_gl_svga_ONLY_SOURCES=gl_vidlinux.c
+cl_gl_x11_ONLY_SOURCES=gl_vidlinuxglx.c
+cl_gl_win32_SOURCES=gl_vidnt.c
+cl_gl_mac_SOURCES=gl_vidmac.c
+
+sv_SOURCES=$(COMMON_SOURCES) $(sv_ONLY_SOURCES) $(sv_IO_ENGINE_SOURCES) \
+	$(sv_PR_SOURCES)
+
+cl_SOURCES=$(COMMON_SOURCES) $(cl_COMMON_SOURCES) $(cl_ONLY_SOURCES) \
+	$(cl_COMMON_ASM_SOURCES) $(cl_ONLY_ASM_SOURCES) \
+	$(cl_CD_SOURCES) $(cl_SND_SOURCES)
+cl_svga_SOURCES=$(cl_SOURCES) $(cl_linux_SOURCES) $(cl_svga_ONLY_SOURCES)
+cl_x11_SOURCES=$(cl_SOURCES) $(cl_linux_SOURCES) $(cl_x11_ONLY_SOURCES)
+cl_sw_SOURCES=$(cl_SOURCES) $(cl_win32_SOURCES) $(cl_sw_ONLY_SOURCES)
+
+cl_gl_COMMON_SOURCES=$(COMMON_SOURCES) $(cl_COMMON_SOURCES) \
+		     $(cl_gl_ONLY_SOURCES) $(cl_COMMON_ASM_SOURCES) \
+		     $(cl_CD_SOURCES) $(cl_SND_SOURCES)
+cl_gl_svga_SOURCES=$(cl_gl_COMMON_SOURCES) $(cl_linux_SOURCES) \
+		   $(cl_gl_svga_ONLY_SOURCES)
+cl_gl_x11_SOURCES=$(cl_gl_COMMON_SOURCES) $(cl_linux_SOURCES) \
+		  $(cl_gl_x11_ONLY_SOURCES)
+ 
+cl_gl_SOURCES=$(cl_gl_COMMON_SOURCES) $(cl_win32_SOURCES) \
+	      $(cl_gl_win32_SOURCES)
+
+cl_mac_gl_SOURCES=$(COMMON_SOURCES) $(cl_gl_ONLY_SOURCES) $(cl_COMMON_SOURCES) \
+		  $(cl_CD_SOURCES) $(cl_SND_SOURCES) \
+		  $(cl_mac_SOURCES) $(cl_gl_mac_SOURCES)
+
+sv_TARGET=qwsv262
+sv_WORKDIR=sv
+sv_INSTALL=sbin
+
+cl_svga_TARGET=qwcl262
+cl_svga_WORKDIR=cl_svga
+cl_svga_INSTALL=bin
+
+cl_x11_TARGET=qwcl262.x11
+cl_x11_WORKDIR=cl_x11
+cl_x11_INSTALL=bin
+
+#cl_gl_svga_TARGET=glqwcl262
+#cl_gl_svga_WORKDIR=cl_gl
+#cl_gl_svga_INSTALL=bin
+
+cl_gl_x11_TARGET=glqwcl262.glx
+cl_gl_x11_WORKDIR=cl_gl_x11
+cl_gl_x11_INSTALL=bin
+
+cl_sw_TARGET=qwcl262
+cl_sw_WORKDIR=cl_sw
+cl_sw_INSTALL=bin
+cl_sw_EXTRA=../res/winquake.o
+
+cl_gl_TARGET=glqwcl262
+cl_gl_WORKDIR=cl_gl
+cl_gl_INSTALL=bin
+cl_gl_EXTRA=../res/winquake.o
+
+cl_mac_gl_TARGET=glqwcl262
+cl_mac_gl_WORKDIR=cl_mac_gl
+cl_mac_gl_INSTALL=bin
+
+TARGETS=@TARGETS@
+#TARGETS+=cl_gl_svga
+
+all:		build
+
+clean:
+		@$(RM) -f *~
+		@for i in $(TARGETS); do \
+			$(MAKE) target_clean T=$$i; \
+		done
+
+distclean:	clean
+		@$(RM) -f *.orig *.rej *.tmp Makefile Makefile.sub
+
+build:
+		@for i in $(TARGETS); do \
+			$(MAKE) target_build T=$$i; \
+		done
+
+install:
+		@for i in $(TARGETS); do \
+			$(MAKE) target_install T=$$i; \
+		done
+
+target_build:	$($(T)_WORKDIR)
+		$(MAKE) -f Makefile.sub TARGET="$($(T)_TARGET)" \
+			CFLAGS="$($(T)_CFLAGS)" INCFLAGS="$($(T)_INCFLAGS)" \
+			LDFLAGS="$($(T)_LDFLAGS)" SOURCES="$($(T)_SOURCES)" \
+			LIBS="$($(T)_LIBS)" PREFIX="$(T)" EXTRA="$($(T)_EXTRA)"
+
+target_install: target_build
+		../install-sh -c -m 755 $($(T)_TARGET) \
+			$(PREFIX)/$($(T)_INSTALL)/$($(T)_TARGET)
+
+target_clean:
+		@$(RM) -rf $($(T)_WORKDIR) $($(T)_TARGET)
+
+$($(T)_WORKDIR):
+		$(MKDIR) -p $($(T)_WORKDIR)
