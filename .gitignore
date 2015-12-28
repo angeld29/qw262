@@ -14,3 +14,5 @@ src/Makefile.sub
 *.sdf
 *.user
 *.filters
+data/
+*.suo

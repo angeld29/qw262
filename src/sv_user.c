@@ -408,7 +408,7 @@ void SV_Spawn_f (void)
 				sizeof(entvars_t));
 		ent->v.netname = savenetname;
 		//host_client->name = PR2_GetString(ent->v.netname);
-		//strlcpy(PR2_GetString(ent->v.netname), host_client->name, 32);
+		//strlcpy(PR2_GetString(ent->v.netname), host_client->name, CLIENT_NAME_LEN);
 	}
 #endif
 // so spec will have right goalentity - if speccing someone
@@ -1317,11 +1317,7 @@ SV_Pause_f
 */
 void SV_Pause_f (void)
 {
-#ifdef USE_PR2
-	char st[32 + 32];
-#else
-	char st[sizeof(host_client->name) + 32];
-#endif
+	char st[CLIENT_NAME_LEN + 32];
 
 
 	if (!pausable.value) {

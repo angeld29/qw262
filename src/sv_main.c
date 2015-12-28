@@ -678,7 +678,7 @@ A connection request that did not come from the master
 ==================
 */
 #ifdef USE_PR2
-extern char clientnames[MAX_CLIENTS][32];
+extern char clientnames[MAX_CLIENTS][CLIENT_NAME_LEN];
 //int     userid;
 #endif
 void SVC_DirectConnect (void)
@@ -866,7 +866,7 @@ void SVC_DirectConnect (void)
         {
           newcl->name = clientnames[edictnum-1];
         }
-        memset(newcl->name, 0, 32);
+        memset(newcl->name, 0, CLIENT_NAME_LEN);
 #endif
 	// parse some info from the info strings
 	SV_ExtractFromUserinfo (newcl, true);
@@ -2078,13 +2078,9 @@ void SV_ExtractFromUserinfo (client_t *cl, qboolean namechanged)
 					break;
 			}
 			if (i != MAX_CLIENTS) { // dup name
-#ifdef USE_PR2
-				if (strlen(val) > 32 - 1)
-					val[32 - 4] = 0;
-#else
-				if (strlen(val) > sizeof(cl->name) - 1)
-					val[sizeof(cl->name) - 4] = 0;
-#endif
+
+				if (strlen(val) > CLIENT_NAME_LEN - 1)
+					val[CLIENT_NAME_LEN - 4] = 0;
 				p = val;
 
 				if (val[0] == '(') {
@@ -2118,11 +2114,7 @@ void SV_ExtractFromUserinfo (client_t *cl, qboolean namechanged)
 				SV_BroadcastPrintf (PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
 		}
 
-#ifdef USE_PR2
-			strlcpy (cl->name, val, 32);
-#else
-			strlcpy (cl->name, val, sizeof(cl->name));
-#endif
+			strlcpy (cl->name, val, CLIENT_NAME_LEN);
 
 	}
 

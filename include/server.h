@@ -130,16 +130,14 @@ typedef struct
 
 #define MAX_BACK_BUFFERS	4
 #define MAX_STUFFTEXT		256
+#define	CLIENT_NAME_LEN		32
 
 typedef struct client_s
 {
 	client_state_t	state;
 
 	int				spectator;			// non-interactive
-#ifdef USE_PR2
-        int                             isBot;
-	usercmd_t		       botcmd;			// bot movment
-#endif
+
 	qboolean		sendinfo;			// at end of frame, send info to all
 										// this prevents malicious multiple broadcasts
 	float			lastnametime;		// time of last name change
@@ -164,12 +162,14 @@ typedef struct client_s
 
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
 #ifdef USE_PR2
+        int                             isBot;
+	usercmd_t		       botcmd;			// bot movment
 	char			*name;			// in PR2 points to ent->v.netname
 #else
-	char			name[32];			// for printing to other people
+	char			name[CLIENT_NAME_LEN];			// for printing to other people
 #endif
 										// extracted from userinfo
-	char			team[32];			// Highlander
+	char			team[CLIENT_NAME_LEN];			// Highlander
 	int				messagelevel;		// for filtering printed messages
 
 	// the datagram is written to after every frame, but only cleared

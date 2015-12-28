@@ -29,7 +29,7 @@ char	localmodels[MAX_MODELS][5];	// inline model names for precache
 char localinfo[MAX_LOCALINFO_STRING+1]; // local game info
 #ifdef USE_PR2
 //storage for client names for -progtype 0 (VM_NONE)
-char clientnames[MAX_CLIENTS][32]; //clientnames for -progtype 0
+char clientnames[MAX_CLIENTS][CLIENT_NAME_LEN]; //clientnames for -progtype 0
 #endif
 
 /*
@@ -326,7 +326,7 @@ void SV_SpawnServer (char *server)
 	edict_t		*ent;
 	int			i;
 #ifdef USE_PR2
-        char savenames[MAX_CLIENTS][32];
+        char savenames[MAX_CLIENTS][CLIENT_NAME_LEN];
 #endif
 	Con_DPrintf ("SpawnServer: %s\n",server);
 	
@@ -349,7 +349,7 @@ void SV_SpawnServer (char *server)
 		svs.clients[i].isBot = 0;
             }
             if(svs.clients[i].name)
-            	strlcpy(savenames[i],svs.clients[i].name,32);
+            	strlcpy(savenames[i],svs.clients[i].name,CLIENT_NAME_LEN);
         }
         if( sv_vm )
         	PR2_GameShutDown();
@@ -417,7 +417,7 @@ void SV_SpawnServer (char *server)
         	 svs.clients[i].name = PR2_GetString(ent->v.netname);
                 }else
                    svs.clients[i].name = clientnames[i];
-        	 strlcpy(svs.clients[i].name,savenames[i],32);
+        	 strlcpy(svs.clients[i].name,savenames[i],CLIENT_NAME_LEN);
 #endif
 		svs.clients[i].edict = ent;
 //ZOID - make sure we update frags right
