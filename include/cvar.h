@@ -61,7 +61,7 @@ interface from being ambiguous.
 #define CVAR_SERVERCFGCONST	0x0008		// constant setup in config
 #endif
 #define CVAR_ROM			0x0040		// read only
-#define CVAR_USER_CREATED	0x0080		// created by user
+#define CVAR_USER_CREATED	0x0080		// created by user
 #define CVAR_INTERNAL		0x0100		// can't be set in console directly
 
 typedef struct cvar_s

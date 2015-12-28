@@ -5,3 +5,8 @@ Debug/
 Release/
 PR2Release/
 svRelease/
+Makefile
+config.log
+config.status
+include/setup.h
+src/Makefile.sub
