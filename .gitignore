@@ -10,3 +10,7 @@ config.log
 config.status
 include/setup.h
 src/Makefile.sub
+*.opensdf
+*.sdf
+*.user
+*.filters
