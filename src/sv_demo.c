@@ -1009,7 +1009,7 @@ static void SV_Record (const char *name)
 #ifdef USE_PR2
 		PR2_GetString(sv.edicts->v.message)
 #else
-		PR_GetString(sv.edicts->v.message)
+		PR1_GetString(sv.edicts->v.message)
 #endif
 		);
 

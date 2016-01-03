@@ -743,7 +743,7 @@ void SV_UpdateClientStats (client_t *client)
 #ifdef USE_PR2
 		PR2_GetString(ent->v.weaponmodel)
 #else
-		PR_GetString(ent->v.weaponmodel)
+		PR1_GetString(ent->v.weaponmodel)
 #endif
 		);
 	stats[STAT_AMMO] = ent->v.currentammo;
@@ -879,7 +879,7 @@ void SV_UpdateToReliableMessages (void)
 #ifdef USE_PR2
 			PR2_GetEdictFieldValue(ent, "gravity");
 #else
-			GetEdictFieldValue(ent, "gravity");
+			PR1_GetEdictFieldValue(ent, "gravity");
 #endif
 		if (val && host_client->entgravity != val->_float) {
 			host_client->entgravity = val->_float;
@@ -898,7 +898,7 @@ void SV_UpdateToReliableMessages (void)
 #ifdef USE_PR2
 			PR2_GetEdictFieldValue(ent, "maxspeed");
 #else
-			GetEdictFieldValue(ent, "maxspeed");
+			PR1_GetEdictFieldValue(ent, "maxspeed");
 #endif
 		if (val && host_client->maxspeed != val->_float) {
 			host_client->maxspeed = val->_float;
@@ -1123,7 +1123,7 @@ void SV_SendDemoMessage(void)
 #ifdef USE_PR2
 			PR2_GetString(ent->v.weaponmodel)
 #else
-			PR_GetString(ent->v.weaponmodel)
+			PR1_GetString(ent->v.weaponmodel)
 #endif
 			);
 		stats[STAT_AMMO] = ent->v.currentammo;

@@ -111,7 +111,7 @@ void SV_New_f (void)
 #ifdef USE_PR2
 		PR2_GetString(sv.edicts->v.message)
 #else
-		PR_GetString(sv.edicts->v.message)
+		PR1_GetString(sv.edicts->v.message)
 #endif
 		);
 
@@ -398,7 +398,7 @@ void SV_Spawn_f (void)
 	{
 #endif
 		memset(&ent->v, 0, progs->entityfields * 4);
-		ent->v.netname = PR_SetString(host_client->name);
+		ent->v.netname = PR1_SetString(host_client->name);
 #ifdef USE_PR2
 	}
 	else
@@ -426,7 +426,7 @@ void SV_Spawn_f (void)
 #ifdef USE_PR2
 		PR2_GetEdictFieldValue(ent, "gravity");
 #else
-		GetEdictFieldValue(ent, "gravity");
+		PR1_GetEdictFieldValue(ent, "gravity");
 #endif
 	if (val)
 		val->_float = 1.0;
@@ -435,7 +435,7 @@ void SV_Spawn_f (void)
 #ifdef USE_PR2
 		PR2_GetEdictFieldValue(ent, "maxspeed");
 #else
-		GetEdictFieldValue(ent, "maxspeed");
+		PR1_GetEdictFieldValue(ent, "maxspeed");
 #endif
 	if (val)
 		val->_float = sv_maxspeed.value;
@@ -490,7 +490,7 @@ void SV_SpawnSpectator(void)
 #ifdef USE_PR2 /* phucking Linux implements strcmp as a macro */
 			!strcmp(PR2_GetString(e->v.classname), "info_player_start")
 #else
-			!strcmp(PR_GetString(e->v.classname), "info_player_start")
+			!strcmp(PR1_GetString(e->v.classname), "info_player_start")
 #endif
 			)
 		{
@@ -1278,10 +1278,10 @@ void SV_Kill_f(void)
 #ifdef USE_PR2
 	if ( !sv_vm )
 #endif
-		PR_ExecuteProgram(pr_global_struct->ClientKill);
+		PR1_ClientKill();
 #ifdef USE_PR2
 	else
-		PR2_ClientCmd();
+		PR2_ClientKill();
 #endif
 }
 
@@ -1959,7 +1959,7 @@ void SV_RunCmd (usercmd_t *ucmd, qboolean inside) //bliP: 24/9
 			PR2_GameClientPreThink(0);
 		else
 #endif
-			PR_ExecuteProgram(pr_global_struct->PlayerPreThink);
+			PR1_GameClientPreThink(0);
 
 		SV_RunThink(sv_player);
 	}
@@ -2024,10 +2024,10 @@ void SV_RunCmd (usercmd_t *ucmd, qboolean inside) //bliP: 24/9
 			pr_global_struct->other = EDICT_TO_PROG(sv_player);
 #ifdef USE_PR2
 			if ( sv_vm )
-				PR2_EdictTouch();
+				PR2_EdictTouch(ent->v.touch);
 			else
 #endif
-				PR_ExecuteProgram(ent->v.touch);
+				PR1_EdictTouch(ent->v.touch);
 			playertouch[n / 8] |= 1 << (n % 8);
 		}
 	}

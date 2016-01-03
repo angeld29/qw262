@@ -36,7 +36,7 @@ eval_t *PR2_GetEdictFieldValue(edict_t *ed, char *field)
 	char *s;
 
 	if (!sv_vm)
-		return GetEdictFieldValue(ed, field);
+		return PR1_GetEdictFieldValue(ed, field);
 
 	for (f = fields; (s = PR2_GetString(f->name)) && *s; f++)
 		if (!Q_stricmp(s, field))

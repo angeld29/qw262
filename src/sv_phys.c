@@ -77,7 +77,7 @@ void SV_CheckVelocity(edict_t *ent)
 #ifdef USE_PR2
 				PR2_GetString(ent->v.classname)
 #else
-				PR_GetString(ent->v.classname)
+				PR1_GetString(ent->v.classname)
 #endif
 				);
 			ent->v.velocity[i] = 0;
@@ -88,7 +88,7 @@ void SV_CheckVelocity(edict_t *ent)
 #ifdef USE_PR2
 				PR2_GetString(ent->v.classname)
 #else
-				PR_GetString(ent->v.classname)
+				PR1_GetString(ent->v.classname)
 #endif
 				);
 			ent->v.origin[i] = 0;
@@ -141,10 +141,10 @@ qboolean SV_RunThink(edict_t *ent)
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
 #ifdef USE_PR2
 		if ( sv_vm )
-			PR2_EdictThink();
+			PR2_EdictThink(ent->v.think);
 		else
 #endif
-			PR_ExecuteProgram(ent->v.think);
+			PR1_EdictThink(ent->v.think);
 
 		if (ent->free)
 			return false;
@@ -175,10 +175,10 @@ void SV_Impact(edict_t *e1, edict_t *e2)
 		pr_global_struct->other = EDICT_TO_PROG(e2);
 #ifdef USE_PR2
 		if ( sv_vm )
-			PR2_EdictTouch();
+			PR2_EdictTouch(e1->v.touch);
 		else
 #endif
-			PR_ExecuteProgram(e1->v.touch);
+			PR1_EdictTouch(e1->v.touch);
 	}
 	
 	if (e2->v.touch && e2->v.solid != SOLID_NOT)
@@ -187,10 +187,10 @@ void SV_Impact(edict_t *e1, edict_t *e2)
 		pr_global_struct->other = EDICT_TO_PROG(e1);
 #ifdef USE_PR2
 		if( sv_vm )
-			PR2_EdictTouch();
+			PR2_EdictTouch(e2->v.touch);
 		else
 #endif
-			PR_ExecuteProgram(e2->v.touch);
+			PR1_EdictTouch(e2->v.touch);
 	}
 
 	pr_global_struct->self = old_self;
@@ -536,9 +536,11 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 #ifdef USE_PR2
 		if ( sv_vm )
 		{
-			pr_global_struct->self = EDICT_TO_PROG(pusher);
-			pr_global_struct->other = EDICT_TO_PROG(check);
-		    PR2_EdictBlocked();
+			if (pusher->v.blocked){
+				pr_global_struct->self = EDICT_TO_PROG(pusher);
+				pr_global_struct->other = EDICT_TO_PROG(check);
+				PR2_EdictBlocked(pusher->v.blocked);
+			}
 		}
 		else
 		{
@@ -547,7 +549,7 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 			{
 				pr_global_struct->self = EDICT_TO_PROG(pusher);
 				pr_global_struct->other = EDICT_TO_PROG(check);
-				PR_ExecuteProgram(pusher->v.blocked);
+				PR1_EdictBlocked(pusher->v.blocked);
 			}
 #ifdef USE_PR2
 		}
@@ -628,10 +630,10 @@ void SV_Physics_Pusher(edict_t *ent)
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
 #ifdef USE_PR2
 		if ( sv_vm )
-			PR2_EdictThink();
+			PR2_EdictThink(ent->v.think);
 		else
 #endif
-			PR_ExecuteProgram(ent->v.think);
+			PR1_EdictThink(ent->v.think);
 		if (ent->free)
 			return;
 		VectorSubtract(ent->v.origin, oldorg, move);
@@ -860,7 +862,7 @@ void SV_ProgStartFrame(void)
 		PR2_GameStartFrame();
 	else
 #endif
-		PR_ExecuteProgram(pr_global_struct->StartFrame);
+		PR1_GameStartFrame();
 }
 
 /*

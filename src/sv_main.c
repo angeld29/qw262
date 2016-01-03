@@ -896,7 +896,7 @@ void SVC_DirectConnect (void)
 		PR2_GameSetNewParms();
 	else
 #endif
-		PR_ExecuteProgram (pr_global_struct->SetNewParms);
+		PR1_GameSetNewParms();
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		newcl->spawn_parms[i] = (&pr_global_struct->parm1)[i];
 

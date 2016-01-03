@@ -107,13 +107,13 @@ int NUM_FOR_EDICT(edict_t *e);
 #define	G_EDICT(o) ((edict_t *)((byte *)sv.edicts+ *(int *)&pr_globals[o]))
 #define G_EDICTNUM(o) NUM_FOR_EDICT(G_EDICT(o))
 #define	G_VECTOR(o) (&pr_globals[o])
-#define	G_STRING(o) (PR_GetString(*(string_t *)&pr_globals[o]))
+#define	G_STRING(o) (PR1_GetString(*(string_t *)&pr_globals[o]))
 #define	G_FUNCTION(o) (*(func_t *)&pr_globals[o])
 
 #define	E_FLOAT(e,o) (((float*)&e->v)[o])
 #define	E_INT(e,o) (*(int *)&((float*)&e->v)[o])
 #define	E_VECTOR(e,o) (&((float*)&e->v)[o])
-#define	E_STRING(e,o) (PR_GetString(*(string_t *)&((float*)&e->v)[o]))
+#define	E_STRING(e,o) (PR1_GetString(*(string_t *)&((float*)&e->v)[o]))
 
 extern	int		type_size[8];
 
@@ -136,7 +136,7 @@ void PR_RunError (char *error, ...);
 void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
 
-eval_t *GetEdictFieldValue(edict_t *ed, char *field);
+eval_t *PR1_GetEdictFieldValue(edict_t *ed, char *field);
 
 //
 // PR STrings stuff
@@ -146,6 +146,27 @@ eval_t *GetEdictFieldValue(edict_t *ed, char *field);
 extern char *pr_strtbl[MAX_PRSTR];
 extern int num_prstr;
 
-char *PR_GetString(int num);
-int PR_SetString(char *s);
+char *PR1_GetString(int num);
+int PR1_SetString(char *s);
+void	PR1_GameSetChangeParms();
+void PR1_GameSetNewParms();
+void PR1_GameStartFrame();
+void PR1_ClientKill();
+void PR1_UnLoadProgs();
 
+void PR1_GameClientDisconnect(int spec);
+void PR1_GameClientConnect(int spec);
+void PR1_GamePutClientInServer(int spec);
+void PR1_GameClientPreThink(int spec);
+void PR1_GameClientPostThink(int spec);
+//qboolean PR1_ClientSay(int isTeamSay, char *message);
+//void PR1_PausedTic(float duration);
+
+#define PR1_GameShutDown()	// PR1 does not really have it.
+#define PR1_ClientCmd()	// PR1 does not really have it.
+#define PR1_UserInfoChanged() (0) // PR1 does not really have it,
+
+#define PR1_LoadEnts ED_LoadFromFile
+#define PR1_EdictThink PR_ExecuteProgram
+#define PR1_EdictTouch PR_ExecuteProgram
+#define PR1_EdictBlocked PR_ExecuteProgram

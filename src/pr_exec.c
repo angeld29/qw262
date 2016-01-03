@@ -203,7 +203,7 @@ void PR_StackTrace (void)
 			Con_Printf ("<NO FUNCTION>\n");
 		}
 		else
-			Con_Printf ("%12s : %s\n", PR_GetString(f->s_file), PR_GetString(f->s_name));		
+			Con_Printf ("%12s : %s\n", PR1_GetString(f->s_file), PR1_GetString(f->s_name));		
 	}
 }
 
@@ -238,7 +238,7 @@ void PR_Profile_f (void)
 		if (best)
 		{
 			if (num < 10)
-				Con_Printf ("%7i %s\n", best->profile, PR_GetString(best->s_name));
+				Con_Printf ("%7i %s\n", best->profile, PR1_GetString(best->s_name));
 			num++;
 			best->profile = 0;
 		}
@@ -480,7 +480,7 @@ while (1)
 		c->_float = !a->vector[0] && !a->vector[1] && !a->vector[2];
 		break;
 	case OP_NOT_S:
-		c->_float = !a->string || !*PR_GetString(a->string);
+		c->_float = !a->string || !*PR1_GetString(a->string);
 		break;
 	case OP_NOT_FNC:
 		c->_float = !a->function;
@@ -498,7 +498,7 @@ while (1)
 					(a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !strcmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = !strcmp(PR1_GetString(a->string), PR1_GetString(b->string));
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -517,7 +517,7 @@ while (1)
 					(a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = strcmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = strcmp(PR1_GetString(a->string), PR1_GetString(b->string));
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;
@@ -665,7 +665,7 @@ while (1)
 char *pr_strtbl[MAX_PRSTR];
 int num_prstr;
 
-char *PR_GetString(int num)
+char *PR1_GetString(int num)
 {
 	if (num < 0) {
 //Con_DPrintf("GET:%d == %s\n", num, pr_strtbl[-num]);
@@ -674,7 +674,7 @@ char *PR_GetString(int num)
 	return pr_strings + num;
 }
 
-int PR_SetString(char *s)
+int PR1_SetString(char *s)
 {
 	int i;
 
@@ -694,3 +694,84 @@ int PR_SetString(char *s)
 	return (int)(s - pr_strings);
 }
 
+void	PR1_GameSetChangeParms(){
+	PR_ExecuteProgram (pr_global_struct->SetChangeParms);
+}
+
+void PR1_GameSetNewParms(){
+	PR_ExecuteProgram (pr_global_struct->SetNewParms);
+}
+void PR1_GameStartFrame(){
+	PR_ExecuteProgram (pr_global_struct->StartFrame);
+}
+void PR1_ClientKill(){
+	PR_ExecuteProgram (pr_global_struct->ClientKill);
+}
+//=============================================================================
+
+void PR1_GameClientDisconnect(int spec)
+{
+	if (spec)
+	{
+	}
+	else
+	{
+		PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
+	}
+}
+
+//=============================================================================
+
+void PR1_GameClientConnect(int spec)
+{
+	if (spec)
+	{
+	}
+	else
+	{
+		PR_ExecuteProgram(pr_global_struct->ClientConnect);
+	}
+}
+
+//=============================================================================
+
+void PR1_GamePutClientInServer(int spec)
+{
+	if (spec)
+	{
+		// none...
+	}
+	else
+	{
+		PR_ExecuteProgram(pr_global_struct->PutClientInServer);
+	}
+}
+
+//=============================================================================
+
+void PR1_GameClientPreThink(int spec)
+{
+	if (spec)
+	{
+		// none...
+	}
+	else
+	{
+		PR_ExecuteProgram(pr_global_struct->PlayerPreThink);
+	}
+}
+
+//=============================================================================
+
+void PR1_GameClientPostThink(int spec)
+{
+	if (spec)
+	{
+	}
+	else
+	{
+		PR_ExecuteProgram(pr_global_struct->PlayerPostThink);
+	}
+}
+
+//=============================================================================

@@ -599,7 +599,7 @@ void SV_WriteEntitiesToClient (client_t *client, sizebuf_t *msg, qboolean record
 #ifdef USE_PR2
 					PR2_GetString(ent->v.model)
 #else
-					PR_GetString(ent->v.model)
+					PR1_GetString(ent->v.model)
 #endif
 					)
 				continue;
@@ -705,7 +705,7 @@ void SV_WriteEntitiesToDemo (client_t *client, sizebuf_t *msg)
 #ifdef USE_PR2
 				PR2_GetString(ent->v.model)
 #else
-				PR_GetString(ent->v.model)
+				PR1_GetString(ent->v.model)
 #endif
 				)
 			continue;

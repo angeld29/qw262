@@ -117,7 +117,7 @@ void SV_CreateBaseline(void)
 #ifdef USE_PR2
 					PR2_GetString(svent->v.model)
 #else
-					PR_GetString(svent->v.model)
+					PR1_GetString(svent->v.model)
 #endif
 					);
 		}
@@ -181,7 +181,7 @@ void SV_SaveSpawnparms (void)
 			PR2_GameSetChangeParms();
 		else
 #endif
-			PR_ExecuteProgram (pr_global_struct->SetChangeParms);
+			PR1_GameSetChangeParms();
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
@@ -353,7 +353,9 @@ void SV_SpawnServer (char *server)
         }
         if( sv_vm )
         	PR2_GameShutDown();
+		else
 #endif
+        	PR1_GameShutDown();
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -475,7 +477,7 @@ void SV_SpawnServer (char *server)
 #ifdef USE_PR2
 	if ( !sv_vm )
 #endif
-		ent->v.model = PR_SetString(sv.worldmodel->name);
+		ent->v.model = PR1_SetString(sv.worldmodel->name);
 #ifdef USE_PR2
 	else 
 		strlcpy(PR2_GetString(ent->v.model), sv.worldmodel->name, 64);
@@ -490,7 +492,7 @@ void SV_SpawnServer (char *server)
         	strlcpy((char*)PR2_GetString(pr_global_struct->mapname) , sv.name, 64);
         else
 #endif
-		pr_global_struct->mapname = PR_SetString(sv.name);
+		pr_global_struct->mapname = PR1_SetString(sv.name);
 
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;
@@ -507,7 +509,7 @@ void SV_SpawnServer (char *server)
 #ifdef USE_PR2
 	if ( !sv_vm )
 #endif
-		ED_LoadFromFile(sv.worldmodel->entities);
+		PR1_LoadEnts(sv.worldmodel->entities);
 #ifdef USE_PR2
 	else
 		PR2_LoadEnts(sv.worldmodel->entities);
