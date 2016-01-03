@@ -177,11 +177,10 @@ void SV_SaveSpawnparms (void)
 		// call the progs to get default spawn parms for the new client
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 #ifdef USE_PR2
-		if (sv_vm)
-			PR2_GameSetChangeParms();
-		else
+		PR2_GameSetChangeParms();
+#else
+		PR1_GameSetChangeParms();
 #endif
-			PR1_GameSetChangeParms();
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
@@ -351,11 +350,12 @@ void SV_SpawnServer (char *server)
             if(svs.clients[i].name)
             	strlcpy(savenames[i],svs.clients[i].name,CLIENT_NAME_LEN);
         }
-        if( sv_vm )
-        	PR2_GameShutDown();
-		else
+		PR2_GameShutDown();
+		PR2_UnLoadProgs();
+#else
+		PR1_GameShutDown();
+		PR1_UnLoadProgs();
 #endif
-        	PR1_GameShutDown();
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -393,16 +393,11 @@ void SV_SpawnServer (char *server)
 	// and allocate edicts
 #ifdef USE_PR2
 	sv.time = 1.0;
-
-	sv_vm = VM_Load(sv_vm, sv_progtype.value, sv_progsname.string, sv_syscall ,sv_sys_callex); 
-	if( !sv_vm )
-	{
-#endif
-		PR_LoadProgs();
-		sv.edicts = Hunk_AllocName(MAX_EDICTS * pr_edict_size, "edicts");
-#ifdef USE_PR2
-	}else
-	    PR2_InitProg();
+	PR2_LoadProgs();
+	PR2_InitProg();
+#else
+	PR1_LoadProgs();
+	PR1_InitProg();
 #endif
 	
 	// leave slots at start for clients only
@@ -507,12 +502,9 @@ void SV_SpawnServer (char *server)
 
 	// load and spawn all other entities
 #ifdef USE_PR2
-	if ( !sv_vm )
-#endif
-		PR1_LoadEnts(sv.worldmodel->entities);
-#ifdef USE_PR2
-	else
-		PR2_LoadEnts(sv.worldmodel->entities);
+	PR2_LoadEnts(sv.worldmodel->entities);
+#else
+	PR1_LoadEnts(sv.worldmodel->entities);
 #endif
 
 	// look up some model indexes for specialized message compression

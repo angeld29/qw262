@@ -293,11 +293,10 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		pr_global_struct->other = EDICT_TO_PROG(ent);
 		pr_global_struct->time = sv.time;
 #ifdef USE_PR2
-		if ( sv_vm )
 			PR2_EdictTouch(touch->v.touch);
-		else
-#endif
+#else
 			PR1_EdictTouch(touch->v.touch);
+#endif
 
 		pr_global_struct->self = old_self;
 		pr_global_struct->other = old_other;

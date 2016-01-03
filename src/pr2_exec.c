@@ -81,8 +81,8 @@ char *PR2_GetString(int num)
 {
     qvm_t *qvm;
 
-        if(!sv_vm)
-        	return PR1_GetString(num);
+	if(!sv_vm)
+		return PR1_GetString(num);
 
 	switch (sv_vm->type)
 	{
@@ -118,8 +118,8 @@ int PR2_SetString(char *s)
 {
     qvm_t *qvm;
     int off;
-        if(!sv_vm)
-        	return PR1_SetString(s);
+	if(!sv_vm)
+		return PR1_SetString(s);
         	
 	switch (sv_vm->type)
 	{
@@ -255,7 +255,10 @@ void PR2_ClientKill()
 //===========================================================================
 void PR2_GameSetNewParms()
 {
-	VM_Call(sv_vm, GAME_SETNEWPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	if (sv_vm)
+		VM_Call(sv_vm, GAME_SETNEWPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	else
+		PR1_GameSetNewParms();
 }
 
 //===========================================================================
@@ -263,7 +266,12 @@ void PR2_GameSetNewParms()
 //===========================================================================
 void PR2_GameSetChangeParms()
 {
-	VM_Call(sv_vm, GAME_SETCHANGEPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	if (sv_vm)
+		VM_Call(sv_vm, GAME_SETCHANGEPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	else
+	{
+		PR1_GameSetChangeParms();
+	}
 }
 
 //===========================================================================
@@ -326,7 +334,8 @@ void PR2_GameShutDown()
 //=========================================================================== 
 qboolean PR2_ClientSay(int isTeamSay) 
 { 
-        return VM_Call(sv_vm, GAME_CLIENT_SAY, isTeamSay, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); 
+	if (sv_vm)
+	        return VM_Call(sv_vm, GAME_CLIENT_SAY, isTeamSay, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); 
 } 
 
 //===========================================================================
@@ -363,6 +372,38 @@ void PR2_GameConsoleCommand(void)
         	pr_global_struct->self = old_self;
         	pr_global_struct->other = old_other;
         }
+}
+//===========================================================================
+// UnLoadProgs
+//===========================================================================
+void PR2_UnLoadProgs()
+{
+	if (sv_vm)
+	{
+		VM_Unload( sv_vm );
+		sv_vm = NULL;
+	}
+	else
+	{
+		PR1_UnLoadProgs();
+	}
+}
+
+//===========================================================================
+// LoadProgs
+//===========================================================================
+void PR2_LoadProgs()
+{
+	sv_vm = (vm_t *) VM_Load(sv_vm, (vm_type_t) (int) sv_progtype.value, sv_progsname.string, sv_syscall, sv_sys_callex);
+
+	if ( sv_vm )
+	{
+		; // nothing.
+	}
+	else
+	{
+		PR1_LoadProgs ();
+	}
 }
 
 #endif /* USE_PR2 */

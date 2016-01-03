@@ -271,51 +271,29 @@ or crashing.
 =====================
 */
 
-#ifdef USE_PR2
-void RemoveBot(client_t *cl);
-#endif
 void SV_DropClient (client_t *drop)
 {
 	// add the disconnect
 #ifdef USE_PR2
         if( drop->isBot )
         {
-                RemoveBot(drop);
-                return;  
+			extern void RemoveBot(client_t *cl);
+			RemoveBot(drop);
+			return;  
         }
 #endif
 	MSG_WriteByte(&drop->netchan.message, svc_disconnect);
 
 	if (drop->state == cs_spawned)
 	{
-		if (!drop->spectator)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
+		// call the prog function for removing a client
+		// this will set the body to a dead frame, among other things
+		pr_global_struct->self = EDICT_TO_PROG(drop->edict);
 #ifdef USE_PR2
-			if ( sv_vm )
-				PR2_GameClientDisconnect(0);
-			else
+		PR2_GameClientDisconnect(drop->spectator);
+#else
+		PR1_GameClientDisconnect(drop->spectator);
 #endif
-				PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
-		}
-		else if (SpectatorDisconnect
-#ifdef USE_PR2
-			|| ( sv_vm )
-#endif
-			)
-		{
-			// call the prog function for removing a client
-			// this will set the body to a dead frame, among other things
-			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
-#ifdef USE_PR2
-			if ( sv_vm )
-				PR2_GameClientDisconnect(1);
-			else
-#endif
-				PR_ExecuteProgram(SpectatorDisconnect);
-		}
 	}
 
 	if (drop->spectator)
@@ -892,11 +870,10 @@ void SVC_DirectConnect (void)
 
 	// call the progs to get default spawn parms for the new client
 #ifdef USE_PR2
-	if ( sv_vm )
-		PR2_GameSetNewParms();
-	else
+	PR2_GameSetNewParms();
+#else
+	PR1_GameSetNewParms();
 #endif
-		PR1_GameSetNewParms();
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		newcl->spawn_parms[i] = (&pr_global_struct->parm1)[i];
 
@@ -2199,7 +2176,7 @@ void SV_Init(quakeparms_t *parms)
 #ifdef USE_PR2
 	PR2_Init();
 #else
-	PR_Init();
+	PR1_Init();
 #endif
 	
 	Mod_Init();

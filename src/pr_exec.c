@@ -713,6 +713,8 @@ void PR1_GameClientDisconnect(int spec)
 {
 	if (spec)
 	{
+		if (SpectatorDisconnect)
+			PR_ExecuteProgram(SpectatorDisconnect);
 	}
 	else
 	{
@@ -726,6 +728,8 @@ void PR1_GameClientConnect(int spec)
 {
 	if (spec)
 	{
+		if (SpectatorConnect)
+			PR_ExecuteProgram(SpectatorConnect);
 	}
 	else
 	{
@@ -767,6 +771,8 @@ void PR1_GameClientPostThink(int spec)
 {
 	if (spec)
 	{
+		if (SpectatorThink)
+			PR_ExecuteProgram(SpectatorThink);
 	}
 	else
 	{
@@ -775,3 +781,13 @@ void PR1_GameClientPostThink(int spec)
 }
 
 //=============================================================================
+void PR1_UnLoadProgs()
+{
+	if (progs)
+	{
+		// FIXME: There should be done alot of variables reseting...
+
+		progs = NULL;
+	}
+}
+

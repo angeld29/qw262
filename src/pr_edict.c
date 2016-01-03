@@ -952,10 +952,10 @@ void ED_LoadFromFile (char *data)
 
 /*
 ===============
-PR_LoadProgs
+PR1_LoadProgs
 ===============
 */
-void PR_LoadProgs (void)
+void PR1_LoadProgs (void)
 {
 	int		i;
 	char	num[32];
@@ -1054,6 +1054,10 @@ void PR_LoadProgs (void)
 		SpectatorDisconnect = (func_t)(f - pr_functions);
 }
 
+void PR1_InitProg()
+{
+	sv.edicts = (edict_t*) Hunk_AllocName (MAX_EDICTS * pr_edict_size, "edicts");
+}
 
 /*
 ===============
@@ -1061,7 +1065,7 @@ PR_Init
 ===============
 */
 void PR_CleanLogText_Init(); 
-void PR_Init (void)
+void PR1_Init (void)
 {
         Cvar_RegisterVariable(&sv_progsname);
 

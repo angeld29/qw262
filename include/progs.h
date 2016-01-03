@@ -67,10 +67,11 @@ extern	cvar_t	sv_progsname;
 
 //============================================================================
 
-void PR_Init (void);
+void PR1_Init (void);
 
 void PR_ExecuteProgram (func_t fnum);
-void PR_LoadProgs (void);
+void PR1_LoadProgs (void);
+void PR1_InitProg(void);
 
 void PR_Profile_f (void);
 
@@ -163,7 +164,7 @@ void PR1_GameClientPostThink(int spec);
 //void PR1_PausedTic(float duration);
 
 #define PR1_GameShutDown()	// PR1 does not really have it.
-#define PR1_ClientCmd()	// PR1 does not really have it.
+#define PR1_ClientCmd()	(0) // PR1 does not really have it.
 #define PR1_UserInfoChanged() (0) // PR1 does not really have it,
 
 #define PR1_LoadEnts ED_LoadFromFile

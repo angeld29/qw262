@@ -140,11 +140,10 @@ qboolean SV_RunThink(edict_t *ent)
 		pr_global_struct->self = EDICT_TO_PROG(ent);
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
 #ifdef USE_PR2
-		if ( sv_vm )
-			PR2_EdictThink(ent->v.think);
-		else
+		PR2_EdictThink(ent->v.think);
+#else
+		PR1_EdictThink(ent->v.think);
 #endif
-			PR1_EdictThink(ent->v.think);
 
 		if (ent->free)
 			return false;
@@ -174,11 +173,10 @@ void SV_Impact(edict_t *e1, edict_t *e2)
 		pr_global_struct->self = EDICT_TO_PROG(e1);
 		pr_global_struct->other = EDICT_TO_PROG(e2);
 #ifdef USE_PR2
-		if ( sv_vm )
-			PR2_EdictTouch(e1->v.touch);
-		else
+		PR2_EdictTouch(e1->v.touch);
+#else
+		PR1_EdictTouch(e1->v.touch);
 #endif
-			PR1_EdictTouch(e1->v.touch);
 	}
 	
 	if (e2->v.touch && e2->v.solid != SOLID_NOT)
@@ -186,11 +184,10 @@ void SV_Impact(edict_t *e1, edict_t *e2)
 		pr_global_struct->self = EDICT_TO_PROG(e2);
 		pr_global_struct->other = EDICT_TO_PROG(e1);
 #ifdef USE_PR2
-		if( sv_vm )
-			PR2_EdictTouch(e2->v.touch);
-		else
+		PR2_EdictTouch(e2->v.touch);
+#else
+		PR1_EdictTouch(e2->v.touch);
 #endif
-			PR1_EdictTouch(e2->v.touch);
 	}
 
 	pr_global_struct->self = old_self;
@@ -533,27 +530,15 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 
 		// if the pusher has a "blocked" function, call it
 		// otherwise, just stay in place until the obstacle is gone
+		if (pusher->v.blocked){
+			pr_global_struct->self = EDICT_TO_PROG(pusher);
+			pr_global_struct->other = EDICT_TO_PROG(check);
 #ifdef USE_PR2
-		if ( sv_vm )
-		{
-			if (pusher->v.blocked){
-				pr_global_struct->self = EDICT_TO_PROG(pusher);
-				pr_global_struct->other = EDICT_TO_PROG(check);
-				PR2_EdictBlocked(pusher->v.blocked);
-			}
-		}
-		else
-		{
+			PR2_EdictBlocked(pusher->v.blocked);
+#else
+			PR1_EdictBlocked(pusher->v.blocked);
 #endif
-			if (pusher->v.blocked)
-			{
-				pr_global_struct->self = EDICT_TO_PROG(pusher);
-				pr_global_struct->other = EDICT_TO_PROG(check);
-				PR1_EdictBlocked(pusher->v.blocked);
-			}
-#ifdef USE_PR2
 		}
-#endif
 		// move back any entities we already moved
 		for (i = 0; i < num_moved; i++)
 		{
@@ -629,11 +614,10 @@ void SV_Physics_Pusher(edict_t *ent)
 		pr_global_struct->self = EDICT_TO_PROG(ent);
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
 #ifdef USE_PR2
-		if ( sv_vm )
 			PR2_EdictThink(ent->v.think);
-		else
-#endif
+#else
 			PR1_EdictThink(ent->v.think);
+#endif
 		if (ent->free)
 			return;
 		VectorSubtract(ent->v.origin, oldorg, move);
@@ -858,11 +842,10 @@ void SV_ProgStartFrame(void)
 	pr_global_struct->time = sv.time;
 
 #ifdef USE_PR2
-	if ( sv_vm )
-		PR2_GameStartFrame();
-	else
+	PR2_GameStartFrame();
+#else
+	PR1_GameStartFrame();
 #endif
-		PR1_GameStartFrame();
 }
 
 /*
@@ -933,19 +916,12 @@ SV_Physics
 
 ================
 */
-#ifdef USE_PR2
-void SV_PreRunCmd(void);
-void SV_RunCmd(usercmd_t *ucmd);
-void SV_PostRunCmd(void);
-#endif
 void SV_Physics (void)
 {
 	int		i;
 	edict_t	*ent;
-#ifdef USE_PR2
-        client_t *cl,*savehc;
-        edict_t	*savesvpl;
-#endif
+	client_t *cl,*savehc;
+	edict_t	*savesvpl;
 
 	if (sv.state != ss_active)
 		return;
@@ -993,27 +969,31 @@ void SV_Physics (void)
         savesvpl = sv_player;
         savehc = host_client;
         for ( i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++ )
-        {
-		if ( cl->state == cs_free )
-			continue;
-		if ( !cl->isBot )
-		       continue;
+		{
+			extern void SV_PreRunCmd(void);
+			extern void SV_RunCmd (usercmd_t *ucmd, qboolean inside);
+			extern void SV_PostRunCmd(void);
 
-                host_client = cl;
-                sv_player = cl->edict;
+			if ( cl->state == cs_free )
+				continue;
+			if ( !cl->isBot )
+				continue;
 
-		SV_PreRunCmd();
-		SV_RunCmd (&cl->botcmd);
-		SV_PostRunCmd();
+			host_client = cl;
+			sv_player = cl->edict;
 
-		cl->lastcmd = cl->botcmd;
-		cl->lastcmd.buttons = 0; 
+			SV_PreRunCmd();
+			SV_RunCmd (&cl->botcmd, false);
+			SV_PostRunCmd();
 
-		memset(&cl->botcmd,0,sizeof(cl->botcmd));
+			cl->lastcmd = cl->botcmd;
+			cl->lastcmd.buttons = 0; 
 
-         	cl->localtime = sv.time;
-        	cl->delta_sequence = -1;	// no delta unless requested
-        }
+			memset(&cl->botcmd,0,sizeof(cl->botcmd));
+
+			cl->localtime = sv.time;
+			cl->delta_sequence = -1;	// no delta unless requested
+		}
         sv_player = savesvpl;
         host_client = savehc;
 #endif
