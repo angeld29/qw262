@@ -407,6 +407,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="include\progs.h" />
+    <ClInclude Include="include\pr_common.h" />
     <ClInclude Include="include\pr_comp.h" />
     <ClInclude Include="include\progdefs.h" />
     <ClInclude Include="include\wad.h" />

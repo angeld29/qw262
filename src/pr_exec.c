@@ -791,3 +791,4 @@ void PR1_UnLoadProgs()
 	}
 }
 
+qboolean PR1_ClientSay(int isTeamSay){return false;}

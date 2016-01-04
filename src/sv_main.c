@@ -289,11 +289,7 @@ void SV_DropClient (client_t *drop)
 		// call the prog function for removing a client
 		// this will set the body to a dead frame, among other things
 		pr_global_struct->self = EDICT_TO_PROG(drop->edict);
-#ifdef USE_PR2
-		PR2_GameClientDisconnect(drop->spectator);
-#else
-		PR1_GameClientDisconnect(drop->spectator);
-#endif
+		PR_GameClientDisconnect(drop->spectator);
 	}
 
 	if (drop->spectator)
@@ -869,11 +865,7 @@ void SVC_DirectConnect (void)
 	newcl->logincount = 0;	// bliP
 
 	// call the progs to get default spawn parms for the new client
-#ifdef USE_PR2
-	PR2_GameSetNewParms();
-#else
-	PR1_GameSetNewParms();
-#endif
+	PR_GameSetNewParms();
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		newcl->spawn_parms[i] = (&pr_global_struct->parm1)[i];
 
@@ -2173,11 +2165,7 @@ void SV_Init(quakeparms_t *parms)
 
 	COM_Init();
 
-#ifdef USE_PR2
-	PR2_Init();
-#else
-	PR1_Init();
-#endif
+	PR_Init();
 	
 	Mod_Init();
 

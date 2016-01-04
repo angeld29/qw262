@@ -73,24 +73,12 @@ void SV_CheckVelocity(edict_t *ent)
 	{
 		if (IS_NAN(ent->v.velocity[i]))
 		{
-			Con_Printf("Got a NaN velocity on %s\n",
-#ifdef USE_PR2
-				PR2_GetString(ent->v.classname)
-#else
-				PR1_GetString(ent->v.classname)
-#endif
-				);
+			Con_Printf("Got a NaN velocity on %s\n", PR_GetString(ent->v.classname) );
 			ent->v.velocity[i] = 0;
 		}
 		if (IS_NAN(ent->v.origin[i]))
 		{
-			Con_Printf("Got a NaN origin on %s\n",
-#ifdef USE_PR2
-				PR2_GetString(ent->v.classname)
-#else
-				PR1_GetString(ent->v.classname)
-#endif
-				);
+			Con_Printf("Got a NaN origin on %s\n", PR_GetString(ent->v.classname) );
 			ent->v.origin[i] = 0;
 		}
 /*		if (ent->v.velocity[i] > sv_maxvelocity.value)
@@ -139,11 +127,7 @@ qboolean SV_RunThink(edict_t *ent)
 		pr_global_struct->time = thinktime;
 		pr_global_struct->self = EDICT_TO_PROG(ent);
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
-#ifdef USE_PR2
-		PR2_EdictThink(ent->v.think);
-#else
-		PR1_EdictThink(ent->v.think);
-#endif
+		PR_EdictThink(ent->v.think);
 
 		if (ent->free)
 			return false;
@@ -172,22 +156,14 @@ void SV_Impact(edict_t *e1, edict_t *e2)
 	{
 		pr_global_struct->self = EDICT_TO_PROG(e1);
 		pr_global_struct->other = EDICT_TO_PROG(e2);
-#ifdef USE_PR2
-		PR2_EdictTouch(e1->v.touch);
-#else
-		PR1_EdictTouch(e1->v.touch);
-#endif
+		PR_EdictTouch(e1->v.touch);
 	}
 	
 	if (e2->v.touch && e2->v.solid != SOLID_NOT)
 	{
 		pr_global_struct->self = EDICT_TO_PROG(e2);
 		pr_global_struct->other = EDICT_TO_PROG(e1);
-#ifdef USE_PR2
-		PR2_EdictTouch(e2->v.touch);
-#else
-		PR1_EdictTouch(e2->v.touch);
-#endif
+		PR_EdictTouch(e2->v.touch);
 	}
 
 	pr_global_struct->self = old_self;
@@ -533,11 +509,7 @@ qboolean SV_Push (edict_t *pusher, vec3_t move)
 		if (pusher->v.blocked){
 			pr_global_struct->self = EDICT_TO_PROG(pusher);
 			pr_global_struct->other = EDICT_TO_PROG(check);
-#ifdef USE_PR2
-			PR2_EdictBlocked(pusher->v.blocked);
-#else
-			PR1_EdictBlocked(pusher->v.blocked);
-#endif
+			PR_EdictBlocked(pusher->v.blocked);
 		}
 		// move back any entities we already moved
 		for (i = 0; i < num_moved; i++)
@@ -613,11 +585,7 @@ void SV_Physics_Pusher(edict_t *ent)
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(ent);
 		pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
-#ifdef USE_PR2
-			PR2_EdictThink(ent->v.think);
-#else
-			PR1_EdictThink(ent->v.think);
-#endif
+		PR_EdictThink(ent->v.think);
 		if (ent->free)
 			return;
 		VectorSubtract(ent->v.origin, oldorg, move);
@@ -841,11 +809,7 @@ void SV_ProgStartFrame(void)
 	pr_global_struct->other = EDICT_TO_PROG(sv.edicts);
 	pr_global_struct->time = sv.time;
 
-#ifdef USE_PR2
-	PR2_GameStartFrame();
-#else
-	PR1_GameStartFrame();
-#endif
+	PR_GameStartFrame();
 }
 
 /*

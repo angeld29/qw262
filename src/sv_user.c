@@ -107,13 +107,7 @@ void SV_New_f (void)
 	MSG_WriteByte (&host_client->netchan.message, playernum);
 
 	// send full levelname
-	MSG_WriteString(&host_client->netchan.message,
-#ifdef USE_PR2
-		PR2_GetString(sv.edicts->v.message)
-#else
-		PR1_GetString(sv.edicts->v.message)
-#endif
-		);
+	MSG_WriteString(&host_client->netchan.message, PR_GetString(sv.edicts->v.message) );
 
 	// send the movevars
 	MSG_WriteFloat(&host_client->netchan.message, movevars.gravity);
@@ -422,21 +416,11 @@ void SV_Spawn_f (void)
 	ent->v.team = 0;	// FIXME
 
 	host_client->entgravity = 1.0;
-	val =
-#ifdef USE_PR2
-		PR2_GetEdictFieldValue(ent, "gravity");
-#else
-		PR1_GetEdictFieldValue(ent, "gravity");
-#endif
+	val = PR_GetEdictFieldValue(ent, "gravity");
 	if (val)
 		val->_float = 1.0;
 	host_client->maxspeed = sv_maxspeed.value;
-	val =
-#ifdef USE_PR2
-		PR2_GetEdictFieldValue(ent, "maxspeed");
-#else
-		PR1_GetEdictFieldValue(ent, "maxspeed");
-#endif
+	val = PR_GetEdictFieldValue(ent, "maxspeed");
 	if (val)
 		val->_float = sv_maxspeed.value;
 
@@ -486,13 +470,7 @@ void SV_SpawnSpectator(void)
 	for (i = MAX_CLIENTS - 1; i < sv.num_edicts; i++)
 	{
 		e = EDICT_NUM(i);
-		if (
-#ifdef USE_PR2 /* phucking Linux implements strcmp as a macro */
-			!strcmp(PR2_GetString(e->v.classname), "info_player_start")
-#else
-			!strcmp(PR1_GetString(e->v.classname), "info_player_start")
-#endif
-			)
+		if ( !strcmp(PR_GetString(e->v.classname), "info_player_start") )
 		{
 			VectorCopy(e->v.origin, sv_player->v.origin);
 
@@ -547,11 +525,7 @@ void SV_Begin_f(void)
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 
-#ifdef USE_PR2
-		PR2_GameClientConnect(1);
-#else
-		PR1_GameClientConnect(1);
-#endif
+		PR_GameClientConnect(1);
 	}
 	else
 	{
@@ -563,21 +537,13 @@ void SV_Begin_f(void)
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 
-#ifdef USE_PR2
-		PR2_GameClientConnect(0);
-#else
-		PR1_GameClientConnect(0);
-#endif
+		PR_GameClientConnect(0);
 
 		// actually spawn the player
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 
-#ifdef USE_PR2
-		PR2_GamePutClientInServer(0);
-#else
-		PR1_GamePutClientInServer(0);
-#endif
+		PR_GamePutClientInServer(0);
 	}
 
 	// clear the net statistics, because connecting gives a bogus picture
@@ -1264,11 +1230,7 @@ void SV_Kill_f(void)
 	
 	pr_global_struct->time = sv.time;
 	pr_global_struct->self = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-		PR2_ClientKill();
-#else
-		PR1_ClientKill();
-#endif
+	PR_ClientKill();
 }
 
 /*
@@ -1484,11 +1446,7 @@ void SV_SetInfo_f (void)
 	pr_global_struct->time = sv.time;
 	pr_global_struct->self = EDICT_TO_PROG(sv_player);
 
-#ifdef USE_PR2
-	if( PR2_UserInfoChanged() )
-#else
-	if( PR1_UserInfoChanged() )
-#endif
+	if( PR_UserInfoChanged() )
 		return;
 
 	Info_SetValueForKey (host_client->userinfo, key, Cmd_Argv(2), MAX_INFO_STRING);
@@ -1723,11 +1681,7 @@ void SV_ExecuteUserCommand(char *s)
 	{
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-		if (!PR2_ClientCmd())
-#else
-		if (!PR1_ClientCmd())
-#endif
+		if (!PR_ClientCmd())
 			Con_Printf("Bad user command: %s\n", Cmd_Argv(0));
 	}
 	SV_EndRedirect();
@@ -1933,11 +1887,7 @@ void SV_RunCmd (usercmd_t *ucmd, qboolean inside) //bliP: 24/9
 		pr_global_struct->frametime = sv_frametime;
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-		PR2_GameClientPreThink(0);
-#else
-		PR1_GameClientPreThink(0);
-#endif
+		PR_GameClientPreThink(0);
 
 		SV_RunThink(sv_player);
 	}
@@ -2000,11 +1950,7 @@ void SV_RunCmd (usercmd_t *ucmd, qboolean inside) //bliP: 24/9
 				continue;
 			pr_global_struct->self = EDICT_TO_PROG(ent);
 			pr_global_struct->other = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-			PR2_EdictTouch(ent->v.touch);
-#else
-			PR1_EdictTouch(ent->v.touch);
-#endif
+			PR_EdictTouch(ent->v.touch);
 			playertouch[n / 8] |= 1 << (n % 8);
 		}
 	}
@@ -2024,22 +1970,14 @@ void SV_PostRunCmd(void)
 	{
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-		PR2_GameClientPostThink(0);
-#else
-		PR1_GameClientPostThink(0);
-#endif
+		PR_GameClientPostThink(0);
 		SV_RunNewmis();
 	}
 	else 
 	{
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
-#ifdef USE_PR2
-		PR2_GameClientPostThink(1);
-#else
-		PR1_GameClientPostThink(1);
-#endif
+		PR_GameClientPostThink(1);
 	}
 }
 

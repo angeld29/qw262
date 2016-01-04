@@ -739,13 +739,7 @@ void SV_UpdateClientStats (client_t *client)
 		ent = svs.clients[client->spec_track - 1].edict;
 
 	stats[STAT_HEALTH] = ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(
-#ifdef USE_PR2
-		PR2_GetString(ent->v.weaponmodel)
-#else
-		PR1_GetString(ent->v.weaponmodel)
-#endif
-		);
+	stats[STAT_WEAPON] = SV_ModelIndex( PR_GetString(ent->v.weaponmodel) );
 	stats[STAT_AMMO] = ent->v.currentammo;
 	stats[STAT_ARMOR] = ent->v.armorvalue;
 	stats[STAT_SHELLS] = ent->v.ammo_shells;
@@ -875,12 +869,7 @@ void SV_UpdateToReliableMessages (void)
 		// maxspeed/entgravity changes
 		ent = host_client->edict;
 
-		val =
-#ifdef USE_PR2
-			PR2_GetEdictFieldValue(ent, "gravity");
-#else
-			PR1_GetEdictFieldValue(ent, "gravity");
-#endif
+		val = PR_GetEdictFieldValue(ent, "gravity");
 		if (val && host_client->entgravity != val->_float) {
 			host_client->entgravity = val->_float;
 			ClientReliableWrite_Begin(host_client, svc_entgravity, 5);
@@ -894,12 +883,7 @@ void SV_UpdateToReliableMessages (void)
 			}
 // <-- Highlander
 		}
-		val = 
-#ifdef USE_PR2
-			PR2_GetEdictFieldValue(ent, "maxspeed");
-#else
-			PR1_GetEdictFieldValue(ent, "maxspeed");
-#endif
+		val = PR_GetEdictFieldValue(ent, "maxspeed");
 		if (val && host_client->maxspeed != val->_float) {
 			host_client->maxspeed = val->_float;
 			ClientReliableWrite_Begin(host_client, svc_maxspeed, 5);
@@ -1010,13 +994,13 @@ void SV_SendClientMessages (void)
 			}
 		}
 #ifdef USE_PR2
-                if(c->isBot)
-                {
+		if(c->isBot)
+		{
 			SZ_Clear (&c->netchan.message);
 			SZ_Clear (&c->datagram);
 			c->num_backbuf = 0;
 			continue;
-                }
+		}
 #endif
 		// if the reliable message overflowed,
 		// drop the client
@@ -1119,13 +1103,7 @@ void SV_SendDemoMessage(void)
 		memset (stats, 0, sizeof(stats));
 
 		stats[STAT_HEALTH] = ent->v.health;
-		stats[STAT_WEAPON] = SV_ModelIndex(
-#ifdef USE_PR2
-			PR2_GetString(ent->v.weaponmodel)
-#else
-			PR1_GetString(ent->v.weaponmodel)
-#endif
-			);
+		stats[STAT_WEAPON] = SV_ModelIndex( PR_GetString(ent->v.weaponmodel) );
 		stats[STAT_AMMO] = ent->v.currentammo;
 		stats[STAT_ARMOR] = ent->v.armorvalue;
 		stats[STAT_SHELLS] = ent->v.ammo_shells;

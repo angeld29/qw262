@@ -113,13 +113,7 @@ void SV_CreateBaseline(void)
 		else
 		{
 			svent->baseline.colormap = 0;
-			svent->baseline.modelindex = SV_ModelIndex(
-#ifdef USE_PR2
-					PR2_GetString(svent->v.model)
-#else
-					PR1_GetString(svent->v.model)
-#endif
-					);
+			svent->baseline.modelindex = SV_ModelIndex( PR_GetString(svent->v.model) );
 		}
 
 		//
@@ -176,11 +170,7 @@ void SV_SaveSpawnparms (void)
 
 		// call the progs to get default spawn parms for the new client
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
-#ifdef USE_PR2
-		PR2_GameSetChangeParms();
-#else
-		PR1_GameSetChangeParms();
-#endif
+		PR_GameSetChangeParms();
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
@@ -350,12 +340,9 @@ void SV_SpawnServer (char *server)
             if(svs.clients[i].name)
             	strlcpy(savenames[i],svs.clients[i].name,CLIENT_NAME_LEN);
         }
-		PR2_GameShutDown();
-		PR2_UnLoadProgs();
-#else
-		PR1_GameShutDown();
-		PR1_UnLoadProgs();
 #endif
+		PR_GameShutDown();
+		PR_UnLoadProgs();
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -391,14 +378,9 @@ void SV_SpawnServer (char *server)
 	// load progs to get entity field count
 	// which determines how big each edict is
 	// and allocate edicts
-#ifdef USE_PR2
 	sv.time = 1.0;
-	PR2_LoadProgs();
-	PR2_InitProg();
-#else
-	PR1_LoadProgs();
-	PR1_InitProg();
-#endif
+	PR_LoadProgs();
+	PR_InitProg();
 	
 	// leave slots at start for clients only
 	sv.num_edicts = MAX_CLIENTS+1;
@@ -406,15 +388,15 @@ void SV_SpawnServer (char *server)
 	{
 		ent = EDICT_NUM(i+1);
 #ifdef USE_PR2
-//restore client names
-//for -progtype 0 (VM_NONE) names stored in clientnames array
-//for -progtype 1 (VM_NAITVE) and -progtype 2 (VM_BYTECODE)  stored in mod memory
-                if(sv_vm)
-                {
-        	 svs.clients[i].name = PR2_GetString(ent->v.netname);
-                }else
-                   svs.clients[i].name = clientnames[i];
-        	 strlcpy(svs.clients[i].name,savenames[i],CLIENT_NAME_LEN);
+		//restore client names
+		//for -progtype 0 (VM_NONE) names stored in clientnames array
+		//for -progtype 1 (VM_NAITVE) and -progtype 2 (VM_BYTECODE)  stored in mod memory
+		if(sv_vm)
+		{
+			svs.clients[i].name = PR2_GetString(ent->v.netname);
+		}else
+			svs.clients[i].name = clientnames[i];
+		strlcpy(svs.clients[i].name,savenames[i],CLIENT_NAME_LEN);
 #endif
 		svs.clients[i].edict = ent;
 //ZOID - make sure we update frags right
@@ -501,11 +483,7 @@ void SV_SpawnServer (char *server)
 // <-- Tonik
 
 	// load and spawn all other entities
-#ifdef USE_PR2
-	PR2_LoadEnts(sv.worldmodel->entities);
-#else
-	PR1_LoadEnts(sv.worldmodel->entities);
-#endif
+	PR_LoadEnts(sv.worldmodel->entities);
 
 	// look up some model indexes for specialized message compression
 	SV_FindModelNumbers ();

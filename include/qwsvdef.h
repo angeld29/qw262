@@ -68,12 +68,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "hash.h"
 // <-- BorisU
 
-#ifdef USE_PR2
 // Angel -->
+#ifdef USE_PR2
 #include "pr2_vm.h"
 #include "pr2.h"
-// <-- Angel
 #endif
+#include "pr_common.h"
+// <-- Angel
 
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))

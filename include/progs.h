@@ -153,6 +153,7 @@ void	PR1_GameSetChangeParms();
 void PR1_GameSetNewParms();
 void PR1_GameStartFrame();
 void PR1_ClientKill();
+qboolean PR1_ClientSay(int);
 void PR1_UnLoadProgs();
 
 void PR1_GameClientDisconnect(int spec);
