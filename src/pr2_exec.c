@@ -237,6 +237,7 @@ qboolean PR2_ClientCmd()
 {
 	if (sv_vm)
 		return VM_Call(sv_vm, GAME_CLIENT_COMMAND, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	else return PR1_ClientCmd();
 }
 //===========================================================================
 // ClientKill
@@ -336,6 +337,8 @@ qboolean PR2_ClientSay(int isTeamSay)
 { 
 	if (sv_vm)
 	        return VM_Call(sv_vm, GAME_CLIENT_SAY, isTeamSay, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); 
+	else
+		return PR1_ClientCmd();
 } 
 
 //===========================================================================

@@ -323,26 +323,26 @@ void SV_SpawnServer (char *server)
 
 #ifdef USE_PR2
 //save client names from mod memory before unload mod and clearing VM memory by Hunk_FreeToLowMark
-        memset(savenames,0,sizeof(savenames));
-       	for (i=0 ; i<MAX_CLIENTS ; i++)
-        {
-            if( sv_vm && svs.clients[i].isBot ) // remove bot clients
-            {
-		svs.clients[i].old_frags = 0;
-		svs.clients[i].edict->v.frags = 0;
-		svs.clients[i].name[0] = 0;
-		svs.clients[i].state = cs_free;
-		memset( svs.clients[i].userinfo, 0, sizeof( svs.clients[i].userinfo ) );
-		memset( svs.clients[i].userinfoshort, 0, sizeof( svs.clients[i].userinfoshort ) );
-		SV_FullClientUpdate( &svs.clients[i], &sv.reliable_datagram );
-		svs.clients[i].isBot = 0;
-            }
-            if(svs.clients[i].name)
-            	strlcpy(savenames[i],svs.clients[i].name,CLIENT_NAME_LEN);
-        }
+	memset(savenames,0,sizeof(savenames));
+	for (i=0 ; i<MAX_CLIENTS ; i++)
+	{
+		if( sv_vm && svs.clients[i].isBot ) // remove bot clients
+		{
+			svs.clients[i].old_frags = 0;
+			svs.clients[i].edict->v.frags = 0;
+			svs.clients[i].name[0] = 0;
+			svs.clients[i].state = cs_free;
+			memset( svs.clients[i].userinfo, 0, sizeof( svs.clients[i].userinfo ) );
+			memset( svs.clients[i].userinfoshort, 0, sizeof( svs.clients[i].userinfoshort ) );
+			SV_FullClientUpdate( &svs.clients[i], &sv.reliable_datagram );
+			svs.clients[i].isBot = 0;
+		}
+		if(svs.clients[i].name)
+			strlcpy(savenames[i],svs.clients[i].name,CLIENT_NAME_LEN);
+	}
 #endif
-		PR_GameShutDown();
-		PR_UnLoadProgs();
+	PR_GameShutDown();
+	PR_UnLoadProgs();
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -399,7 +399,7 @@ void SV_SpawnServer (char *server)
 		strlcpy(svs.clients[i].name,savenames[i],CLIENT_NAME_LEN);
 #endif
 		svs.clients[i].edict = ent;
-//ZOID - make sure we update frags right
+		//ZOID - make sure we update frags right
 		svs.clients[i].old_frags = 0;
 	}
 
@@ -415,20 +415,6 @@ void SV_SpawnServer (char *server)
 	//
 	SV_ClearWorld ();
 	
-#ifdef USE_PR2
-	if ( !sv_vm )
-	{
-#endif
-		sv.sound_precache[0] = pr_strings;
-		sv.model_precache[0] = pr_strings;
-#ifdef USE_PR2
-	}
-	else
-	{
-		sv.sound_precache[0] = "";
-		sv.model_precache[0] = "";
-	}
-#endif
 	sv.model_precache[1] = sv.modelname;
 	sv.models[1] = sv.worldmodel;
 	for (i=1 ; i<sv.worldmodel->numsubmodels ; i++)
@@ -452,24 +438,23 @@ void SV_SpawnServer (char *server)
 	ent = EDICT_NUM(0);
 	ent->free = false;
 #ifdef USE_PR2
-	if ( !sv_vm )
-#endif
-		ent->v.model = PR1_SetString(sv.worldmodel->name);
-#ifdef USE_PR2
-	else 
+	if ( sv_vm ){
+		sv.sound_precache[0] = "";
+		sv.model_precache[0] = "";
 		strlcpy(PR2_GetString(ent->v.model), sv.worldmodel->name, 64);
+		strlcpy((char*)PR2_GetString(pr_global_struct->mapname) , sv.name, 64);
+	}else 
 #endif
+	{
+		sv.sound_precache[0] = pr_strings;
+		sv.model_precache[0] = pr_strings;
+		ent->v.model = PR1_SetString(sv.worldmodel->name);
+		pr_global_struct->mapname = PR1_SetString(sv.name);
+	}
 
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
-
-#ifdef USE_PR2
-        if(sv_vm)
-        	strlcpy((char*)PR2_GetString(pr_global_struct->mapname) , sv.name, 64);
-        else
-#endif
-		pr_global_struct->mapname = PR1_SetString(sv.name);
 
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;

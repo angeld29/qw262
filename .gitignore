@@ -16,3 +16,4 @@ src/Makefile.sub
 *.filters
 data/
 *.suo
+tags

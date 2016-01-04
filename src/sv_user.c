@@ -388,14 +388,7 @@ void SV_Spawn_f (void)
 	ent = host_client->edict;
 
 #ifdef USE_PR2
-	if ( !sv_vm )
-	{
-#endif
-		memset(&ent->v, 0, progs->entityfields * 4);
-		ent->v.netname = PR1_SetString(host_client->name);
-#ifdef USE_PR2
-	}
-	else
+	if ( sv_vm )
 	{
 		savenetname = ent->v.netname;
 		memset(&ent->v, 0, pr_edict_size - sizeof(edict_t) +
@@ -403,8 +396,12 @@ void SV_Spawn_f (void)
 		ent->v.netname = savenetname;
 		//host_client->name = PR2_GetString(ent->v.netname);
 		//strlcpy(PR2_GetString(ent->v.netname), host_client->name, CLIENT_NAME_LEN);
-	}
+	}else
 #endif
+	{
+		memset(&ent->v, 0, progs->entityfields * 4);
+		ent->v.netname = PR1_SetString(host_client->name);
+	}
 // so spec will have right goalentity - if speccing someone
 // qqshka {
 	if(host_client->spectator && host_client->spec_track > 0)
@@ -995,7 +992,6 @@ void SV_Say (int team)
 		t1[31] = 0;
 	}
 
-#ifdef USE_PR2
 	{
 		qboolean ret;
 
@@ -1004,14 +1000,13 @@ void SV_Say (int team)
 		pr_global_struct->time = sv.time;
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 
-		ret = PR2_ClientSay(team);
+		ret = PR_ClientSay(team);
 
 		SV_BeginRedirect (RD_CLIENT);
 
 		if (ret)
 			return; // say/say_team was handled by mod
 	}
-#endif
 	if (host_client->spectator && (!sv_spectalk.value || team))
 		sprintf (text, "[SPEC] %s: ", host_client->name);
 	else if (team==1)

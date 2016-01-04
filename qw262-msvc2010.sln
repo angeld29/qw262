@@ -1,10 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mhooks", "mhooks\mhooks.vcxproj", "{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mhooks", "mhooks\mhooks.vcxproj", "{515AB78B-876E-E7F9-752B-FD3F13396B76}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwcl262", "qwcl262.vcxproj", "{860932C6-318B-504F-20F9-E002C41FEB45}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwcl262", "qwcl262.vcxproj", "{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwsv262", "qwsv262.vcxproj", "{855473B2-2E5C-6E6B-073B-40599E18B729}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwsv262", "qwsv262.vcxproj", "{6D269F6D-1467-FA03-FBA3-44DE95401D72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,24 +16,24 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.GLAuthRelease|Win32.ActiveCfg = Release|Win32
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.GLDebug|Win32.ActiveCfg = Debug|Win32
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.GLRelease|Win32.ActiveCfg = Release|Win32
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.PR2Release|Win32.ActiveCfg = Release|Win32
-		{F4ECDC32-1211-50C5-92AC-6B73A9C005CE}.Release|Win32.ActiveCfg = Release|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.Debug|Win32.ActiveCfg = Release|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.GLAuthRelease|Win32.ActiveCfg = GLAuthRelease|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.GLDebug|Win32.ActiveCfg = GLDebug|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.GLRelease|Win32.ActiveCfg = GLRelease|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.PR2Release|Win32.ActiveCfg = Release|Win32
-		{860932C6-318B-504F-20F9-E002C41FEB45}.Release|Win32.ActiveCfg = Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.Debug|Win32.ActiveCfg = Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.GLAuthRelease|Win32.ActiveCfg = Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.GLDebug|Win32.ActiveCfg = Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.GLRelease|Win32.ActiveCfg = Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.PR2Release|Win32.ActiveCfg = PR2Release|Win32
-		{855473B2-2E5C-6E6B-073B-40599E18B729}.Release|Win32.ActiveCfg = Release|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.Debug|Win32.ActiveCfg = Debug|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.GLAuthRelease|Win32.ActiveCfg = Release|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.GLDebug|Win32.ActiveCfg = Debug|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.GLRelease|Win32.ActiveCfg = Release|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.PR2Release|Win32.ActiveCfg = Release|Win32
+		{515AB78B-876E-E7F9-752B-FD3F13396B76}.Release|Win32.ActiveCfg = Release|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.Debug|Win32.ActiveCfg = Release|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.GLAuthRelease|Win32.ActiveCfg = GLAuthRelease|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.GLDebug|Win32.ActiveCfg = GLDebug|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.GLRelease|Win32.ActiveCfg = GLRelease|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.PR2Release|Win32.ActiveCfg = Release|Win32
+		{07B44CF7-A1DC-BB9A-A531-2BC75C8BE590}.Release|Win32.ActiveCfg = Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.Debug|Win32.ActiveCfg = Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.GLAuthRelease|Win32.ActiveCfg = Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.GLDebug|Win32.ActiveCfg = Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.GLRelease|Win32.ActiveCfg = Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.PR2Release|Win32.ActiveCfg = PR2Release|Win32
+		{6D269F6D-1467-FA03-FBA3-44DE95401D72}.Release|Win32.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
