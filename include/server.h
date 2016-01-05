@@ -162,12 +162,10 @@ typedef struct client_s
 
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
 #ifdef USE_PR2
-        int                             isBot;
+	int                             isBot;
 	usercmd_t		       botcmd;			// bot movment
-	char			*name;			// in PR2 points to ent->v.netname
-#else
-	char			name[CLIENT_NAME_LEN];			// for printing to other people
 #endif
+	char			name[CLIENT_NAME_LEN];			// for printing to other people
 										// extracted from userinfo
 	char			team[CLIENT_NAME_LEN];			// Highlander
 	int				messagelevel;		// for filtering printed messages

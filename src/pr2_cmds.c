@@ -2238,7 +2238,7 @@ void PF2_Add_Bot( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * r
 	if( val )
 	       val->_int = 1;
 
-	newcl->name = PR2_GetString( ent->v.netname );
+	strlcpy(newcl->name, PR2_GetString(ent->v.netname),CLIENT_NAME_LEN);
 	memset( newcl->stats, 0, sizeof( host_client->stats ) );
 	SZ_Clear( &newcl->netchan.message );
 	newcl->netchan.drop_count = 0;

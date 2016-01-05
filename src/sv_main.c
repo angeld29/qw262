@@ -651,10 +651,6 @@ SVC_DirectConnect
 A connection request that did not come from the master
 ==================
 */
-#ifdef USE_PR2
-extern char clientnames[MAX_CLIENTS][CLIENT_NAME_LEN];
-//int     userid;
-#endif
 void SVC_DirectConnect (void)
 {
 	char		userinfo[1024];
@@ -829,19 +825,6 @@ void SVC_DirectConnect (void)
 	ent->free = false;
 	newcl->edict = ent;
 	
-#ifdef USE_PR2
-//restore pointer to client name
-//for -progtype 0 (VM_NONE) names stored in clientnames array
-//for -progtype 1 (VM_NAITVE) and -progtype 2 (VM_BYTECODE)  stored in mod memory
-        if(sv_vm)
-        {
-          newcl->name = PR2_GetString(ent->v.netname);
-        }else
-        {
-          newcl->name = clientnames[edictnum-1];
-        }
-        memset(newcl->name, 0, CLIENT_NAME_LEN);
-#endif
 	// parse some info from the info strings
 	SV_ExtractFromUserinfo (newcl, true);
 
@@ -2084,6 +2067,15 @@ void SV_ExtractFromUserinfo (client_t *cl, qboolean namechanged)
 		}
 
 			strlcpy (cl->name, val, CLIENT_NAME_LEN);
+#ifdef USE_PR2
+        if(sv_vm)
+        {
+			strlcpy(PR2_GetString(cl->edict->v.netname), cl->name, CLIENT_NAME_LEN);
+        }else
+        {
+			cl->edict->v.netname = PR1_SetString(cl->name);
+        }
+#endif
 
 	}
 
