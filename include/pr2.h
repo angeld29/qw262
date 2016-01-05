@@ -57,11 +57,13 @@ qboolean	PR2_ClientSay(int isTeamSay);
 
 char*		PR2_GetString(int);
 int		PR2_SetString(char*s);
+void		PR2_SetString2(int*,char*,int);
 void		PR2_RunError(char *error, ...);
 void		ED2_Free(edict_t *ed);
 edict_t*	ED2_Alloc();
 void		ED2_ClearEdict(edict_t *e);
 eval_t*		PR2_GetEdictFieldValue(edict_t *ed, char *field);
 void 		PR2_InitProg();
+void		ED2_ClearUserEdict(edict_t *e, client_t *cl);
 
 #endif /* !__PR2_H__ */

@@ -63,6 +63,11 @@ void ED_ClearEdict (edict_t *e)
 	memset (&e->v, 0, progs->entityfields * 4);
 	e->free = false;
 }
+void ED1_ClearUserEdict (edict_t *e, client_t *cl)
+{
+	memset (&e->v, 0, progs->entityfields * 4);
+	e->v.netname = PR1_SetString(cl->name);
+}
 
 /*
 =================

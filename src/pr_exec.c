@@ -674,6 +674,10 @@ char *PR1_GetString(int num)
 	return pr_strings + num;
 }
 
+void PR1_SetString2(int* num, char* str, int len){
+	*num = PR1_SetString(str);
+}
+
 int PR1_SetString(char *s)
 {
 	int i;

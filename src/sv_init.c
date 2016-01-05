@@ -314,7 +314,7 @@ void SV_SpawnServer (char *server)
 	
 	SV_SaveSpawnparms ();
 
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		if( sv_vm && svs.clients[i].isBot ) // remove bot clients
@@ -376,17 +376,7 @@ void SV_SpawnServer (char *server)
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		ent = EDICT_NUM(i+1);
-#ifdef USE_PR2
-		//restore client names
-		//for -progtype 0 (VM_NONE) names stored in clientnames array
-		//for -progtype 1 (VM_NAITVE) and -progtype 2 (VM_BYTECODE)  stored in mod memory
-		if(sv_vm)
-		{
-			strlcpy(PR2_GetString(ent->v.netname),svs.clients[i].name,CLIENT_NAME_LEN);
-		}else{
-			ent->v.netname = PR_SetString(svs.clients[i].name);
-		}
-#endif
+		PR_SetString2(&(ent->v.netname),svs.clients[i].name, CLIENT_NAME_LEN);
 		svs.clients[i].edict = ent;
 		//ZOID - make sure we update frags right
 		svs.clients[i].old_frags = 0;
@@ -430,16 +420,14 @@ void SV_SpawnServer (char *server)
 	if ( sv_vm ){
 		sv.sound_precache[0] = "";
 		sv.model_precache[0] = "";
-		strlcpy(PR2_GetString(ent->v.model), sv.worldmodel->name, 64);
-		strlcpy((char*)PR2_GetString(pr_global_struct->mapname) , sv.name, 64);
 	}else 
 #endif
 	{
 		sv.sound_precache[0] = pr_strings;
 		sv.model_precache[0] = pr_strings;
-		ent->v.model = PR1_SetString(sv.worldmodel->name);
-		pr_global_struct->mapname = PR1_SetString(sv.name);
 	}
+	PR_SetString2(&(ent->v.model), sv.worldmodel->name, 64);
+	PR_SetString2(&(pr_global_struct->mapname) , sv.name, 64);
 
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;

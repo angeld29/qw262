@@ -993,7 +993,7 @@ void SV_SendClientMessages (void)
 				}
 			}
 		}
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
 		if(c->isBot)
 		{
 			SZ_Clear (&c->netchan.message);

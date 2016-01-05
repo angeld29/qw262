@@ -338,9 +338,6 @@ void SV_Spawn_f (void)
 	edict_t		*ent;
 	eval_t		*val;
 	unsigned	n;
-#ifdef USE_PR2
-	string_t	savenetname;
-#endif
 
 	if (host_client->state != cs_connected)
 	{
@@ -386,22 +383,7 @@ void SV_Spawn_f (void)
 
 	// set up the edict
 	ent = host_client->edict;
-
-#ifdef USE_PR2
-	if ( sv_vm )
-	{
-		savenetname = ent->v.netname;
-		memset(&ent->v, 0, pr_edict_size - sizeof(edict_t) +
-				sizeof(entvars_t));
-		ent->v.netname = savenetname;
-		//host_client->name = PR2_GetString(ent->v.netname);
-		//strlcpy(PR2_GetString(ent->v.netname), host_client->name, CLIENT_NAME_LEN);
-	}else
-#endif
-	{
-		memset(&ent->v, 0, progs->entityfields * 4);
-		ent->v.netname = PR1_SetString(host_client->name);
-	}
+	ED_ClearUserEdict(ent, host_client);
 // so spec will have right goalentity - if speccing someone
 // qqshka {
 	if(host_client->spectator && host_client->spec_track > 0)

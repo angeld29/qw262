@@ -929,7 +929,7 @@ void SV_Physics (void)
 	if (pr_global_struct->force_retouch)
 		pr_global_struct->force_retouch--;	
 
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
         savesvpl = sv_player;
         savehc = host_client;
         for ( i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++ )

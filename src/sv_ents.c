@@ -378,7 +378,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 			VectorCopy(ent->v.origin, dcl->info.origin);
 			VectorCopy(ent->v.angles, dcl->info.angles);
 			dcl->info.angles[0] *= -3;
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot		
 			if( cl->isBot )
 				VectorCopy(ent->v.v_angle, dcl->info.angles);
 #endif

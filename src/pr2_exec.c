@@ -74,6 +74,13 @@ void PR2_Init(void)
 
 }
 
+void PR2_SetString2(int* num, char* str, int len){
+	if(!sv_vm) {
+		PR1_SetString2(num,str,len);
+	}else{
+		strlcpy(PR2_GetString(*num),str,len);
+	}
+}
 //===========================================================================
 // PR2_GetString
 //===========================================================================

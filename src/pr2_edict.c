@@ -58,6 +58,16 @@ void ED2_ClearEdict(edict_t *e)
 	memset(&e->v, 0, pr_edict_size - sizeof(edict_t) + sizeof(entvars_t));
 	e->free = false;
 }
+void ED2_ClearUserEdict(edict_t *e, client_t *cl)
+{
+	string_t	savenetname = e->v.netname;
+	if( !sv_vm) {
+		ED1_ClearUserEdict(e,cl);
+	}else{
+		memset(&e->v, 0, pr_edict_size - sizeof(edict_t) + sizeof(entvars_t));
+		e->v.netname = savenetname;
+	}
+}
 
 /*
 =================

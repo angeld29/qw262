@@ -22,6 +22,7 @@
 
 #ifndef __PR_COMMON_H__
 #define __PR_COMMON_H__
+void 		ED1_ClearUserEdict (edict_t *e, client_t *cl);
 #ifndef USE_PR2
 	#define PR_LoadProgs PR1_LoadProgs
 	#define PR_InitProg PR1_InitProg
@@ -31,6 +32,7 @@
 	#define PR_Init PR1_Init
 	#define PR_GetString PR1_GetString
 	#define PR_SetString PR1_SetString
+	#define PR_SetString2 PR1_SetString2
 	#define PR_GetEdictFieldValue PR1_GetEdictFieldValue
 
 	#define PR_GameClientDisconnect PR1_GameClientDisconnect
@@ -50,6 +52,7 @@
 	#define PR_EdictThink PR1_EdictThink
 	#define PR_EdictTouch PR1_EdictTouch
 	#define PR_EdictBlocked PR1_EdictBlocked
+	#define ED_ClearUserEdict ED1_ClearUserEdict
 #else
 	#define PR_LoadProgs PR2_LoadProgs
 	#define PR_InitProg PR2_InitProg
@@ -59,6 +62,7 @@
 	#define PR_Init PR2_Init
 	#define PR_GetString PR2_GetString
 	#define PR_SetString PR2_SetString
+	#define PR_SetString2 PR2_SetString2
 	#define PR_GetEdictFieldValue PR2_GetEdictFieldValue
 
 	#define PR_GameClientDisconnect PR2_GameClientDisconnect
@@ -78,6 +82,36 @@
 	#define PR_EdictThink PR2_EdictThink
 	#define PR_EdictTouch PR2_EdictTouch
 	#define PR_EdictBlocked PR2_EdictBlocked
+	#define ED_ClearUserEdict ED2_ClearUserEdict
 #endif
+
+
+typedef struct prog_swither_s
+{
+	void (*Init)(void);
+	char * (*GetString)(int num);
+	int  (*SetString)(char *s) ;
+	void  (*LoadEnts)(char *data);
+	void  (*GameStartFrame)();
+	void  (*GameClientConnect)(int spec);
+	void  (*GamePutClientInServer)(int spec);
+	void  (*GameClientDisconnect)(int spec);
+	void  (*GameClientPreThink)(int spec);
+	void  (*GameClientPostThink)(int spec);
+	qboolean  (*ClientCmd)();
+	void  (*ClientKill)();
+	void  (*GameSetNewParms)();
+	void  (*GameSetChangeParms)();
+	void  (*EdictTouch)(func_t f);
+	void  (*EdictThink)(func_t f);
+	void  (*EdictBlocked)(func_t f);
+	qboolean  (*UserInfoChanged)();
+	void  (*GameShutDown)();
+	qboolean  (*ClientSay)(int isTeamSay) ;
+	void  (*GameConsoleCommand)(void);
+	void  (*UnLoadProgs)();
+	void  (*LoadProgs)();
+} prog_switcher_t;
+prog_switcher_t* prog_switcher;
 
 #endif /* !__PR_COMMON_H__*/

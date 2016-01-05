@@ -149,6 +149,7 @@ extern int num_prstr;
 
 char *PR1_GetString(int num);
 int PR1_SetString(char *s);
+void PR1_SetString2(int*,char *,int);
 void	PR1_GameSetChangeParms();
 void PR1_GameSetNewParms();
 void PR1_GameStartFrame();

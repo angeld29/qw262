@@ -274,7 +274,7 @@ or crashing.
 void SV_DropClient (client_t *drop)
 {
 	// add the disconnect
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
         if( drop->isBot )
         {
 			extern void RemoveBot(client_t *cl);
@@ -352,7 +352,7 @@ int SV_CalcPing (client_t *cl)
 
 	ping = 0;
 	count = 0;
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
 	if( cl->isBot )
 		return sv_mintic.value*1000;
 #endif
@@ -1472,7 +1472,7 @@ void SV_ReadPackets (void)
 		{
 			if (cl->state == cs_free)
 				continue;
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
 			if (cl->isBot)
 				continue;
 #endif
@@ -1529,7 +1529,7 @@ void SV_CheckTimeouts (void)
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
 	{
-#ifdef USE_PR2
+#ifdef USE_PR2 //bot
                 if( cl->isBot ) 
                      continue;
 #endif
@@ -2066,16 +2066,8 @@ void SV_ExtractFromUserinfo (client_t *cl, qboolean namechanged)
 				SV_BroadcastPrintf (PRINT_HIGH, "%s changed name to %s\n", cl->name, val);
 		}
 
-			strlcpy (cl->name, val, CLIENT_NAME_LEN);
-#ifdef USE_PR2
-        if(sv_vm)
-        {
-			strlcpy(PR2_GetString(cl->edict->v.netname), cl->name, CLIENT_NAME_LEN);
-        }else
-        {
-			cl->edict->v.netname = PR1_SetString(cl->name);
-        }
-#endif
+		strlcpy (cl->name, val, CLIENT_NAME_LEN);
+		PR_SetString2(&(cl->edict->v.netname), cl->name, CLIENT_NAME_LEN);
 
 	}
 
