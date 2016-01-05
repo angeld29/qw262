@@ -314,11 +314,11 @@ char *Sys_ConsoleInput (void)
 	while (_kbhit())
 	{
 		c = _getch();
-		putch (c);
+		_putch (c);
 		if (c == '\r')
 		{
 			text[len] = 0;
-			putch ('\n');
+			_putch ('\n');
 			len = 0;
 			return text;
 		}
@@ -326,8 +326,8 @@ char *Sys_ConsoleInput (void)
 		{
 			if (len)
 			{
-				putch (' ');
-				putch (c);
+				_putch (' ');
+				_putch (c);
 				len--;
 				text[len] = 0;
 			}
