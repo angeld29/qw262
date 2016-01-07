@@ -29,29 +29,27 @@ extern int sv_sys_callex(byte *data, unsigned int len, int fn, pr2val_t*arg);
 typedef void (*pr2_trapcall_t)(byte* base, unsigned int mask, pr2val_t* stack, pr2val_t*retval);
 
 //extern int usedll;
-extern cvar_t sv_progtype;
 extern vm_t* sv_vm;
 
-
-void		PR2_Init();
-void		PR2_UnLoadProgs();
-void		PR2_LoadProgs();
-void		PR2_GameStartFrame();
+void		PR2_Init(void);
+void		PR2_UnLoadProgs(void);
+void		PR2_LoadProgs(void);
+void		PR2_GameStartFrame(void);
 void		PR2_LoadEnts(char *data);
 void		PR2_GameClientConnect(int spec);
 void		PR2_GamePutClientInServer(int spec);
 void		PR2_GameClientDisconnect(int spec);
 void		PR2_GameClientPreThink(int spec);
 void		PR2_GameClientPostThink(int spec);
-qboolean	PR2_ClientCmd();
-void		PR2_ClientKill();
-void		PR2_GameSetNewParms();
-void		PR2_GameSetChangeParms();
+qboolean	PR2_ClientCmd(void);
+void		PR2_ClientKill(void);
+void		PR2_GameSetNewParms(void);
+void		PR2_GameSetChangeParms(void);
 void		PR2_EdictTouch(func_t f);
 void		PR2_EdictThink(func_t f);
 void		PR2_EdictBlocked(func_t f);
-qboolean 	PR2_UserInfoChanged();
-void 		PR2_GameShutDown();
+qboolean 	PR2_UserInfoChanged(void);
+void 		PR2_GameShutDown(void);
 void 		PR2_GameConsoleCommand(void);
 qboolean	PR2_ClientSay(int isTeamSay);
 
@@ -60,10 +58,10 @@ int		PR2_SetString(char*s);
 void		PR2_SetString2(int*,char*,int);
 void		PR2_RunError(char *error, ...);
 void		ED2_Free(edict_t *ed);
-edict_t*	ED2_Alloc();
+edict_t*	ED2_Alloc(void);
 void		ED2_ClearEdict(edict_t *e);
 eval_t*		PR2_GetEdictFieldValue(edict_t *ed, char *field);
-void 		PR2_InitProg();
+void 		PR2_InitProg(void);
 void		ED2_ClearUserEdict(edict_t *e, client_t *cl);
 
 #endif /* !__PR2_H__ */

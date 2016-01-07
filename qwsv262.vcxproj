@@ -245,6 +245,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\pr_common.c" />
     <ClCompile Include="src\pr_edict.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">Full</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -410,6 +411,7 @@
     <ClInclude Include="include\pr_common.h" />
     <ClInclude Include="include\pr_comp.h" />
     <ClInclude Include="include\progdefs.h" />
+    <ClInclude Include="include\qwsvdef.h" />
     <ClInclude Include="include\wad.h" />
     <ClInclude Include="include\world.h" />
     <ClInclude Include="include\zone.h" />

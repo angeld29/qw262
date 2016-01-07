@@ -698,17 +698,17 @@ int PR1_SetString(char *s)
 	return (int)(s - pr_strings);
 }
 
-void	PR1_GameSetChangeParms(){
+void	PR1_GameSetChangeParms(void){
 	PR_ExecuteProgram (pr_global_struct->SetChangeParms);
 }
 
-void PR1_GameSetNewParms(){
+void PR1_GameSetNewParms(void){
 	PR_ExecuteProgram (pr_global_struct->SetNewParms);
 }
-void PR1_GameStartFrame(){
+void PR1_GameStartFrame(void){
 	PR_ExecuteProgram (pr_global_struct->StartFrame);
 }
-void PR1_ClientKill(){
+void PR1_ClientKill(void){
 	PR_ExecuteProgram (pr_global_struct->ClientKill);
 }
 //=============================================================================
@@ -785,7 +785,7 @@ void PR1_GameClientPostThink(int spec)
 }
 
 //=============================================================================
-void PR1_UnLoadProgs()
+void PR1_UnLoadProgs(void)
 {
 	if (progs)
 	{

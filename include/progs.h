@@ -150,12 +150,12 @@ extern int num_prstr;
 char *PR1_GetString(int num);
 int PR1_SetString(char *s);
 void PR1_SetString2(int*,char *,int);
-void	PR1_GameSetChangeParms();
-void PR1_GameSetNewParms();
-void PR1_GameStartFrame();
-void PR1_ClientKill();
+void	PR1_GameSetChangeParms(void);
+void PR1_GameSetNewParms(void);
+void PR1_GameStartFrame(void);
+void PR1_ClientKill(void);
 qboolean PR1_ClientSay(int);
-void PR1_UnLoadProgs();
+void PR1_UnLoadProgs(void);
 
 void PR1_GameClientDisconnect(int spec);
 void PR1_GameClientConnect(int spec);
@@ -164,10 +164,9 @@ void PR1_GameClientPreThink(int spec);
 void PR1_GameClientPostThink(int spec);
 //qboolean PR1_ClientSay(int isTeamSay, char *message);
 //void PR1_PausedTic(float duration);
-
-#define PR1_GameShutDown()	// PR1 does not really have it.
-#define PR1_ClientCmd()	(0) // PR1 does not really have it.
-#define PR1_UserInfoChanged() (0) // PR1 does not really have it,
+inline qboolean PR1_ClientCmd(void) { return 0; };
+inline qboolean PR1_UserInfoChanged(void) { return 0; };
+inline void PR1_GameShutDown(void) { };
 
 #define PR1_LoadEnts ED_LoadFromFile
 #define PR1_EdictThink PR_ExecuteProgram

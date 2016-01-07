@@ -33,6 +33,7 @@
 #else
 #define EXPORT_FN
 #endif
+#include "pr_common.h"
 
 #define OPSTACKSIZE 	0x100
 #define MAX_PROC_CALL 	100
@@ -53,15 +54,6 @@ typedef union pr2val_s
 
 typedef int (EXPORT_FN *sys_call_t) (int arg, ...);
 typedef int (*sys_callex_t) (byte *data, unsigned int mask, int fn,  pr2val_t* arg);
-
-typedef enum vm_type_e
-{
-	VM_NONE,
-	VM_NATIVE,
-	VM_BYTECODE
-} vm_type_t;
-
-
 
 struct vm_s {
 // common
