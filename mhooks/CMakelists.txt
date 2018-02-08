@@ -1,0 +1,14 @@
+# Проверка версии CMake
+cmake_minimum_required( VERSION 2.8 )
+# Если версия установленой программы ниже, то ошибка выполнения
+
+#if( WIN32 )
+   # Название проекта и проверка доступности компиляторя с++
+   project( mhooks C )			
+
+   # Включение экспорта всех символов для создания динамической библиотеки
+   add_definitions(-DMHOOKS_EXPORTS)
+
+   # Создание динамической библиотеки с именем example
+   add_library( mhooks SHARED mhooks.c )
+#endif()
