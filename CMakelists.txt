@@ -1,1 +1,230 @@
 add_subdirectory( mhooks )
+file( GLOB HEADER_SOURCES include/*.h lib/*.h lib/scitech/include/*.h lib/tcl/generic/*.h lib/pcre/*.h )
+cmd.c
+common.c
+crc.c
+cvar.c
+hash.c
+mathlib.c
+md4.c
+net_chan.c
+net_wins.c
+pmove.c
+pmovetst.c
+pr2_cmds.c
+pr2_edict.c
+pr2_exec.c
+pr2_vm.c
+pr_cmds.c
+pr_edict.c
+pr_exec.c
+sv_ccmds.c
+sv_demo.c
+sv_ents.c
+sv_init.c
+sv_io.c
+sv_io_select.c
+sv_main.c
+sv_model.c
+sv_move.c
+sv_nchan.c
+sv_phys.c
+sv_send.c
+sv_sys_win.c
+sv_user.c
+world.c
+zone.c
+set( CL_COMMON_SRC 
+    "cl_common\auth.c"
+    "cl_common\cd_audio.c"
+    "cl_common\cl_cam.c"
+    "cl_common\cl_demo.c"
+    "cl_common\cl_ents.c"
+    "cl_common\cl_input.c"
+    "cl_common\cl_main.c"
+    "cl_common\cl_model.c"
+    "cl_common\cl_parse.c"
+    "cl_common\cl_pred.c"
+    "cl_common\cl_tcl.c"
+    "cl_common\cl_tent.c"
+    "cl_common\console.c"
+    "cl_common\fchecks.c"
+    "cl_common\fmod.c"
+    "cl_common\keys.c"
+    "cl_common\locfiles.c"
+    "cl_common\menu.c"
+    "cl_common\modules.c"
+    "cl_common\nonintel.c"
+    "cl_common\sbar.c"
+    "cl_common\screen.c"
+    "cl_common\skin.c"
+    "cl_common\snd_dma.c"
+    "cl_common\snd_mem.c"
+    "cl_common\snd_mix.c"
+    "cl_common\teamplay.c"
+    "cl_common\triggers.c"
+    "cl_common\util.c"
+    "cl_common\view.c"
+    "cl_common\wad.c")
+set( CL_OPENGL_SRC 
+    "cl_opengl\gl_common.c"
+    "cl_opengl\gl_draw.c"
+    "cl_opengl\gl_flare.c"
+    "cl_opengl\gl_image.c"
+    "cl_opengl\gl_mesh.c"
+    "cl_opengl\gl_model.c"
+    "cl_opengl\gl_ngraph.c"
+    "cl_opengl\gl_refrag.c"
+    "cl_opengl\gl_rlight.c"
+    "cl_opengl\gl_rmain.c"
+    "cl_opengl\gl_rmisc.c"
+    "cl_opengl\gl_rpart.c"
+    "cl_opengl\gl_rsurf.c"
+    "cl_opengl\gl_screen.c"
+    "cl_opengl\gl_test.c"
+    "cl_opengl\gl_texture.c"
+    "cl_opengl\gl_vidlinux.c"
+    "cl_opengl\gl_vidlinuxglx.c"
+    "cl_opengl\gl_vidlinux_svga.c"
+    "cl_opengl\gl_vidlinux_x11.c"
+    "cl_opengl\gl_vidmac.c"
+    "cl_opengl\gl_vidnt.c"
+    "cl_opengl\gl_warp.c")
+set( CL_SOFT_SRC
+    "cl_soft\draw.c"
+    "cl_soft\d_copy.s"
+    "cl_soft\d_draw.s"
+    "cl_soft\d_draw16.s"
+    "cl_soft\d_edge.c"
+    "cl_soft\d_fill.c"
+    "cl_soft\d_init.c"
+    "cl_soft\d_modech.c"
+    "cl_soft\d_part.c"
+    "cl_soft\d_parta.s"
+    "cl_soft\d_polysa.s"
+    "cl_soft\d_polyse.c"
+    "cl_soft\d_scan.c"
+    "cl_soft\d_scana.s"
+    "cl_soft\d_sky.c"
+    "cl_soft\d_spr8.s"
+    "cl_soft\d_sprite.c"
+    "cl_soft\d_surf.c"
+    "cl_soft\d_vars.c"
+    "cl_soft\d_varsa.s"
+    "cl_soft\d_zpoint.c"
+    "cl_soft\r_aclip.c"
+    "cl_soft\r_aclipa.s"
+    "cl_soft\r_alias.c"
+    "cl_soft\r_aliasa.s"
+    "cl_soft\r_bsp.c"
+    "cl_soft\r_draw.c"
+    "cl_soft\r_drawa.s"
+    "cl_soft\r_edge.c"
+    "cl_soft\r_edgea.s"
+    "cl_soft\r_efrag.c"
+    "cl_soft\r_light.c"
+    "cl_soft\r_main.c"
+    "cl_soft\r_misc.c"
+    "cl_soft\r_part.c"
+    "cl_soft\r_screen.c"
+    "cl_soft\r_sky.c"
+    "cl_soft\r_sprite.c"
+    "cl_soft\r_surf.c"
+    "cl_soft\r_vars.c"
+    "cl_soft\r_varsa.s"
+    "cl_soft\snd_mixa.s"
+    "cl_soft\surf16.s"
+    "cl_soft\surf8.s")
+set( COMMON_SRC
+    "common\cmd.c"
+    "common\common.c"
+    "common\crc.c"
+    "common\cvar.c"
+    "common\hash.c"
+    "common\math.s"
+    "common\mathlib.c"
+    "common\md4.c"
+    "common\net_chan.c"
+    "common\pmove.c"
+    "common\pmovetst.c"
+    "common\zone.c")
+set( SV_COMMON_SRC
+    "sv\pr2_cmds.c"
+    "sv\pr2_edict.c"
+    "sv\pr2_exec.c"
+    "sv\pr2_vm.c"
+    "sv\pr_cmds.c"
+    "sv\pr_edict.c"
+    "sv\pr_exec.c"
+    "sv\sv_ccmds.c"
+    "sv\sv_cygwin.c"
+    "sv\sv_demo.c"
+    "sv\sv_ents.c"
+    "sv\sv_init.c"
+    "sv\sv_io.c"
+    "sv\sv_io_kqueue.c"
+    "sv\sv_io_poll.c"
+    "sv\sv_io_select.c"
+    "sv\sv_main.c"
+    "sv\sv_model.c"
+    "sv\sv_move.c"
+    "sv\sv_nchan.c"
+    "sv\sv_phys.c"
+    "sv\sv_send.c"
+    "sv\sv_sys_unix.c"
+    "sv\sv_sys_win.c"
+    "sv\sv_user.c"
+    "sv\world.c")
+set( MAC_SRC 
+    "sys\CarbonSndPlayDB.c"
+    "sys\cd_freebsd.c"
+    "sys\cd_linux.c"
+    "sys\cd_null.c"
+    "sys\cl_sys_mac.c"
+    "sys\cl_sys_unix.c"
+    "sys\in_mac.c"
+    "sys\in_null.c"
+    "sys\mac_prefs.c"
+    "sys\net_udp.c"
+    "sys\snd_freebsd.c"
+    "sys\snd_linux.c"
+    "sys\snd_mac.c"
+    "sys\snd_win.c"
+    "sys\sys_dosa.s"
+    "sys\sys_null.c"
+    "sys\vid_null.c"
+    "sys\vid_svgalib.c"
+    "sys\vid_x.c")
+set(WIN_SRC 
+    "sys\net_wins.c"
+    "sys\sys_wina.s"
+    "sys\vid_win.c"
+    "sys\in_win.c"
+    "sys\cl_sys_win.c"
+    "sys\cd_win.c"
+    "sys\cl_mhooks.c"
+)
+SV_IO=sv_io_kqueue.c
+else
+if test $enable_poll = yes; then
+echo "poll I/O enabled"
+SV_IO=sv_io_poll.c
+else
+SV_IO=sv_io_select.c
+
+if test "x$win32" = "xyes"; then
+    SUBDIRS="res $SUBDIRS"
+    LIBS="$LIBS -lwinmm -lwsock32"
+    ASMFLAGS=""
+    SV_SYSTEM="net_wins.c sv_sys_win.c"
+    if test "x$cygwin" = "xyes"; then
+	SV_SYSTEM="$SV_SYSTEM sv_cygwin.c"
+    	CPPFLAGS="$CPPFLAGS -D_WIN32 -D_POSIX_SOURCE"
+    fi
+elif test "x$mac" = "xyes"; then
+	SV_SYSTEM="net_udp.c sv_sys_unix.c"
+else
+    LIBS="$LIBS -lm"
+    ASMFLAGS="-DELF"
+    SV_SYSTEM="net_udp.c sv_sys_unix.c"
+fi
