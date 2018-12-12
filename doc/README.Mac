@@ -1,0 +1,2 @@
+Build with standard Apple Developer Tools (Xcode).  You will need pcre, libpng
+and libjpeg libraries installed.  Just run "./configure && make".

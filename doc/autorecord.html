@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- $Id: autorecord.html,v 1.2 2003/12/15 20:01:58 borisu Exp $ -->
+<html>
+<head>
+<title>QW262 документация :: Автозапись серверных демок</title>
+<link rel="stylesheet" type="text/css" href="doc.css">
+</head>
+<body>
+
+<h2>Общая информация</h2>
+Сервер QW262 может автоматически записывать демки проводимых на нем игр.
+Запись ведется все время пока на сервере присутствуют игроки. Если с сервера
+уходит последний клиент, запись останавливается. При смене карты и при заходе
+на пустой сервер начинается новая демка.
+
+<h2>Настройки сервера</h2>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td valign=top><b>sv_demoautorecord</b></td>
+<td>
+Возможные значения:
+<ul>
+<li>1 -- включает автоматическую запись демок</li>
+<li>0 -- выключает автоматическую запись (по умолчанию)</li>
+<li>строка -- запись ведется только при указанном значении gamedir, необходимо
+например если не нужно записывать демки голосования ThunderVote</li>
+</ul>
+<p>
+Значение этой переменной может быть изменено только в server.cfg.
+</td>
+</tr>
+<tr> 
+<td valign=top><b>sv_demoprefixftime</b></td>
+<td>
+Определяет префикс имени файла демки, в формате strftime(3). Полное имя
+устанавливается в виде &lt;prefix&gt;&lt;mapname&gt;.mvd. По умолчанию --
+"%Y%m%d-%H%M%S-".
+<p>
+Значение этой переменной может быть изменено только в server.cfg.
+</td>
+</tr>
+</tbody> 
+</table>
+
+<h2>Пример настроек server.cfg для автозаписи</h2>
+Настройки сервера, включающие автоматическую запись демок для gamedir
+fortress:
+<p>
+<pre>
+sv_onrecordfinish "scripts/recordfinish"
+sv_demoautorecord fortress
+</pre>
+<p>
+По окончании записи запускается скрипт gamedir/scripts/recordfinish.qws с
+рабочим каталогом gamedir (вообще, это тот gamedir, при котором началась
+запись демки; а в данном случае -- fortress) и ему передаются четыре
+параметра:
+<p>
+0 &lt;demodir&gt; &lt;demoname&gt;.mvd &lt;demoname&gt;.txt
+<p>
+demodir -- каталог (в gamedir) с демками
+<br>
+demoname -- имя файла демки и info-файла, без расширений
+
+<h2>Пример скрипта для обработки демок после записи</h2>
+Скрипт scripts/recordfinish.qws, архивирующий демку после записи и помещающий
+архив и info-файл демки в другой каталог:
+<p>
+<pre>
+#!/bin/sh
+
+DEMODIR=$2
+DEMOFILE=$3
+TXTFILE=$4
+
+TARGETDIR=/usr/local/quake/pubdemos
+RAR=/usr/local/bin/rar
+RAROPTIONS='a -r -m5 -mcT+ -md4096 -s -inul'
+AWK=/usr/bin/awk
+NICE=/usr/bin/nice
+NICEVALUE=20
+
+FILEROOT=`echo ${DEMOFILE} 2&gt;/dev/null | ${AWK} -F. '{print $1}' 2&gt;/dev/null`
+ARCHIVE="${FILEROOT}.rar"
+
+cd ${DEMODIR} &gt;/dev/null 2&gt;&amp;1
+
+chmod 644 ${DEMOFILE} &gt;/dev/null 2&gt;&amp;1
+chmod 644 ${TXTFILE} &gt;/dev/null 2&gt;&amp;1
+
+${NICE} -n ${NICEVALUE} ${RAR} ${RAROPTIONS} ${ARCHIVE} ${DEMOFILE} ${TXTFILE} &gt;/dev/null 2&gt;&amp;1
+chmod 644 ${ARCHIVE} &gt;/dev/null 2&gt;&amp;1
+
+rm -f ${DEMOFILE} &gt;/dev/null 2&gt;&amp;1
+
+mv -f ${ARCHIVE} ${TARGETDIR} &gt;/dev/null 2&gt;&amp;1
+mv -f ${TXTFILE} ${TARGETDIR} &gt;/dev/null 2&gt;&amp;1
+
+exit 0
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+body, table, td, th{
+	font-family : verdana,arial,helvetica,sans-serif;
+	font-size : 9pt;
+	background-color : Silver;
+}
+
+h1  {
+	color : White;
+	background-color : Teal;
+	padding : 8px;
+	font-weight : bold;
+	font-size : 10pt;
+	border: none;
+}
+
+h2  {
+	color : White;
+	background-color : Teal;
+	font-weight : bold;
+	font-size : 10pt;
+	border: none;
+	padding : 8px;
+	letter-spacing : 1px;
+}
+
+h3 {
+	font-size : 9pt;
+}
+
+u  {
+	text-decoration : none;
+	color : Navy;
+}
+

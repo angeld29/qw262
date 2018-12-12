@@ -1,0 +1,2285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>QW262 documentation (revision 10)</title>
+<link rel="stylesheet" type="text/css" href="doc.css">
+</head>
+<body>
+<h2>QW262 by [2WP]BorisU revision 10</h2>
+<h2>Major advances of QW262</h2>
+<ul>
+<li>TeamFortress anti-flash and anti-concussion cheats are disabled (old grens 
+on). 
+<li>GL version in TeamFortress now has the flash and gas grenade effects working 
+in the same way as in software rendering.</li>
+<li> GL version allows in-game gamma and contrast change.</li>
+<li>A new algorithm of demo recording with delta_compression is implemented. Standard 
+QW clients have delta_compression turned off by default while recording a demo 
+and this usually results in undesired ping and PL increases. </li>
+<li>A built-in support for some proxy functions like:<br>
+<a href="#locfile">loc-files</a> of two types (qizmo and QW262 block format);<br>
+<a href="#macros">message macros</a> (%l, %a, %h etc.). some of which are strongly 
+improved. For example, one can transmit his map coordinates which means that anyone 
+can interpret them acoording to his own loc-files.</li>
+<li><a href="#filter">Advanced message filtering</a>;</li>
+<li> Some fps-filter features.</li>
+<li>Improved demo handling (easy browsing over all quake folders) and playback 
+(including QWZ and MVD demos).</li>
+<li>Improved console editing.</li>
+<li>You can bind such buttons as capslock, numlock and all buttons of numeric 
+pad separately.</li>
+<li>Mice with 4 and more buttons are supported.</li>
+<li>Configurable <a href="#hud">hud</a> allows to display a wide range of info 
+during the gameplay (for example health, armor, ammo or value of any desired variable).</li>
+<li>For even higher anti-cheating safety the ability to work on a <a
+href="#qw262">rewritten protocol</a> is implemented. Using QW262 server in such 
+a way makes it incompatible with other clients and proxies.</li>
+</ul>
+<p>Extra <a href="#common">features</a></p>
+<ul>
+<li>Improved <a
+href="#script">script</a> handling. Naturally, it looks like a special QW262 macro 
+language which includes: 
+<ul>
+<li>powerful variable processing (expansion, search and etc.) 
+<li>improved work with aliases (increased speed, special features for complex 
+aliases, aliases with parameters) 
+<li>math feature - addition, substraction, multiplication and others 
+<li>conditional execution of commands - <b>if/then/else</b> 
+<li>improved logging 
+</ul>
+<li>Ability of automation of certain actions by means of triggers and <a href="#regexp">regexp-triggers</a>. 
+This is apparently one of the most powerful tools for reacting to in-game events! 
+At the moment on the basis of almost any message appearing on the screen one can 
+provide execution of a certain alias. The application area is immense, but the 
+minimal use is an advanced teammate communication system. 
+</ul>
+<a name=common></a> 
+<h2>New settings and abilities</h2>
+<p>The client is automatically responding the f_version queue sent by any player 
+in messagemode 1. The answer is sent only one time in 20 seconds to avoid spamming.</p>
+<p>If your config has a line containing <b>setinfo uid nick</b>, this nick becomes 
+your id-name (any string up to 5 symbols will fit, case-sensitive). This is convenient 
+if you have lots of nicks but still want your friends to recognize you. Uid can 
+be viewed in userinfo and everybody using QW262 can do so using <b>users</b> command. 
+Some commands in QW2.62 recognize and use uid in the same manner as id of a player. 
+</p>
+<p>The volume of a sound produced by <b>play</b> and <b>playvol</b> commands doesn't 
+depend on a current distance from the place where thesecommands were issued. This 
+is very handy for grenade-timers in TeamFortress.</p>
+<p>While opening the console the view on the remaining part of the screen is corrected 
+in the software version (works like in Unreal so that you don't miss any event 
+when working in the console). Users of the GL version can adjust transparency 
+of the console by a <b>gl_conalpha</b> variable (default is 0.8). At values about 
+0.3 the console is transparent enough and there's no need for the view correction.</p>
+<p></p>
+<p>Client automatically determines if the server using jump-fix and tunes prediction 
+accordingly.</p>
+<h3>Some variables have changed limits</h3>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>rate</b></td>
+<td> 
+<p>maximum rate value is increased up to 15000. Nevertheless, values of more than 
+10000 can be really gained only using QW262 server.</p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_maxfps</b></td>
+<td> 
+<p>one can obtain fps higher than 72 (up to 120) but only if server permits this 
+by setting <b>serverinfo maxfps</b> or during demo playback</p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>user</b></td>
+<td>as extra shows the amount of userinfo in bytes. When plaing on QW2.30 server 
+this amount can not exceed 196 bytes (255 bytes for QW262 server). When plaing 
+TeamFortress also shows skin, topcolor and bottomcolor only to teammates.</td>
+</tr>
+</tbody> 
+</table>
+<h3>Visual settings</h3>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td noWrap><b>crosshair 3</b></td>
+<td>really a little one. The color is that of the <b>crosshaircolor</b> varibale.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>crosshair 4</b></td>
+<td><b>crosshaircolor</b> painted cross, the size can be adjusted by <b>cl_cross_size</b> 
+and <b>cl_cross_width</b> variables.</td>
+</tr>
+<tr> 
+<td valign="top"><b>cl_crosshair_hack</b></td>
+<td>if set to 1 (default 0) moves the viewing point slightly so that crosshair 
+approximately coinside with the sniper dot in TF.</td>
+</tr>
+<tr> 
+<td valign=top><b>default_fov</b></td>
+<td>when client receives a command from server to set <b>fov</b> to 90 (e.g. after 
+concussion effect is gone), the client sets fov to <b>default_fov</b> instead. 
+It's nice to use default_fov if you are playing TeamFortress by using a nonstandard 
+<b>fov</b>. </td>
+</tr>
+<tr> 
+<td valign=top><b>r_draviewmodel</b></td>
+<td>if set to 2, weapon models are visible in soft-rendering even with fov higher 
+than 90.</td>
+</tr>
+<tr> 
+<td valign=top><b>show_speed</b></td>
+<td> 
+<p>when set to 1, the ammo counter is replaced with a speed meter like in qizmo 
+(default is 0). Values 2 and 3 show a graphical speed meter.</p>
+</td>
+</tr>
+<tr> 
+<td><b>show_lagmeter</b></td>
+<td>when set to 1, a ping and pl meter appear in the lower right corner of the 
+screen (default is 0).</td>
+</tr>
+<tr> 
+<td><b>lagmeter_format</b></td>
+<td>when set to 1, the lagmeter looks more compact (default is 0).</td>
+</tr>
+<tr> 
+<td valign=top><b>con_notifylines</b></td>
+<td>defines the maximum number of console messages lines which can be viewed up 
+the screen at once. Default is 4, the allowed range is 0-8.</td>
+</tr>
+<tr> 
+<td valign=top><b>scr_centershift</b></td>
+<td>defines the position of centerprint messages on the screen. The positive number 
+shifts them down the center, the negative - up. This is useful when watching demos 
+which were recorded on different resolution.</td>
+</tr>
+<tr> 
+<td valign=top><b>scr_consize</b></td>
+<td>determines the size of in-game console. Valid values from 0 to1 (default 0.5).</td>
+</tr>
+<tr> 
+<td valign=top><b>r_drawflame</b></td>
+<td>when 0 (default 1), removes animated torches from maps to increase your fps.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_powerupglow</b></td>
+<td>when 0 (default 1), removes dynamic lighting from powerups. Value 2 removes 
+this effect only for your own powerups.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_lightflicker</b></td>
+<td>when 0 (default 1), removes lighting flicker from powerups.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_rocketlight </b></td>
+<td>when 0 (default 1), removes dynamic lighting from rockets.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_explosion </b></td>
+<td>when set to 2 (default 0), removes dynamic lighting from explosions.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_fastsky</b></td>
+<td>setting it to 1 (default 0) draws a singlecoloured sky texture, the colour 
+being taken automatically from a current sky texture.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_muzzleflash</b></td>
+<td>shooting flashes: 0 - not to show, 2 - not to show own flashes only (deafult 
+1). </td>
+</tr>
+<tr> 
+<td valign=top><b>cl_sbar_inv</b></td>
+<td>when set to 0, inventory disappears from status bar at any <b>viewsize</b> 
+level.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_netgraph</b></td>
+<td>can be set to 2 or 3. The graph's background is then removed (and also numbers 
+when set to 3). </td>
+</tr>
+<tr> 
+<td valign=top><b>r_fullbrightskins</b></td>
+<td>sets the minimum level of player skin lighting. Avalable range from 0 (normal 
+lighting) to 1 (fullbright skins). Works only during demo playback or if explicitely 
+allowed on server(<b>serverinfo fbskins x</b>, x sets the maximum allowed level 
+of brightness).</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_truelightning</b></td>
+<td>changes drawing of shaft. Available range: 0-1. Works only during demo playback 
+or if explicitely allowed on server (<b>serverinfo truelightning x</b>).</td>
+</tr>
+<tr> 
+<td valign=top><b>v_damagecshift</b></td>
+<td>changes red flash intensity when you are hit. Default - 1, available range 
+0 - 1.</td>
+</tr>
+<tr> 
+<td valign=top><b>v_quadcshift, v_suitcshift, v_ringcshift, v_pentcshift</b></td>
+<td valign="top">changes the intensity of color change effect when you have the 
+corresponding powerup. Default - 1, available range 0 - 1.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_bonusflash</b></td>
+<td valign="top">Turns on/off screen flash when you are picking up something . 
+Default - 1.</td>
+</tr>
+</tbody> 
+</table>
+<h3> GL version specific.</h3>
+<p>LIT-files are supported (static colored lighting). They are loaded from <b>maps</b> 
+or <b>lits </b>directories. Works only if <b>gl_colorlights</b> cvar is set to 
+1. </p>
+<p>It is possible to use 24/32bit JPG, PNG, TGA and PCX (file search is performed 
+in this order!) textures up to 2048x2048 size. When loading 'test' texture the 
+client first look for test.link (link to other texture), then test.jpg, test.png, 
+test.tga, test.pcx and finally for standard 8bit texture. If the name of the texture 
+starts from '*' it is replaced by '#'. <i>Fullbright colors on 24/32bit textures 
+are supported only if server permits it through '<b>serverinfo allow_24bit_fullbrights 
+1</b>' - currently disabled.</i></p>
+<p>It is possible to use 24/32bit textures for bsp-models, alias models, sprites, 
+elements of quake interface (menu, statusbar), skyboxes and crosshairs. The following 
+table summarizes the directories where textures shoul be placed:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tr> 
+<td> bsp-models (walls, healthboxes etc.)</td>
+<td><b>textures/mapname</b>, <b>textures/bmodels</b>,<b> textures</b></td>
+</tr>
+<tr> 
+<td>alias-models (weapons, armor etc. except player.mdl!)</td>
+<td><b>textures/models</b>, <b>textures/progs</b>,<b> textures</b></td>
+</tr>
+<tr> 
+<td>Sprites</td>
+<td><b>textures/sprites</b>, <b>textures/progs</b>,<b> textures</b></td>
+</tr>
+<tr> 
+<td>textures for skybox</td>
+<td><b>textures/skybox</b>,<b> env</b></td>
+</tr>
+<tr> 
+<td>textures for quake interface</td>
+<td><b>textures/gfx</b>, <b>textures/wad</b>, <b>gfx</b></td>
+</tr>
+<tr> 
+<td>crosshairs</td>
+<td><b>textures/crosshairs</b></td>
+</tr>
+</table>
+<p>Console background can be loaded from <b>textures/gfx/conback.*</b> file. Console 
+font can be loaded from <b>textures/charset.*</b>. </p>
+<p></p>
+<p>Some words abount .link file. This is a plaintext file containing the name 
+of the texture (can contain path and must contain extention). For example if<b> 
+some_texture.link</b> contain <b>TFcommon/blue_wall.tga</b> line, then loading 
+<b>some_texture</b> will load <b>blue_wall.tga</b> from the indicated directory. 
+This can eliminate texture duplication and allows meaningful naming of textures.</p>
+<p>Skyboxes are supported. Name of skybox should be placed into <b>r_skybox</b> 
+variable or you can use <b>loadsky skyboxname</b> command. Skybox textures have 
+names <b>namexx.*</b> or <b>name_xx.*</b> (where xx: rt, bk, lf, ft, up, dn). 
+Due to some problems with skybox rendering and possible cheating skybox should 
+be allowed on server through '<b>serverinfo allow_skybox 1</b>'.</p>
+<p>32bit texture can be used as crosshair (<b>crosshair 5</b>). Required rexture 
+is loaded by <b>load_crosshair name</b> command. Partial transparency is supported. 
+Size and color are set by <b>cl_crosssize</b> and <b>crosshaircolor</b> cvars<b>.</b></p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tr> 
+<td valign=top><b>vid_hwgammacontrol</b></td>
+<td> 
+<p>when 1 (default if your videocard supports doenloadable gamma ramps), it becomes 
+possible to adjust <b>gamma</b> in GL version and the spy gas in TeamFortress 
+works as in software version.<br>
+Value 2 is the same as 0 with only difference that you can adjust <b>gamma</b> 
+when playing. It is recommended that you use the value of 2 when playing GL under 
+Win2000/WinXP.<br>
+If you play with <b>vid_hwgammacontrol 0</b>, then you should use a <b>-gamma 
+[value]</b> in command line when launching the client to adjust gamma. </p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_fb_models</b></td>
+<td> 
+<p>when set to 1 (default), the fullbright colours are turned on in GL version. 
+This works only for textures of bsp-models (walls, medkits etc.). </p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_fb_bmodels</b></td>
+<td>when set to 1 (default), the fullbright colours are turned on in GL version. 
+This works only for textures of alias-models (players, grenades, etc.). </td>
+</tr>
+<tr> 
+<td valign=top><b>gl_player_interpolate</b></td>
+<td>when set to 1 (default) player model frames are interpolated to get smother 
+movement.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_lightmode </b></td>
+<td>regulates the type of dynamic lighting (0 - standard GLQuake, 2 - ZQuake, 
+you must restart a map for changes to take effect). </td>
+</tr>
+<tr> 
+<td valign=top><b>gl_colorlights </b></td>
+<td>when set to 1 (default is 0), turns on the coloured dynamic lighting in GL 
+version (working only if gl_flashblend is 0, changes take place after a map restart).</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_flares</b></td>
+<td>when set to 1, launched rockets have beautiful shiny tails in GL :)</td>
+</tr>
+<tr> 
+<td valign=top><b>scr_scalemenu </b></td>
+<td>when set to 1 (default), the menu in GL version is stretched along the screen.</td>
+</tr>
+<tr> 
+<td valign=top><b>r_watervishack</b></td>
+<td>Partially solves the problem of entities visibility when viewing point is 
+close to water surface(default 1). </td>
+</tr>
+<tr> 
+<td valign=top><b>gl_smoothfont</b></td>
+<td>regulates smoothing of the console font (default 0).</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_waterfog</b></td>
+<td> Controls fog when you are under water, in lava etc. Possible values: 0 - 
+disabled, 1 - Linear Fog, 2 -Exponential Fog (default).</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_waterfogdensity</b></td>
+<td> controls the strength of the effect. Available range: 0 - 1.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_caustics </b></td>
+<td>when set to 1 (default) water caustic is shown on all underwater walls. water_caustic 
+texture should be placed in qw/textures. Works only if <b>gl_texsort</b> is set 
+to 0.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_use_24bit_textures</b></td>
+<td>when set to 1 (default) allows to use 24bit textures.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_screenshot_format</b></td>
+<td>Controls the format ofscreenshots. Affects <b>capture</b> command. Possible 
+values: 0 - TGA (default), 1 - PNG, 2 -JPG.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_screenshot_png_compression </b></td>
+<td>Controls the compression level of PNG screenshots. Available range: 1-9, the 
+higher - the better and slower compression is used, 0 - libpng default (corresponds 
+to 6 in the current version of libpng).</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_screenshot_jpg_quality</b></td>
+<td>Controls the compression level of JPG screenshots. Available range:1-100, 
+the higher - the better is screenshot quality and larger its size, 0 - libjpeg 
+default (corresponds to 75 in the current version of libjpeg). </td>
+</tr>
+<tr> 
+<td valign=top><b>gl_ext_anisotropy_level</b></td>
+<td>Sets anisotropic filtering level. Value 0 (default) leaves anisotropy at default 
+level. Over values: 1 (anisotropy filtering disabled), 2, 4 ... and so on up to 
+the maximum level supported by hardware are applied during texture filtering.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_ext_automipmap</b></td>
+<td> 
+<p>Allows to use OpenGL-extension for automatic mipmap creation. Enabled by default 
+(1).</p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_ext_texture_compress</b></td>
+<td>Controls texture compression. Disabled by default (0). Values &gt; 0 work 
+as follows: : if log<sub>2</sub>(width*height) is greater or equal to the value 
+of this cvar then the texture will be compressed during uploading to the videocard. 
+So value 16 allows compression of textures larger than áóäóò 256x256. Some videocards 
+work significantly faster with the compressed textures.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_ext_lod_bias</b></td>
+<td>Controls the LOD bias. Default is 0. Available range: from -3 to 3. Positive 
+values give effect similar to <b>gl_picmip</b> but it can be changed ingame. Negative 
+values give sharper picture butcan lead to texture shimmering.</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_blend_sprites</b></td>
+<td>When set to 0 sprites are drawn in a standard way. When set to 1(default) 
+partial transparency is supported and sprites look better. Videocard and processor 
+load is slightly higher in this case.</td>
+</tr>
+<tr> 
+<td valign=top><b>vid_vsync</b></td>
+<td>Allows to control synchronization of frames with vertical sync (default 0 
+- disabled). Win32 version only.</td>
+</tr>
+<tr> 
+<td valign=top><b>v_dlightcshift</b></td>
+<td valign="top">Turns on/off screen color change when you are inside &quot;light 
+bubble&quot; and <b>gl_flashblend 1</b>. </td>
+</tr>
+<tr> 
+<td valign=top><b>gl_cshiftpercent</b></td>
+<td valign="top">Controls the strength of the effects changing the color of the 
+screen . Default - 100. Available range 0-100.</td>
+</tr>
+<tbody> </tbody> 
+</table>
+<h3>Sound settings</h3>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td valign=top><b>snd_reverse</b></td>
+<td>when set to 1, right and left sound channels are swapped.</td>
+</tr>
+<tr> 
+<td valign=top><b>snd_restart</b></td>
+<td>restart sound system. Sometimes is useful when you have sound problems.</td>
+</tr>
+<tr> 
+<td valign=top nowrap><b>stopsound 1</b></td>
+<td>if you pass additional parameter to <b>stopsound</b> command it will stop 
+only sounds that were played using <b>play</b>, <b>playvol</b> commands.</td>
+</tr>
+</tbody> 
+</table>
+<h3>New variables</h3>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td valign=top><b>mapname</b></td>
+<td>map (read-only)</td>
+</tr>
+<tr> 
+<td><b>date</b></td>
+<td>date ;) (read-only)</td>
+</tr>
+<tr> 
+<td><b>time</b></td>
+<td>time ;)) (read-only)</td>
+</tr>
+<tr> 
+<td valign=top><b>date_format</b></td>
+<td>defines the format of date ouput: 0 - ddmmyyyy (default), 1 - ddmm, 2 - dd-mm-yyyy, 
+3 - dd-mm.</td>
+</tr>
+<tr> 
+<td valign=top><b>time_format</b></td>
+<td>defines the time format: 0 - hhmmss (default), 1 - hhmm, 2 - hh-mm-ss, 3 - 
+hh-mm.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_currentweapon</b></td>
+<td>contains a number of current weapon. Equals 0 when reloading in TeamFortress. 
+Is determined by name of a current weapon model even when <b>r_drawviewmodel</b> 
+is set to 0. 
+<p></p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>gl_cachemodels</b></td>
+<td>(default 0) regulates the models caching on your hard drive. Since modern 
+computers deal with models pretty fast there's no need to cache them. And , by 
+the way, this eliminates the problem with changing of models and QuakeForge client, 
+in which the authors for no reason changed the format of model information and 
+as a result other clients were simply crashing during the model loading process.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_ping</b></td>
+<td>contains your current ping value (the same that is shown by <b>show_lagmeter</b> 
+command). </td>
+</tr>
+</tbody> 
+</table>
+<h3>Additional command line parameters</h3>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr> 
+<td valign="top"><b>-mtfl</b></td>
+<td><b>gamma</b> values are limited to 0.55 (according to the rules of <a target=_top href="http://mtfl.sd.ru">Moscow 
+TF League</a>). In this mode &quot;+&quot; is added to the standard client's <b>f_version</b> 
+response(&quot;*&quot; if SetDeviceGammaRamp function returned error in Win2000/XP). 
+In GL version <b>-gamma 1</b> and <b>vid_hwgammacontrol 1</b> settings are forced 
+so that flash grenade effect is as close as possible to the software rendering.</td>
+</tr>
+<tr> 
+<td valign="top"><b>-sgis</b></td>
+<td>GL version is using ARB-multitexturing by default. This key allows to force 
+usage of SGIS-multitexturing.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>-nohwtimer</b></td>
+<td>turns off new precise timer and returns back old behaviour</td>
+</tr>
+<tr> 
+<td valign="top"><b>-zone</b></td>
+<td>default zone size is icreased up to 2 Megabytes (<b>-zone 2048</b>)</td>
+</tr>
+<tr> 
+<td valign="top"><b>-heapsize</b></td>
+<td>client is using 32 Megabytes of memory by default.</td>
+</tr>
+<tr> 
+<td valign="top"><b>-use8bit</b></td>
+<td>turns on support for shared palette 8bit textures</td>
+</tr>
+<tr> 
+<td valign="top"><b>-fullscreen</b></td>
+<td>Linux-GLX version tries to start fullscreen</td>
+</tr>
+<tr> 
+<td valign="top"><b>-freq V</b></td>
+<td>Sets monitor refresh rate (Hz)</td>
+</tr>
+</table>
+<h3>Console logging</h3>
+<p>It is now possible to switch on and off console logging at any desired moment 
+directly from the console. Here are related variables and commands:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>log_filename</b></td>
+<td>if this variable is not empty, the logfile called @log_filename is put to 
+&lt;gamedir&gt; directory.</td>
+</tr>
+<tr> 
+<td valign=top><b>log_prefix</b></td>
+<td>this variableis is not empty, its content is inserted into the beginning of 
+each logfile line. By the way, cvar expansion is allowed, and certainly all kind 
+of log-processing programs (like SpeedStats) will go nuts but ... who cares? :)</td>
+</tr>
+<tr> 
+<td valign=top><b>log_truncate</b></td>
+<td>this command cuts a logfile size to 0; a name of logfile is defined by <b>log_filename</b> 
+variable.</td>
+</tr>
+</tbody> 
+</table>
+<p>The log-file described would have absolutely no connection to that of -condebug 
+key. Moreover, you can writw them both at once :)<br>
+Examples:</p>
+<p><b>// starts new log with timestamps<br>
+log_prefix "[@date @time]"<br>
+log_filename "mycoollog.txt"<br>
+log_truncate </b></p>
+<p><b>// stops logging<br>
+log_filename ""</b></p>
+<h3>Handling the number of packets sent to server</h3>
+<p>The Quake engine is constructed in such a way that fps is rigidly connected 
+to the number of packets sent to a server. This means that if you got a bad connection 
+and a low <b>rate</b> number - you will hardly get nice fps. The <b>cl_c2spps</b> 
+variable allows to limit the number of sent-to-server packets. At the same time 
+your fps is defined by <b>cl_maxfps</b> variable. These &quot;extra&quot; packets 
+are put away and the resulting backdrop is often packetloss and loss of some commands. 
+Some solutions for keeping the most important information intact have been introduced 
+but I would not promise heavens. </p>
+<p>Example:</p>
+<p><b>cl_maxfps 60<br>
+cl_c2spps 30</b></p>
+<h3>Changes in file searching algorithm</h3>
+<p>It is possible to set gamedir at client sartup:</p>
+<p><b>qwcl262 -game fortress</b></p>
+<p>This put <b>fortress</b> directory to the list of directories where files are 
+searched, so files situating there have a priority over files lying in <b>qw</b> 
+and <b>id1</b>. This includes among others <b>quake.rc</b>, <b>autoexec.cfg</b>, 
+<b>gfx.wad</b>, <b>conback.lmp</b> etc. </p>
+<p>Small comment on <b>quake.rc</b>: Default <b>quake.rc</b> is included in <b>id1/pak0.pak</b> 
+and contains execution of <b>autoexec.cfg</b>, <b>config.cfg</b> and <b>stuffcmds</b> 
+command, that puts into execution buffer commands that were given in the command 
+line (<b>+connect localhost</b> for example). If you have decided to write your 
+own <b>quake.rc</b>, then you should make these action yourselves if it is required. 
+When launced with <b>-game</b> paramerter and standard <b>quake.rc </b>client 
+looks for <b>autoexec.cfg</b> file first in the given directory that allows automatiñ 
+launching of the required mod config at startup, before connection to any server. 
+</p>
+<p>A <b>userdir</b> command can be used for addition of directories to the list 
+searched for files by the client (configs, sounds, models, etc.). Real handy when 
+several players with their own configs files play Quake on a single computer. 
+</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>userdir [dir [type]]</b></td>
+<td> 
+<p>adds a directory to the search list:<br>
+0 (default) - &lt;quake_dir&gt;/&lt;gamedir&gt;/&lt;dir&gt;<br>
+1 - &lt;quake_dir&gt;/&lt;dir&gt;/&lt;gamedir&gt;<br>
+2 - &lt;quake_dir&gt;/qw/&lt;dir&gt;/&lt;gamedir&gt;<br>
+3 - &lt;quake_dir&gt;/qw/&lt;dir&gt;<br>
+4 - &lt;quake_dir&gt;/&lt;dir&gt;<br>
+5 - $HOME/qw/&lt;dir&gt; (where $HOME is the contents of HOME enviroment variable)</p>
+<p>When issuing this command after reconnection to a server or parameter is not 
+defined, a current userdir is printed in the console.</p>
+</td>
+</tr>
+</tbody> 
+</table>
+<p>It is possible to set<b> userdir</b> at client startup. Then configs will be 
+executed taking this directory into account. One can use <b>-userdir</b> and<b>-game</b> 
+separately or both at once. Example:</p>
+<p><b>qwcl262 -userdir vasya 2 -game fortress</b></p>
+<p>It is possible to use PAK-files with arbitrary names. When the directory is 
+added to the search path<b> </b>first files <b>pak0.pak, pak1.pak</b> are loaded, 
+then <b>pak.lst</b> is read and all the PAK-files listed there are loaded (one 
+per line with extension). GL-âåðñèÿ skips all files strting with <b>&quot;soft&quot;</b>, 
+soft-version skips files starting with <b>&quot;gl&quot;</b>. If <b>userdir </b>is 
+set to <b>name</b>, then finally <b>name.pak</b> is loaded. <br>
+</p>
+<h3>Demo recording and playing</h3>
+<p>Demo-player is built into the client. You can reach it through <b>multiplayer-demos</b> 
+menu or by the <b>menu_demos</b> command. It is possible to playback directly 
+the qwd, qwz (qizmo compressed format) and mvd (multi view demos - server demos). 
+The .qwz demos are automatically unpacked by qizmo. The unpacked file is deleted 
+after the end of the playback. The <b>qizmo_dir</b> variable (&quot;qizmo&quot; 
+by default) defines the folder in which qizmo surfs (according to quake dir). 
+</p>
+<p>Demo recording differs from that of qw2.30. In QW262 the delta-compression 
+is not switched off and this feature reasonably decreases lags. You can now use 
+<b>pause</b> command to pause while viewing a demo.</p>
+<p></p>
+<p>The beginning of a demo playback is detained till it's actually possible to 
+show it. Helps when something interesting is in the very beginning and you MUST 
+see it. </p>
+<p>The playback of demos recorded in spectator mode with <b>cl_chasecam 1</b> 
+is improved. The player's model is not shown now but you can see proper weapon 
+model.</p>
+<p>Other variables connected to demos:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cl_demoflushtime</b></td>
+<td> determines an interval of buffer flushing while recording a demo. By default 
+is 5 (0 value returns the old behaviour). This is introduced to avoid too frequent 
+disk write operations causing little lags and fps drop. </td>
+</tr>
+<tr> 
+<td valign=top><b>cl_fovtodemo</b></td>
+<td>when set to 1 (default), <b>fov</b> changes are recorded to your demo, which 
+is especially nice for sniper-demos.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_fovfromdemo</b> </td>
+<td>when set to 0 (default is 1), the <b>fov</b> commands recorded in a demo are 
+ignored during playback.</td>
+</tr>
+<tr> 
+<td valign=top><b>demotimescale</b></td>
+<td>defines a speed of demo playing. Slo- and fast motion (&gt;1) are avaliable. 
+The allowed range is 0.1 - 10.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_demoplay_restrictions</b></td>
+<td>when set to 0 (default 1), all buttons can be bound and hud is avaliable while 
+watching a demo.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_demoplay_flash</b> </td>
+<td>decreases the effect of flash-grenade during demo playback (default 1). Value 
+0.7 is well suited for watching demos of heavily flashed defenders :) </td>
+</tr>
+<tr> 
+<td valign=top><b>cl_demoplayer_sort</b></td>
+<td>determines files sorting in demo player. 0 - by name (default), 1 - by size. 
+</td>
+</tr>
+</tbody> 
+</table>
+<h3>Spectator mode and MVD demos playback</h3>
+<p>The spectator mode has been greatly improved. <b>mvd</b> demos playback is 
+practically the same as spectating but you can set pause in any moment and switch 
+to any player or move the cam. During camera switching effects of TeanFortress 
+flash and concussion grenades are cleared.</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cl_spec_id</b></td>
+<td>when set to 1 (default), a nick of a player you are looking at will be exposed; 
+also pressing +attack will capture camera view on a player last running behind 
+your crosshair.</td>
+</tr>
+<tr> 
+<td><b>track (id | uid)</b></td>
+<td>this commands switch camera view to a player with such an id/uid.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_spectator_restrictions</b></td>
+<td>when set to 0 (default 1), in spectator mode the hud and triggers are avaliable.</td>
+</tr>
+</tbody> 
+</table>
+<h3>Converting demos to AVI (filming)</h3>
+<p>To faciliate this process there is a <b>capture </b>command. If you issue <b>capture 
+&lt;fps&gt;</b> command during demo playback, the client starts to make a series 
+of screenshots with the required fps. This mode is switched off by <b>capture 
+0</b> command or automatically at demo end. There is <b>NO NEED</b> to worry if 
+your computer is fast enough to write many screenshots. It is possible to write 
+72 fps in 1600x1200 resolution.Of course it will be slow, but it is possible. 
+And vice versa: if you need only 5 frames per second in 320x200 resolution, then 
+it will be rather fast :) Screenshots are put into directory given by <b>capture_dir</b> 
+variable (realtive to Quake directory, default: &quot;capture&quot;). Subdirectory 
+is created with name <b>@date-@time</b> to prevent accidental overwriting of one 
+series of screenshot by another.</p>
+<h3>Mini-Gamespy</h3>
+<p>One can get certain info about Quake servers without being connected to them.</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>gamespy server:port</b></td>
+<td>gives you info on a map name and a number of players sitting currently on 
+the server.</td>
+</tr>
+<tr> 
+<td><b>cl_gamespy_showplayers</b></td>
+<td>if set to 1 (default is 0), <b>gamespy</b> also shows the players' information.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>cl_gamespy_showrules</b></td>
+<td>when set to 1 (default is 0), <b>gamespy</b> shows serverinfo.</td>
+</tr>
+</tbody> 
+</table>
+<p>Example:<br>
+<b>cl_gamespy_showplayers 1<br>
+gamespy quake.orc.ru:27530</b></p>
+<h3>Limitation of client capabilities using serverinfo fpd</h3>
+<p>Client respects some limitations set by the server administration using serverinfo 
+fpd and disable some functions. These bits in fpd are supported:</p>
+<ul>
+<li>1 - Macros in say are disabled</li>
+<li>2 - Time variable won't show seconds</li>
+<li>4 - Triggers are disabled</li>
+</ul>
+<p>During connect to server client reports in the consiole if something is disabled.</p>
+<a name=filter></a> 
+<h2>Message filtering</h2>
+<p>There is a possibility to filter messages (works with any server but QW262 
+server makes filtering at server-side thus reducing the network traffic). For 
+a message to be filtered and reach you it must end with <b>#abc</b>, where abc 
+is a name of the channel (must consist of 3 letters!). Messages without a name 
+of a channel are never filtered off. It is possible to assign filtering via several 
+channels. For example, <b>filter &quot;#att#eng&quot;</b> will allow you to obtain 
+messages on <b>#att</b> and <b>#eng</b> channels. At the given moment widely used 
+are only <b>#att</b> and <b>#def</b> channels for attack and defence modes respectively. 
+When a <b>#def</b> filter is active you will not get messages marked differently 
+than <b>#def</b>. In order to totally cancel filtering use a <b>filter &quot;&quot;</b> 
+command. </p>
+<h2>Improved console</h2>
+<p>The following buttons and combinations work in the console::</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td valign=top>TAB</td>
+<td>tab-completion, repeated hits of TAB button allow you to scroll alternative 
+aliases and commands names if they exist. Works in any place of the line.</td>
+</tr>
+<tr> 
+<td>SHIFT+TAB</td>
+<td>Scrolls alternatives in the opposite direction.</td>
+</tr>
+<tr> 
+<td>HOME</td>
+<td>cursor jumps to the start of the line. If the line is already empty, jumps 
+the cursor to the beginning of the console buffer.</td>
+</tr>
+<tr> 
+<td>END</td>
+<td>cursor jumps to the end of the line. If the line is already empty, jumps the 
+cursor to the end of the console buffer.</td>
+</tr>
+<tr> 
+<td noWrap>LEFTARROW</td>
+<td>cursor jumps to the next symbol to the left</td>
+</tr>
+<tr> 
+<td noWrap>RIGHTARROW</td>
+<td>cursor jumps to the next symbol to the right.</td>
+</tr>
+<tr> 
+<td noWrap>CTRL-LEFTARROW</td>
+<td>cursor jumps to the next word to the left.</td>
+</tr>
+<tr> 
+<td noWrap>CTRL-RIGHTARROW</td>
+<td>cursor jumps to the next word to the right.</td>
+</tr>
+<tr> 
+<td>CTRL-HOME</td>
+<td>to the beginning of console buffer.</td>
+</tr>
+<tr> 
+<td>CTRL-END</td>
+<td>to the end of the console buffer.</td>
+</tr>
+<tr> 
+<td>CTRL-ENTER</td>
+<td>sends a message via say_team.</td>
+</tr>
+<tr> 
+<td>DEL</td>
+<td>kills a symbol under the cursor.</td>
+</tr>
+<tr> 
+<td>BACKSPACE</td>
+<td>kills a symbol to the left of the cursor.</td>
+</tr>
+<tr> 
+<td noWrap>ALT-(letter or digit)</td>
+<td>brown characters input.</td>
+</tr>
+<tr> 
+<td noWrap>CTRL-digit</td>
+<td>yellow numbers input.</td>
+</tr>
+<tr> 
+<td noWrap>CTRL-(R,G,B,Y)</td>
+<td>input of &quot;lamps&quot; from <a
+href="#ocrana">ocrana.pak</a></td>
+</tr>
+<tr> 
+<td noWrap>CTRL-([,])</td>
+<td>colored brackets input.</td>
+</tr>
+<tr> 
+<td>CTRL-V</td>
+<td>in Win32 version pastes clipboard contents to the console.</td>
+</tr>
+</tbody> 
+</table>
+<p>In <b>messagemode</b>, <b>messagemode2</b>, <b>messagemode3 </b>modes the buffer 
+of the foregoing messages is implemented and you can scroll it by UPARROW and 
+DOWNARROW buttons.</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cl_completion_sort </b></td>
+<td>if set to 0 (1 by default) hitting TAB first shows commands.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_chatmode</b></td>
+<td>determines what to do with text typed in console. If set to 0, all is supposed 
+to be commands, 1 - everything goes to server using <b>say</b> command , 2 (default) 
+- first a check is made then valid commands are executed, anything else is sent 
+to server using <b>say</b> command</td>
+</tr>
+</tbody> 
+</table>
+<p>-alias are blocked in console so that they do not executed when typing except 
+for the keys that have no function in console (like Fx).</p>
+<h2>Keyboard</h2>
+<p>The number of bindable keys has been greatly expanded. It is now possible to 
+bind CAPSLOCK, SCROLLCK, NUMLOCK, PRINTSCR. If a <b>cl_keypad</b> variable is 
+set to 1, then you can bind the buttons of extended keyboard independently, i.e. 
+the DEL and KP_DEL will make a difference. The names of buttons are listed below. 
+Some buttons have several alternative names, so it is possible to use any of them. 
+</p>
+<table cellspacing=0 cellpadding=5 width="50%" align=center border=1>
+<tbody> 
+<tr> 
+<td height=50>NUMLOCK, KP_NUMLCK, KP_NUMLOCK</td>
+<td height=50>KP_SLASH, KP_DIVIDE</td>
+<td height=50>KP_STAR, KP_MULTIPLY,<br>
+* </td>
+<td height=50>KP_MINUS</td>
+</tr>
+<tr> 
+<td height=50>KP_HOME, KP_7</td>
+<td height=50>KP_UPARROW, KP_8</td>
+<td height=50>KP_PGUP, KP_9</td>
+<td height=50 rowspan=2>KP_PLUS</td>
+</tr>
+<tr> 
+<td height=50>KP_LEFTARROW, KP_4</td>
+<td height=50>KP_5</td>
+<td height=50>KP_RIGHTARROW, KP_6</td>
+</tr>
+<tr> 
+<td height=50>KP_END, KP_1</td>
+<td height=50>KP_DOWNARROW, KP_2</td>
+<td height=50>KP_PGDN, KP_3</td>
+<td height=50 rowspan=2>KP_ENTER</td>
+</tr>
+<tr> 
+<td colspan=2 height=50>KP_INS, KP_0</td>
+<td height=50>KP_DEL, KP_DOT</td>
+</tr>
+</tbody> 
+</table>
+<p>Notes:</p>
+<p>In Win32 version PRINTSCR won't work if simultaneously CTRL, ALT etc buttons 
+pressed.</p>
+<h2>Mouse</h2>
+<p> Mouse wheel works in DirectInput mode if <b>m_forcemwheel</b> cvar is set 
+to 1.</p>
+<p>MOUSE4 - MOUSE8 are supported. However driver support is required. It <i>works</i> 
+with<i> </i>Microsoft drivers, <i>does not work</i> with Logitech Mouseware up 
+to version 9.73. </p>
+<p>Client has internal support for MOUSE4 - MOUSE8 buttons if Logitech Mouseware 
+is installed (up to version 9.73) (mw_hook.dll library is required!). This mode 
+is turned on by setting <b>m_mwhook</b> cvar to 1, and it does not matter what 
+is mapped in to 4th-8th mouse button in Mouseware itself. If you don't like the 
+default numbers of mouse buttons then you can change it using <b>m_map_button</b> 
+command:</p>
+<p>Example: logically swaps 4th and 5th mouse buttons, 6th button become an equivalent 
+of keyboard key 'a' :<br>
+<b>m_map_button 4 MOUSE5<br>
+m_map_button 5 MOUSE4<br>
+m_map_button 6 a</b></p>
+<p></p>
+<p> It as possible to use all keys emulated by Logitech Mouseware when mouse button 
+is pressed (not only CTRL and SHIF). However one should know that:</p>
+<ol>
+<li><b>m_mwhook 1 </b>mode is more convinient.</li>
+<li>Button up and down commands arrive without pause between them so you may need 
+<b>wait</b>. </li>
+<li>They arrive then the mouse button is RELEASED.</li>
+<li>If you are using <b>cl_keypad 1</b> then KP_* variants of button are generated 
+for PGDN, PGUP etc. </li>
+</ol>
+<a
+name=script></a> 
+<h2>Advanced scripting</h2>
+<p>Aliases execution speed was considerably elevated in comparison to QW2.30. 
+The scripting language was widely extended. Command processing buffer was increased 
+to 16K. A special alias <b>262_quakerc</b> is automatically executed on launching 
+of the client (after quake.rc is loaded), on changing the <b>gamedir</b> alias 
+<b>262_autoexec</b> is executed after ordinary configs loading. Thus, one can 
+isolate specific part for QW262 config file, so that multiple error messages are 
+not received under QW2.30 which does not understand QW262 scripting. </p>
+<h3>Variables defined by user (cvar)</h3>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>register cvar_name1 [cvar_name2...]</b></td>
+<td valign=top>registers one or several variables for further use.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>unregister cvar_name1 [cvar_name2...]</b></td>
+<td valign=top>kills unneeded variables. Built-in variables unfortunately can 
+not be killed.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>cl_prefixchar</b></td>
+<td valign=top>defines the symbol that has special meaning for cvar expansion, 
+increment/decrement etc. Values <b>@</b> (default) and <b>$</b> (ZQuake compatibility 
+mode) are allowed.</td>
+</tr>
+</tbody> 
+</table>
+<p>Values of variables (both built-in and defined by user) can be used in scripts. 
+Sign <b>@</b> (or <b>$</b> if yo have changed <b>cl_prefixchar</b>) must stand 
+before a name of such variable. Cvar expansion is not working for variables inside 
+the dual quotation marks &quot;, with exception of the specially stipulated cases. 
+</p>
+<p>Examples:</p>
+<p><b>echo current fov: @fov<br>
+register class style<br>
+class medic<br>
+style att<br>
+bind t "say_team (@style-@class) Idu po kiwke"</b></p>
+<p><i>One should remember one important thing. Script statement parsing and cvar 
+expansion is made up to the end of line or semicolon symbol. So if you need to 
+create a cvar containing semicolon you should create another variable, contatining 
+it. For example:</i></p>
+<p><b>set _tz &quot;;&quot;<br>
+alias example &quot;set tmp a%a,%h@_tzlocation:%l'&quot;<br>
+say_team @tmp</b></p>
+<p>One can increase or decrease value of a variable in such way:<br>
+<b>fov @+5</b> - increases fov by 5<br>
+<b>fov @-5</b> - decreases fov by 5</p>
+<p>There are some commands introduced to change values of variables:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>set cvar_name value</b></td>
+<td valign=top>assigns a new value to a variable.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>set_ex cvar_name value</b></td>
+<td valign=top>assigns a new value to a variable, expansion of %macros and variables 
+is performed even in case if a parameter is inside the dual quotation marks.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>set_bind_str cvar_name key_name</b></td>
+<td valign=top>assigns variable a value which contains anything bound to an indicated 
+key.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>set_alias_str cvar_name alias_name</b></td>
+<td valign=top>assigns variable a value which contains an indicated alias.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>set_calc &lt;cvar&gt; &lt;expr1&gt; &lt;op&gt; &lt;expr2&gt;</b></td>
+<td valign=top> 
+<p>allows to make some simple computations in scripts. The result is put into 
+a <b>&lt;cvar&gt;</b> variable. <b>&lt;expr1&gt;</b>,<b> &lt;expr2&gt;</b> - are 
+numbers. Several operations are supported:</p>
+<ul>
+<li>+ - addition</li>
+<li>- - subtraction</li>
+<li><b>*</b> - multiply</li>
+<li><b>/ </b>- divide</li>
+<li><b>%</b> - integer modulus</li>
+<li><b>div</b> - integer division</li>
+<li><b>or</b> - per-bit logical or</li>
+<li><b>and</b> - per-bit logical and</li>
+<li><b>xor</b> - per-bit logical exclusive or</li>
+<li><b>int</b> - converting float to integer</li>
+</ul>
+<p>Additional tasks with strings:<br>
+<b>set_calc &lt;cvar&gt; strlen &lt;string&gt;</b> - calculate the length of the 
+string and assign result to the <b>&lt;cvar&gt;</b>;<br>
+<b>set_calc &lt;cvar&gt; substr &lt;cvar2&gt; &lt;pos&gt; [&lt;len&gt;]</b> - 
+get a piece of string in variable <b>&lt;cvar2&gt;</b> starting from position 
+<b>&lt;pos&gt;</b> (each string starts at position 0) and of length <b>&lt;len&gt;</b> 
+and then assign this piece to the <b>&lt;cvar&gt;</b> variable; <b>&lt;len&gt;</b> 
+equals 1 if not defined. <br>
+<b>set_calc &lt;cvar&gt; pos &lt;cvar2&gt; &lt;string&gt;</b> - search a <b>&lt;string&gt;</b> 
+in a variable <b>&lt;cvar2&gt;</b> and then assign a found position number to 
+a <b>&lt;cvar&gt;</b> variable; value -1 is assigned to a <b>&lt;cvar&gt;</b> 
+if string is not found. <br>
+<b>set_calc &lt;array&gt; set_substr &lt;var&gt; &lt;pos&gt; - </b>put <b>&lt;var&gt; 
+</b> contents into <b>&lt;array&gt;</b> variable starting from position<b>&lt;pos&gt;</b>. 
+If <b>&lt;pos&gt;</b> exceeds the length of <b>&lt;array&gt;</b> then <b>&lt;array&gt;</b> 
+is extended using spaces<br>
+<b>set_calc &lt;cvar&gt; tobrown</b> and<br>
+<b>set_calc &lt;cvar&gt; towhite</b> convert variable contents to brown/white 
+letters respectively.</p>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>set_regexp &lt;cvar&gt; [value]</b></td>
+<td valign=top>Create a regexp in <b>&lt;cvar&gt;</b> corresponding to value (all 
+special symbols are escaped). If <b>value</b> is not given then starting value 
+of <b>&lt;cvar&gt;</b> is used.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>cl_autoregister</b></td>
+<td valign=top>when not set to 0, all <b>set</b> commands automatically register 
+a variable if it doesn't exist yet.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>toggle &lt;cvar&gt;</b></td>
+<td valign=top>inverts a value of a variable (0 -&gt; 1, 1 -&gt; 0).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>crypt &lt;cvar&gt; &lt;key&gt;</b></td>
+<td valign=top> <b>crypt</b> command crypts and decrypts a cvar variable. A <b>&lt;key&gt;</b> 
+parameter is used as a crypting/decrypting key. Limitations: a crypted variable 
+and a key must consist of symbols belonging to a lower half of character table. 
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>inc &lt;cvar&gt; [value]</b></td>
+<td valign=top>increases a variable by value (by 1, if value is not set).</td>
+</tr>
+</tbody> 
+</table>
+<p>Examples:<b><br>
+// a = b * 3<br>
+set_calc a @b * 3 <br>
+// len = strlen(str)<br>
+set_calc len strlen @str<br>
+// a = 7 div 3 = 2<br>
+set_calc a 7 div 3 <br>
+// intvar = int(3.67) = 3<br>
+set_calc intvar int 3.67<br>
+set a &quot;aaaaaaaaaaa&quot;<br>
+set b &quot;bb&quot;<br>
+set_calc a set_substr b 4<br>
+// a = &quot;aaaabbaaaaa&quot;</b></p>
+<p></p>
+<p><b>// rnd (range)<br>
+set tmp @time_format;time_format 0;set_calc rnd_seed @time div 123;time_format 
+@tmp<br>
+alias rnd &quot;set_calc rnd_seed @rnd_seed * 106; inc rnd_seed 1283; set_calc 
+rnd_seed @rnd_seed % 6075; set_calc rnd_n %1 * @rnd_seed; set_calc rnd_n @rnd_n 
+div 6075&quot;</b><br>
+<b>rnd 40<br>
+echo @rnd_n</b></p>
+<p><b>// crypt/decrypt<br>
+set crypt_key &quot;Crypt algorithm is simple&quot;<br>
+set text &quot;Very Secret string!&quot;<br>
+echo @text<br>
+crypt text @crypt_key<br>
+echo @text<br>
+crypt text @crypt_key<br>
+echo @text</b></p>
+<p></p>
+<p><b>cvarlist</b> command prints a list of all registered variables. Flags in 
+front of variables have the following meanings:<br>
+</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td>*</td>
+<td>variable is saved in config.cfg</td>
+</tr>
+<tr> 
+<td>u</td>
+<td>variable is a part of userinfo</td>
+</tr>
+<tr> 
+<td>s</td>
+<td>variable is a part of serverinfo</td>
+</tr>
+</tbody> 
+</table>
+<p><b>bindlist</b> command prints a list of all bound buttons.<br>
+</p>
+<h3>Aliases</h3>
+<p>Aliases can possess parameters. Before alias execution %1-%9 combinations are 
+substituted with a real parameters passed . %0 is substituted with a line containing 
+all provided parameters. Examples:</p>
+<p><b>alias s &quot;say %0&quot;<br>
+s hi all!<br>
+alias kick "rcon kick %1"<br>
+kick 4327</b></p>
+<p>Commands to manage aliases:<br>
+</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td noWrap><b>viewalias</b></td>
+<td>reveals contents of one or more aliases. </td>
+</tr>
+<tr> 
+<td noWrap><b>removealiases</b></td>
+<td>kills <b>all</b> aliases. Be careful :)</td>
+</tr>
+<tr> 
+<td noWrap><b>unalias alias_name</b></td>
+<td>kills a defined alias.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>alias alias_name</b></td>
+<td>if writing it in console - the content of an alias is printed as a result. 
+If executed by means of script - alias is emptied.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>alias_in &lt;alias&gt; &lt;cvar&gt; [&lt;options&gt;]</b></td>
+<td> 
+<p>allows to insert contents of <b>&lt;cvar&gt;</b> variable into an <b>&lt;alias&gt;</b>. 
+<b>&lt;options&gt;</b> is a bit mask which defines an action:</p>
+<ul>
+<li>1 - (0 - insert from left, 1 - from right side) 
+<li>2 - (check in advance whether a line being inserted already exists in alias) 
+<li>4 - (print an error message) 
+<li>8 - (automatically create an alias if it doesn't exist yet) 
+</ul>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>alias_out&lt;alias&gt; &lt;cvar&gt; [&lt;options&gt;]</b></td>
+<td> 
+<p>allows to search for or cut off the contents of <b>&lt;cvar&gt;</b> variable 
+from <b>&lt;alias&gt;</b>. <b>&lt;options&gt;</b> is a bit mask which defines 
+an action:</p>
+<ul>
+<li>1 - (cut off or just search the string, if set the only result of command 
+is error message if the string is not found) 
+<li>2 - (do not print message if string not found) 
+</ul>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>cvar_in &lt;cvar1&gt; &lt;cvar2&gt; [&lt;options&gt;]</b></td>
+<td> 
+<p>allows to insert contents of <b>&lt;cvar2&gt;</b> variable into an <b>&lt;cvar1&gt;</b>. 
+<b>&lt;options&gt;</b> is a bit mask which defines an action:</p>
+<ul>
+<li>1 - (0 - insert from left, 1 - from right side) 
+<li>2 - (check in advance whether a line being inserted already exists in <b>&lt;cvar1&gt;</b>) 
+<li>4 - (print an error message) 
+<li>8 - (automatically create <b>&lt;cvar1&gt;</b> if it doesn't exist yet) 
+</ul>
+<p>&nbsp;</p>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>cvar_out &lt;cvar1&gt; &lt;cvar2&gt; [&lt;options&gt;]</b></td>
+<td> 
+<p>allows to search for or cut off the contents of <b>&lt;cvar2&gt;</b> variable 
+from <b>&lt;cvar1&gt;</b>. <b>&lt;options&gt;</b> is a bit mask which defines 
+an action:</p>
+<ul>
+<li>1 - (cut or just search the string , if set the only result of command is 
+error message if the string is not found) 
+<li>2 - (do not print message if string not found) 
+</ul>
+</td>
+</tr>
+</tbody> 
+</table>
+<h3>Constructing complex aliases</h3>
+<p>One can write multiline aliases. If the last character of the line is \ , then 
+the next line is a continuation of that line. Don not forget that the maximum 
+length of one interpreted line can not exceed 1024 charcters. </p>
+<p>Sometimes it is necessary to use quotes inside quotes. For example when complex 
+aliases create other aliases. Some variables are introduced to facilitate this 
+process:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cl_substsinglequote</b></td>
+<td> 
+<p>if not set to 0, all single quotation marks will be substituted by dual marks 
+when alias is executed. Two single quotation marks in a row are substituted by 
+one (if sustitution is permitted is permitted). Replacement of quotation marks 
+takes place on execution of any command, if only a quotation mark is not located 
+within the dual quotation marks. One should remember that during script parsing 
+client accepts a string in double quotes as one parameter but removes these quotes. 
+</p>
+</td>
+</tr>
+<tr> 
+<td><b>cl_stringescape</b></td>
+<td>if not set to 0, a combination of \&quot; within the dual quotation marks 
+is substituted by &quot; upon the command execution.</td>
+</tr>
+<tr> 
+<td><b>cl_curlybraces</b></td>
+<td>if not set to 0, symbols { and } can be used like \&quot;, and their nesting 
+is correctly handled.</td>
+</tr>
+</tbody> 
+</table>
+<p>Examples:<br>
+// automessage for a location of a flag drop:<br>
+<b>cl_substsinglequote 1<br>
+register v_flagdeath<br>
+v_flagdeath "say_team ENEMY FLAG: %d; alias f_death"<br>
+alias f_took "say_team I''ve got a flag!; alias f_death '@v_flagdeath'"<br>
+<br>
+cl_substsinglequote 0<br>
+cl_stringescape 1<br>
+alias f_took "say_team I've got a flag!; alias f_death \"say_team ENEMY FLAG: 
+%d; alias f_death\"" <br>
+</b></p>
+<p>Note that both variants work slightly in different ways, so in the first case 
+it is necessary to introduce one extra variable.</p>
+<p><b>cl_curlybraces 1<br>
+if {%1} == {@name} {if @tmp = 1 {alias eee {say ok; say ok2}}\<br>
+else {say tmp is not 1}} </b></p>
+<h3>Conditional execution of commands</h3>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tr> 
+<td valign=top noWrap><b>if &lt;expr1&gt; &lt;op&gt; &lt;expr2&gt;<br>
+[then] command1 [else command2]</b></td>
+<td>surely familiar to everbody conditional operators <b>if/then/else</b>. 
+<p><b>&lt;expr1&gt;</b> and <b>&lt;expr2&gt;</b> - are lines or values to be compared<br>
+<b>&lt;op&gt;</b> - comparison operator:</p>
+<ul>
+<li><b>==</b> - equal,</li>
+<li><b>=</b> - equal,</li>
+<li><b>!=</b> - not equal,</li>
+<li><b>&lt;&gt;</b> - not equal,</li>
+<li><b>&gt;</b> - greater,</li>
+<li><b>&lt;</b> - less,</li>
+<li><b>&gt;=</b> - greater or equal,</li>
+<li><b>&lt;=</b> - less or equal;</li>
+</ul>
+<p>(<b>==</b> and <b>=</b>, <b>!=</b> and <b>&lt;&gt;</b> mean the same, use the 
+one which is looking nicer for you :) )</p>
+<p>It is not necessary to use <b>then</b>, if <b>command2</b> is used in your 
+expression, <b>else</b> is required. </p>
+</td>
+</tr>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>if_exists &lt;type&gt; &lt;name&gt; <br>
+&lt;cmd1&gt; [&lt;cmd2&gt;]</b></td>
+<td> 
+<p>if an object <b>&lt;name&gt;</b> of a type <b>&lt;type&gt;</b> exists, a command 
+<b>&lt;cmd1&gt;</b> will be issued, or a command <b>&lt;cmd2&gt;</b> if such object 
+could not be found. <br>
+The type of the object can be either <b>cvar, alias, trigger</b> or <b>hud</b>. 
+</td>
+</tr>
+</tbody> 
+</table>
+<p>Examples:</p>
+<p><b>register v_reportdeath<br>
+v_reportdeath 1</b><b><br>
+alias f_death &quot;if @v_reportdeath = 1 then say_team I am dead [%d]"</b><br>
+</p>
+<p><b>cl_substsinglequote</b> 1<br>
+<b>set _tz &quot;;&quot;</b><br>
+<b>if_exists alias f_death &quot;set_alias_str tmp f_death;alias f_death 'play 
+dead.wav@_tz@tmp'&quot; &quot;alias f_death 'play dead.wav'&quot;</b></p>
+<a name=macros></a> 
+<h2>Message macros</h2>
+<p>In case if a <b>cl_parsesay</b> variable equals 1, the macros are substituted 
+is performed in commands say*, echo and set_ex (even inside double quotes).</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td>macro</td>
+<td>substituted</td>
+</tr>
+<tr> 
+<td><b>%a</b></td>
+<td>armor</td>
+</tr>
+<tr> 
+<td><b>%t</b></td>
+<td>armor type (green, yellow, red)</td>
+</tr>
+<tr> 
+<td><b>%h</b></td>
+<td>health</td>
+</tr>
+<tr> 
+<td><b>%p</b></td>
+<td>powerup, if present :) (quad, 666, eyes)</td>
+</tr>
+<tr> 
+<td><b>%s</b></td>
+<td>shells amount</td>
+</tr>
+<tr> 
+<td> 
+<p><b>%n</b></p>
+</td>
+<td>nails amount</td>
+</tr>
+<tr> 
+<td><b>%r</b></td>
+<td>rockets amount</td>
+</tr>
+<tr> 
+<td><b>%c</b></td>
+<td>ñells amount</td>
+</tr>
+<tr> 
+<td><b>%l</b></td>
+<td>your current location on a map (a loaded <a
+href="#locfile">loc-file</a> is required).</td>
+</tr>
+<tr> 
+<td><b>%L</b></td>
+<td>prints your current position or position of your last death (if you have died 
+less then 5 seconds ago).</td>
+</tr>
+<tr> 
+<td><b>%d</b></td>
+<td>last death location (a loaded loc-file is required)</td>
+</tr>
+<tr> 
+<td><b>@<font color="#FF0000">R</font></b></td>
+<td>red <a href="#ocrana">ocrana.pak</a> &quot;lamp&quot;</td>
+</tr>
+<tr> 
+<td><b>@<font color="#00FF00">G</font></b></td>
+<td>green ocrana.pak &quot;lamp&quot;</td>
+</tr>
+<tr> 
+<td><b>@<font color="#0000FF">B</font></b></td>
+<td>blue ocrana.pak &quot;lamp&quot;</td>
+</tr>
+<tr> 
+<td><b>@<font color="#FFFF00">Y</font></b></td>
+<td>yellow ocrana.pak &quot;lamp&quot;</td>
+</tr>
+<tr> 
+<td><b>@[ and @]</b></td>
+<td>colored brackets</td>
+</tr>
+<tr> 
+<td><b>@:</b></td>
+<td>end line</td>
+</tr>
+<tr> 
+<td><b>@\</b></td>
+<td>&quot;fake&quot; message creation (it will contain no sender name and work 
+only with say_team and say_to_team)</td>
+</tr>
+</tbody> 
+</table>
+<p>Symbols <b>@</b> or <b>$</b> are used in macros depending on <b>cl_prefixchar</b>.</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tr> 
+<td  valign=top><b>cl_locmessage</b></td>
+<td> when set to 0 (1 by default), one can transmit to teammates his coordinates 
+on a map. Macros %l, %d, %L produce a point coordinates rather than a message 
+line from loc-file. These coordinates can be easily caught by yourself and put 
+in a <b>loc_coords2loc var x y z</b> command, which using these coordinates will 
+find a corresponding line in your loc-file and put it to var. If you are not happy 
+with this method, simply set <b>cl_coords2loc</b> cvar to 1so that coordinates 
+are converted to message lines automatically. This looks like as for example you 
+get some coordinates by a <b>say_team</b> message:<b> (Player): I'm at [1345 -567 
+776]</b>, and you see <b>(Player): I'm at enemy FR</b> in console.</td>
+</tr>
+<tr> 
+<td  valign=top><b>cl_digits_format </b></td>
+<td>when set to 1 (0 by default), the %-macros will print standard numbers rather 
+than yellow.</td>
+</tr>
+<tr> 
+<td  valign=top><b>cl_nofake</b></td>
+<td>controls the &quot;fake&quot;-messages output. These messages contain a 0x0D 
+symbol which allows to hide a sender name (exception is log). When set to 1, all 
+fake-messages are prohibited, the 0x0D symbol is substituted with # and a message 
+is shown as always with a sender name. When set to 2 (default), fake-messages 
+are allowed in <b>say_team, say_to_team</b> messages only. 0 allows any fake-messages.</td>
+</tr>
+</table>
+<p>For the macros of ammunition quantities there are some slier versions avaliable: 
+<b>%c+130</b> - ammout of cells which you need to get 130; <b>%c-130</b> - ammount 
+of cells which you have over 130.</p>
+<p>Examples:<br>
+<b>say_team "@GI'm at position, clear (%a:%h)#def"<br>
+say_team "@RHelp to defend flag [%l]"<br>
+say_team "@REnemy flag dropped [%d]"<br>
+say_team "Need rockets, have only %r"<br>
+say_team "Need %c+130 cells to build/upgrade sentrygun!"<br>
+say_team &quot;@\@RFULL DEFENCE!@R@:Really :)&quot;<br>
+// for hunted and QW262 server<br>
+say_to_team red &quot;@\PRESIDENT: Clean the respawn area!&quot;</b></p>
+<a name=ocrana></a> 
+<h3>Ocrana pak</h3>
+<p>This pack modifies the font utilized in the console. Instead of 4 unused symbols 
+with codes of 0x86-0x89, the bright, well noticeable &quot;lamps&quot; are used. 
+They are handy to use for catching some very important game messages. However, 
+it is not worthwhile to misuse them, the messages must be actually important to 
+use them with &quot;lamps&quot;. </p>
+<p><br>
+</p>
+<h2>loc-files support</h2>
+<p>Loc-files are lists of special marks on a map created for a player to be able 
+to automatically report his/her locations to teammates. Two types of the loc-files 
+are supported: proxy (as those used by qizmo, NF-proxy, etc.) and QW262 own format. 
+The files of QW262 format are located in the <b>loc</b> directory, while proxy 
+format loc-files remain in the <b>locs</b> directory, so there should be no confusion 
+:). Limits for a quantity of loc-points are removed for both types of loc-formats. 
+</p>
+<p>Advantages and backdrops of various loc-file types: </p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>proxy</b></td>
+<td> 
+<p>wide-spread format. Looks like a list of points with coordinates (x,y,z) and 
+a message sent by %l flag. Since a point is selected by a minimum distance criteria, 
+there is a so called &quot;point-behind-the-wall&quot; problem when a message 
+does not really match your actual position. </p>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>qw262</b></td>
+<td>only QW262-supported. Represents a list of blocks-parallelepipeds :). The 
+corresponding message is printed according to your presence in a definite block. 
+Messages can be team-dependent, so that you can easily make messages like &quot;our 
+FR&quot;, &quot;enemy FR&quot;. With the comparable degree of detail these locs 
+have substantially smaller file-size, in comparison to that of proxy-locs. </td>
+</tr>
+</tbody> 
+</table>
+<p>Variables and commands referred to loc-files:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cl_loctype</b></td>
+<td>defines the default type of used loc-files. 0 - QW262 format (default), 1 
+- proxy format.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_loadlocs</b></td>
+<td>defines whether to load or not to load loc-files automatically upon the map 
+change. 0 - not to load, 1 - try to load the default-type locs, 2 - try to load 
+a loc of the other type in the case of failure.</td>
+</tr>
+<tr> 
+<td valign=top><b>cl_locnear</b></td>
+<td>QW262 loc type only command. If not set to 0 and a defined point doesn't match 
+any block - a message of a nearest block is printed.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loadloc locfile</b></td>
+<td>loads a specific loc-file (addition of .loc extention is not neccessary).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_unload</b></td>
+<td>removes current loc-file from memory</td>
+</tr>
+</tbody> 
+</table>
+<h3>Loc creation</h3>
+<p>The client has an ability to create loc-files (qw262 format only). Please note 
+that currently there are two ways for setting message of loc-block: 1. using index 
+in the &quot;msg&quot; table, 2. using direct &quot;name&quot; variant. Here are 
+some commands to edit loc-files.</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>mark point</b></td>
+<td>Establishes one of the block apexes in the current position. If this already 
+the second apex, then you are prompted for a message of this block. If you want 
+to use an already utilized message, it is sufficient to input % and the number 
+of this message. </td>
+</tr>
+<tr> 
+<td valign=top><b>mark point2</b></td>
+<td>same as previous command, but accept message directly.</td>
+</tr>
+<tr> 
+<td><b>mark break</b></td>
+<td>cancels an erroneous first apex of a block.</td>
+</tr>
+<tr> 
+<td><b>mark remove</b></td>
+<td>cancels a whole block.</td>
+</tr>
+<tr> 
+<td><b>mark status</b></td>
+<td>prints a list of all messages.</td>
+</tr>
+<tr> 
+<td><b>mark list [start [len]]</b></td>
+<td>prints a list loc blocks</td>
+</tr>
+<tr> 
+<td valign=top><b>mark save</b></td>
+<td>saves a created loc-file in &lt;gamedir&gt;/loc/&lt;mapname&gt;.loc . <i>Attention!</i> 
+The program overwrites an existing loc-file without prompting!</td>
+</tr>
+<tr> 
+<td><b>mark position</b></td>
+<td>prints your current coordinates.</td>
+</tr>
+<tr> 
+<td valign=top><b>mark center [x y]</b></td>
+<td>sets coordinates of a map center. When <b>x</b> and <b>y</b> are not defined, 
+grabs your current position. You should use this command twice to mark two symmeric 
+points and the center will be calculated automatically.</td>
+</tr>
+<tr> 
+<td valign=top><b>loc_selectblock n</b></td>
+<td>selects a block with number n. All coordinates and a message are printed in 
+console. The block itself is highlighted in GL version. To cancel this selection 
+use <b>loc_selectblock -1</b>. 
+<p></p>
+</td>
+</tr>
+<tr> 
+<td noWrap><b>loc_selectnearestblock</b></td>
+<td>selects a block nearest to the player's position.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_editblock param [value]</b></td>
+<td>If parameter equals to <b>x1, y1, z1, x2, y2 </b>or<b> z2</b>, the value is 
+added to a corresponding coordinate of a selected block. When parameter is <b>msg1</b> 
+or <b>msg2</b>, the value defines a number of a corresponding message. When parameter 
+is <b>name</b>, then block message is set directly. If <b>value</b> is not set 
+in command<b> </b>then it requested from console.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_deleteblock [start [end]] </b></td>
+<td> 
+<p>removes the indicated interval ob blocks (loc_point's) or currenly selected 
+block if the interval is not given.</p>
+</td>
+</tr>
+</tbody> 
+</table>
+<p>In short, a loc-file represents a sequence of special commands which upon loading 
+of a map create appropriate data structures. Frankly speaking, loc-files of QW262 
+format are simply executed by the <b>exec</b> command, so it is possible for player 
+to put inside loc-files some other commands. </p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td><b>loc_msg n msg</b></td>
+<td>creates message <b>msg</b> with a number of n</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_point x1 y1 z1 x2 y2 z2 <br>
+msg0 [msg1 [msg2 [msg3]]</b></td>
+<td>creates a block. First 6 parameters define coordinates of the block. Next 
+four define numbers of messages printed for this block (for teams 0, 1, 2 and 
+3). If parameters are not enough, the number of message of team 0 is utilized 
+then. </td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_point x1 y1 z1 x2 y2 z2 <br>
+&quot;name&quot;</b></td>
+<td>Variant of the previous command where message is given directly.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_mirror (x|y|xy) [team1 team2]</b></td>
+<td>automatically adds blocks by means of symmetrical mirror reflection of already 
+existing blocks according to specified axes. Meanwhile, messages for teams 0 or 
+1 (red or blue in TeamFortress) for mirrored blocks are conveniently exchanged. 
+Note that the center of a map has to be previously defined by the <b>mark_center</b> 
+command. In the case when block was created using the second variant of <b>loc_point</b> 
+command, only blocks containing substring <b>@team1</b> are reflected and this 
+substring is replaced by <b>@team2</b> for the reflected block.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>loc_granularity</b></td>
+<td>set the detail level of loc-file (real coordinates are divided by this value, 
+available range 1 - 64). Is set to 50 before loc-file loading is started for compatibility 
+reasons. Required value should be set inside loc-file or in console before loc-file 
+creation. . When <b>loc_granularity</b> is changed loc-file block and center coordinates 
+are adjusted <b>mark save</b> command saves <b>loc_granularity</b> into loc file.</td>
+</tr>
+</tbody> 
+</table>
+<p>For symmetrical maps (such as most of TeamFortress maps, by the way) it is 
+enough to mark a half (or even a quoter) of a map followed by duplicating it with 
+the <b>loc_mirror</b> command. Example:<br>
+<b>// keep2 :)<br>
+mark center 0 0<br>
+loc_point -61 44 2 -44 61 25 "@blue tower"<br>
+loc_mirror xy blue red<br>
+loc_mirror x blue yell <br>
+loc_mirror y blue green</b></p>
+<p></p>
+<p>A cvar expansion is performed in loc-file messages. This should allow to construct 
+more universal loc-files. For example it is possible to set <b>red, blue</b> variables 
+to &quot;our&quot;, &quot;enemy&quot; or even to empty string to save message 
+length. </p>
+<a name=trigger></a> 
+<h2>Triggers</h2>
+<p>In case when <b>cl_triggers</b> variable is not set to 0, the client automatically 
+executes following aliases (if they are defined):</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td><b>f_mapstart</b></td>
+<td>upon connection to a server or map change.</td>
+</tr>
+<tr> 
+<td><b>f_mapend</b></td>
+<td>upon normal ending of a map.</td>
+</tr>
+<tr> 
+<td><b>f_respawn</b></td>
+<td>upon respawn.</td>
+</tr>
+<tr> 
+<td><b>f_death</b></td>
+<td>upon death.</td>
+</tr>
+<tr> 
+<td valign=top><b>f_took</b></td>
+<td> 
+<p>upon taking a flag in TeamFortress. <i>Attention!</i> This feature doesn't 
+work on some maps (there's some code introduced for this feature to work correctly 
+on some broken maps (<b>cl_f_took_hack</b> variable , default 1): oppose1, dkeep2, 
+warehau1, wareh1r.</p>
+</td>
+</tr>
+<tr> 
+<td><b>f_drop</b></td>
+<td>upon death with a flag.</td>
+</tr>
+<tr> 
+<td valign=top><b>f_low_health</b></td>
+<td>if your health gets lower than a value defined by <b>critical_health</b> variable. 
+</td>
+</tr>
+<tr> 
+<td valign=top><b>f_low_armor</b></td>
+<td>if your armor gets lower than a value defined by <b>critical_armor</b> variable. 
+</td>
+</tr>
+<tr> 
+<td><b>f_flash</b></td>
+<td>activates in TeamFortress when hit by a <i>flash</i> grenade (old grens).</td>
+</tr>
+<tr> 
+<td><b>f_conc</b></td>
+<td>activates in TeamFortress when hit by a <i>concussion</i> grenade (old grens).</td>
+</tr>
+<tr> 
+<td><b>f_bonusflash</b></td>
+<td> 
+<p>when grabbing something (e.g. backpacks, medkits, power-ups).</p>
+</td>
+</tr>
+<tr> 
+<td><b>f_weapon_change</b></td>
+<td> activates upon weapon change (including reload in TeamFortress).</td>
+</tr>
+<tr> 
+<td><b>f_got_ammo</b></td>
+<td>when grabbing ammunition.</td>
+</tr>
+<tr> 
+<td><b>f_input_done</b></td>
+<td>when commands <b>input, messagemode*</b> are finished.</td>
+</tr>
+</tbody> 
+</table>
+<p>Example:<br>
+<b>alias f_death say_team "@YI'm dead [%d]#def"</b></p>
+<p> It is possible to create triggers reacting at userinfo change:</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td  valign="top"><b>cl_setinfo_triggers</b></td>
+<td>one can put the names of variables (separated by spaces) which change shoul 
+be detected into <b>cl_setinfo_triggers</b> variable. For example, in case of 
+change of a variable &quot;varname&quot; during the game, an alias <b>f_setinfo_</b><i><b>varname</b></i> 
+will be activated and three parameters: new value of a &quot;varname&quot; variable, 
+name of a player who changed it and his id. Such aliases are called setinfo triggers 
+- they react automatically on some changes in the game. In TeamFortress triggers 
+can not be activated for skin, topcolor and bottomcolor changes of enemy team's 
+players.</td>
+</tr>
+</tbody> 
+</table>
+<p>Example:<br>
+<b>cl_setinfo_triggers &quot;rate&quot;<br>
+alias f_setinfo_rate &quot;if %2 &gt; 5000 then say %1: your rate is set to %2. 
+Decrease rate to 5000!&quot;</b></p>
+<a name=regexp></a> 
+<h2>regexp triggers</h2>
+<p>A new possibility is built-in to automatically carry out some actions (aliases) 
+upon detecting a specific message in console or centerprint. </p>
+<p><b>regexp</b> defines which messages (or whatever) will activate a trigger. 
+The client uses the <a href="ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/">PCRE</a> 
+library (Perl-compatible regular expression library). You can find information 
+how to write regexps in the PCRE's documentation.</p>
+<p></p>
+<p>A trigger is activated as soon as a string defined in this regexp is detected. 
+At the same time a part of this string (which caused activation of a trigger) 
+is put into a <b>@0</b> variable. Variable parts of regexp are put into <b>@1, 
+@2 ... @9</b> variables. After that an alias (which name coinsides with the a 
+name of the trigger) is executed. Tricky, huh? ;)</p>
+<p> Commands related to regexp triggers:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>re_trigger [rt_name [regexp]]</b></td>
+<td>when used w/o parameter, prints a list of all triggers; when regexp is not 
+defined prints options set for <b>rt_name </b>trigger; otherwise creates or changes 
+<b>rt_name</b> trigger. 
+<p></p>
+</td>
+</tr>
+<tr> 
+<td noWrap><b>re_trigger_options rt_name option_list</b></td>
+<td>changes options for a corresponding trigger</td>
+</tr>
+<tr> 
+<td><b>re_trigger_delete rt_name</b></td>
+<td>deletes the corresponding trigger.</td>
+</tr>
+<tr> 
+<td valign=top><b>re_trigger_enable rt_name1 [rt_name2...]</b></td>
+<td>enables activation of one or more triggers.</td>
+</tr>
+<tr> 
+<td valign=top><b>re_trigger_disable rt_name1 [rt_name2...]</b></td>
+<td>disables activation of one or more triggers.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>re_trigger_match &lt;trigger_name&gt; &lt;string&gt;</b></td>
+<td valign=top>allows to direct a <b>&lt;string&gt;</b> to a trigger <b>&lt;trigger_name&gt;</b>. 
+If this string match regexp, then a corresponding alias is activated.</td>
+</tr>
+</tbody> 
+</table>
+<p>A <b>re_trigger_options</b> command has the following options:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>mask value</b></td>
+<td> 
+<p><b>value</b> represents a bit mask which determines which types of messages 
+can cause activation of a trigger:</p>
+<ul>
+<li> 1 - pickup messages 
+<li>2 - death messages 
+<li>4 - critical messages (most of TeamFortress messages) 
+<li>8 - chat 
+<li>16 - centerprint 
+<li>32 - echo command output 
+<li>64 - other strings printed in the console </li>
+</ul>
+<p> The default mask for any trigger equals 31.</p>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>interval value</b></td>
+<td>sets a minimal interval of trigger activation (in seconds). If a second activation 
+happened earlier than the <b>value</b> time - it is ignored. Default is 0.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>final</b></td>
+<td>if activation of this trigger happened, the remaining (in the list of triggers) 
+triggers are not <br>
+checked. Triggers are checked in a reversed order of their definition.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>notfinal</b></td>
+<td>activation of such trigger doesn't stop the checking of other triggers (default).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>remove</b></td>
+<td>a string which caused activation of a trigger is not printed on the screen.</td>
+</tr>
+<tr> 
+<td valign=top noWrap> 
+<p><b>noremove</b></p>
+</td>
+<td>a string which caused activation of a trigger is printed on the screen (default).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>nolog</b></td>
+<td>a string which caused activation of a trigger is not added to a log-file.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>log</b></td>
+<td>a string which caused activation of a trigger is added to a log-file (default). 
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>noaction</b></td>
+<td> 
+<p>a corresponding alias is not executed upon a trigger activation. There is no 
+need to exec alias if all you need is to use <b>remove</b> option :)</p>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>action</b></td>
+<td>a corresponding alias is executed upon a trigger activation (default).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>enable</b></td>
+<td>allows activation of a trigger (default).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>disable</b></td>
+<td>prohibits activation of a trigger.</td>
+</tr>
+</tbody> 
+</table>
+<p>In order to bring down possible cheating the list of commands avaliable in 
+trigger-activated aliases was specially limited. It is allowed to use triggers 
+for launching config files, cvar operatons, alias execution and the following 
+commands:</p>
+<blockquote> 
+<p><b>play playvol stopsound say say_team say_id sayid say_to_team echo alias 
+unalias re_trigger re_trigger_options re_trigger_delete re_trigger_enable re_trigger_disable 
+re_trigger_match hud_add hud_position hud_width hud_remove hud_bg hud_enable hud_disable 
+hud_move hud_bringtofront bind record stop register unregister set (and all its 
+variants) inc toggle rcon users user if/then/else if_exists exec</b></p>
+</blockquote>
+<p>While in TeamFortress you are permitted to use also an <b>impulse</b> command 
+with following parameters: 23(<b>flaginfo</b>), 99(<b>changeclass</b>), 101-109(changeclass 
+commands), 135(<b>inv</b>), 144 (<b>showclasses</b>), 145(<b>showscores</b>).</p>
+<p>Examples:<br>
+// Setting detpack<b><br>
+re_trigger dp "^Setting detpack for (.+) seconds"<br>
+re_trigger_options dp final remove mask 4<br>
+alias dp "say_team Detpack for @1 seconds at %l"<br>
+</b></p>
+<p>// removes spam from inv command output<b><br>
+re_trigger inv_spam "(^You\Dre in team|\w+ armor|^Skin \:|^Colors \:|^Scanner|^$)" 
+<br>
+re_trigger_options inv_spam final remove nolog mask 4 noaction<br>
+</b></p>
+<p>// result of id command is put into @last_id_nick cvar<b><br>
+register last_id_nick<br>
+re_trigger postid "(?m)\n\n\n\n(.+)\n(Friendly)"<br>
+re_trigger_options postid final mask 16<br>
+alias postid "last_id_nick @1"<br>
+</b></p>
+<p><b>Important note!</b><br>
+Triggers would not work for debugging messages like snd_show 1. In Team Fortress 
+triggers would not work for commands <b>showloc</b> and <b>id</b> (of enemy), 
+and for message of your dispencer being used by enemies.</p>
+<p>Commands <b>alias, unalias, viewalias, cmdlist, cvarlist, unregister, hud_list, 
+re_trigger, re_trigger_enable, re_trigger_disable, re_trigger_delete, hud_enable, 
+hud_disable, hud_move, hud_bg hud_width and hud_remove </b>understand regexps 
+as parameters. Corresponding operation will work on objects that have name matching 
+the regexp. Example:<br>
+<b>//list of variables starting with vid_<br>
+cvarlist &quot;^vid_&quot;<br>
+//removing all variables ending with _test<br>
+unregister &quot;_test$&quot;<br>
+//list of aliases containing gren1 or gren2 in name<br>
+alias &quot;gren(1|2)&quot;</b> </p>
+<a name=hud></a> 
+<h2>Customizable hud</h2>
+<p>A user now can easily configure on-screen info he or she wants to be displayed 
+during the gameplay. Hud consists of separate elements any of which can be independently 
+dispatched in any position of the screen .</p>
+<p>Hud commands are:</p>
+<table cellspacing=0 cellpadding=3 border=0 width="100%">
+<tbody> 
+<tr> 
+<td valign=top><b>cl_hud</b></td>
+<td>when set to 0 (1 by default), all huds won't be shown.</td>
+</tr>
+<tr> 
+<td valign=top><b>hud_add hud_name type param</b></td>
+<td> 
+<p>creates or changes a hud element with <b>hud_name</b>; the following types 
+of hud elements are avaliable: 
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top><b>cvar</b></td>
+<td>a value of a variable is displayed; in this case <b>param</b> must be a name 
+of this variable.</td>
+</tr>
+<tr> 
+<td valign=top><b>str</b></td>
+<td>a string defined by <b>param</b> is displayed; Cvar and %macros expansion 
+is performed every time element is shown</td>
+</tr>
+<tr> 
+<td valign=top><b>std</b></td>
+<td> 
+<p>one of the standard hud elements is displayed; in this case <b>param</b> can 
+be:</p>
+<ul>
+<li><b>fps</b> - fps counter 
+<li><b>lag</b> - lag meter 
+<li><b>clock</b> - watches 
+<li><b>speed</b> - speed meter (don't drink and drive afterwards! :)</li>
+</ul>
+</td>
+</tr>
+</tbody> 
+</table>
+<b>hud_add</b> with a a name of already existing element does not make it visible 
+if it was disabled before with a command <b>hud_disable</b>.</td>
+</tr>
+<tr> 
+<td valign=top><b>hud_position hud_name pos x y</b></td>
+<td> indicates position of a hud element on the screen; pos defines a position 
+of a screen point, starting from that the x and y deviations (measured in symbols) 
+are counted: 
+<ol>
+<li>upper left corner 
+<li>upper rightcorner 
+<li>lower right corner 
+<li>lower left corner 
+<li>upper central position 
+<li>lower central position.</li>
+</ol>
+</td>
+</tr>
+<tr> 
+<td valign=top><b>hud_width hud_name width</b></td>
+<td> forces a hud element width and cuts undesired space or adds it when needed. 
+The range of <b>width</b> is 0-128, the value 0 (default) cancels the width forcing.</td>
+</tr>
+<tr> 
+<td valign=top><b>hud_bg hud_name bg_color</b></td>
+<td>defines a color of the hud element backgdround; 0 - transparent (default).</td>
+</tr>
+<tr> 
+<td valign=top><b>hud_move hud_name dx dy</b></td>
+<td>moves a hud element; <b>dx</b> and <b>dy</b> deviations are measured in symbols.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>hud_enable hud_name [hud_name2...]</b></td>
+<td>allows to display one or more hud elements.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>hud_disable hud_name [hud_name2...]</b></td>
+<td>prohibits to display one or more hud elements.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>hud_remove hud_name</b></td>
+<td>kills a hud element.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>hud_list</b></td>
+<td>prints a list of hud elements.</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>input cvar x y len [bg]</b></td>
+<td>allows to input text into <b>cvar</b> variable. <b>x</b> and <b>y</b> give 
+the position of input field relative to upper left corner. <b>len</b> set the 
+length of input field. <b>bg</b> sets the background (default 0 - transparent). 
+Upon the end of data input ( ENTER or ESC are pressed) <b>f_input_done</b> trigger 
+is called.</td>
+</tr>
+</tbody> 
+</table>
+<p>Examples:</p>
+<p><b>// fps counter in lower right corner like show_fps 1<br>
+hud_add fps std fps<br>
+hud_position fps 3 0 0</b></p>
+<p><b>// class cvar above lower left corner<br>
+hud_add class cvar class<br>
+hud_position class 4 0 3</b></p>
+<p><b>// mapname and time at the lower central position <br>
+hud_add test str "@mapname-@time"<br>
+hud_position test 6 0 0</b><br>
+</p>
+<p> <b>// turning huds on and off <br>
+alias +scores &quot;cl_hud 0;+showscores&quot;<br>
+alias -scores &quot;cl_hud 1;-showscores&quot; <br>
+bind TAB +scores </b></p>
+<a name=qw262></a> 
+<h2>QW262</h2>
+<p>While playing on a QW262 server clients gain some extra abilities:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td colspan=2><b>say_id (id | uid) text</b></td>
+<td>send a message to the player with indicated <b>id</b> or <b>uid</b>.</td>
+</tr>
+<tr> 
+<td valign=top noWrap colspan=2><b>sayid text</b></td>
+<td>send a message to one special player (his <b>id</b> or <b>uid</b> need to 
+be preliminarily put into <b>uid</b> variable).</td>
+</tr>
+<tr> 
+<td valign=top noWrap colspan=2><b>messagemode3</b></td>
+<td>allows you to input a message in the console and sends it via <b>sayid</b>.</td>
+</tr>
+<tr> 
+<td valign=top noWrap colspan=2><b>say_to_team team text</b></td>
+<td>send a message to an indicated team. Handy on HUNTED or BORDER TF maps.</td>
+</tr>
+</tbody> 
+</table>
+<p>Example:</p>
+<p><b>uid lamer<br>
+sayid "You are LAME!"<br>
+// hunted<br>
+say_to_team red "Please remove sniper near respawn"</b> </p>
+<h3>What is different in QW262 lite server from standard qwsv 2.30</h3>
+<p>QW262 server for Win32 automatically sets itself as a high priority task (HIGH_PRIORITY_CLASS). 
+This is necessary for avoiding high PL when playing on localhost under Windows9x. 
+If you desire to turn this feature off, launch the server with <b>-nopriority</b> 
+command-line parameter. By the way, the reason for high ping (when QW2.30 server 
+is running under Windows9x) was eliminated. Server uses 32 Megabytes of memory 
+by default.</p>
+<p>In order to reduce network traffic server performs <a href="#filter">message 
+filtering</a>, according to <b>filter</b> variables set by players in userinfo. 
+</p>
+<p>Server includes support for TeamFortress flash grenade that can not be disabled 
+by cheaters. If TeamFortress QuakeC code is modified accordingly then flashed 
+client won't get entities updates from server, so players and other objects will 
+dissapear for some time :)</p>
+<p>Server has several catgories of <b>rcon</b>. Those who have ordinary <b>rcon_password</b> 
+can not change several server settings (<b>serverinfo, localinfo, gamedir</b>), 
+use <b>rcon say</b> and turn off <b>rcon logging</b>. Administrator password that 
+allows to use any commands is set by <b>master_password</b> command. This command 
+is accepted only from <b>server.cfg</b> </p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tbody> 
+<tr> 
+<td valign=top noWrap><b>sys_sleep</b></td>
+<td>win32 version only. Time interval (in milliseconds) during which a server 
+sleeps each tick allowing other programts to execute. It's better if you don't 
+manipulate this parameter without full understanding of it :) (default 8 for Win9x 
+and 0 for NT4/Win2000/WinXP).</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>rcon kick</b></td>
+<td>when somebody is kicked from server - all remaining players will get a message 
+with a name of a kicker :)</td>
+</tr>
+<tr> 
+<td valign=top><b>sv_nailhack</b></td>
+<td>when set to 1, changes the nails data compression algorithm which decreases 
+network traffic. 0 by default.</td>
+</tr>
+<tr> 
+<td valign=top><b>sv_maxrate</b></td>
+<td>client <b>rate</b> higher than indicated is not allowed. When a client's <b>rate</b> 
+gets exceeded, it is forced down to <b>sv_maxrate</b>. Default is 10000. Maximum 
+value: 15000.</td>
+</tr>
+<tr> 
+<td valign=top><b>sv_loadentfiles</b></td>
+<td>If set to 1, during map loading server first tries to load entities from file 
+mapname.ent in the <b>maps</b> directory. If the file does not exist entities 
+are taken from mapname.bsp (default 0).</td>
+</tr>
+<tr> 
+<td valign=top><b>sv_announcercon</b> </td>
+<td>If set to 1, server announce in console every rcon command (default 0).</td>
+</tr>
+<tr> 
+<td valign=top><b>pm_jumpfix</b></td>
+<td>if set to 1, turns on jump prediction fix that allows better bunnyhopping. 
+However it slightly changes physics (default 0).</td>
+</tr>
+<tr> 
+<td valign=top><b>pm_bunnyspeedcap</b></td>
+<td>limits the speed that can be gained using bunnyhopping. It is a coefficient 
+to the maximum allowed speed. So soldier in Teamfortress (speed 240) with <b>pm_bunnyspeedcap 
+1.5</b> can not bunnyhop faster than 240*1.5=360. This limitation does not affect 
+grenade and rocket-jumps. Default - 0 (no limitation).</td>
+</tr>
+<tr> 
+<td valign=top><b>logfile</b></td>
+<td>Really writes log :)</td>
+</tr>
+<tr> 
+<td valign=top><b>logerrors</b></td>
+<td>Special log file is created (&lt;gamedir&gt;/qerror.log), that will contain 
+error messages printed just before server crash. This log can be disabled using 
+the same command for the second time. </td>
+</tr>
+<tr> 
+<td valign=top><b>logrcon</b></td>
+<td>Special log file is created (&lt;gamedir&gt;/rcon.log), that contains all 
+rcon usage info (including IP and nick of the rconer). This log can be disabled 
+using the same command for the second time. </td>
+</tr>
+<tr> 
+<td valign=top><b>admin</b></td>
+<td>Player that have sent this commad will be informed about rcon usage. This 
+mode is disabled using <b>admin off</b> command.</td>
+</tr>
+</tbody> 
+</table>
+<h3>Server-side demos support (Multi View Demos: MVD)</h3>
+<p>It is possible to write server-side demo. It contain all players actions. <i>Attention</i>: 
+maximum number of entities tha coul be written into MVD demo is increased up to 
+300 (QW Extended aka mvdsv - 196). Some TF-maps have a lot of entities and some 
+of them simply are not recorded in the demo. If some demo really contain more 
+than 196 entities, it will be played correctly only by QW262 client.</p>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr> 
+<td valign="top" nowrap><b>record demoname</b></td>
+<td>Starts demo recording on server<b> </b>with name <b>demoname</b>. Demo is 
+written to &lt;quake_dir&gt;/&lt;gamedir&gt;/demos directory. <b>serverinfo</b> 
+shows variable <b>serverdemo</b> with the value <b>demoname</b> during demo recording.</td>
+</tr>
+<tr> 
+<td valign="top"><b>stop</b></td>
+<td>Stops demo recording. It is also stopped automatically at the end of the current 
+map.</td>
+</tr>
+<tr> 
+<td valign="top"><b>demolist</b></td>
+<td>List all demos that exist on server with their size and informs about available 
+free space.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>rmdemo demoname<br>
+rmdemo *token<br>
+rmdemo *</b></td>
+<td> 
+<p>Removes demos from server: particular, with <b>demoname</b> name,<br>
+all, containing <b>token</b> in name,<br>
+all.</p>
+</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>rmdemon n</b></td>
+<td>Remove demo from server by number.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demofps</b></td>
+<td>fps for the demo recording. Default - 20 (it is enough as interpolation is 
+made during MVD demo playback).</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demopings</b></td>
+<td>Interval in seconds for writing player's pings into demo. Default - 3.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demomaxsize</b></td>
+<td>Maximum allowed demo size in Kilobytes. Default - 20480 (enough for 45 minutes 
+6x6 TF match).</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demomaxdirsize</b></td>
+<td>Maximum allowed size of demos directory in Kilobytes. Default - 204800.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demonovis</b></td>
+<td>if set to 1 (default) demo will contain all entities, even that are not visible 
+to any live player.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demouseñache</b></td>
+<td>if set to 1, demo is written through a buffer in memory (default - 0).</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>-democache size</b></td>
+<td>command line parameter setting the <b>size</b> of buffer for demo recording 
+in Kilobytes.</td>
+</tr>
+<tr> 
+<td valign="top" nowrap><b>sv_demoñachesize</b></td>
+<td>(read-only) shows the size of demo recording buffer.</td>
+</tr>
+</table>
+<h3>Differences of the full version of server</h3>
+<p>QW262 server in full version works on the changed protocol. Sources of the 
+protocol are closed, so only a QW262 full version clients can connect to such 
+server. All proxies with built-in cheats are also out of the game. By default 
+the client is working on a QW 2.30 compatible protocol. To connect a QW262 full 
+server one has to use a <b>version</b> command in the console or launch the client 
+with a <b>-ver262</b> command line parameter.</p>
+<p>QW262 full version server has an ability to check players' models and skins 
+to prevent them from cheating. Clients with wrong models and skins are disconnected. 
+Here are corresponding server commands:</p>
+<table cellspacing=0 cellpadding=3 width="100%" border=0>
+<tr> 
+<td valign=top><b>allow_old_clients</b></td>
+<td>when set to 1 (0 by default), allows protocol 2.30 connections to a 262full 
+server.</td>
+</tr>
+<tbody> 
+<tr> 
+<td valign=top><b>addskin skin</b></td>
+<td>adds a skin.pcx to the list of skins to check. Up to 20 different skins can 
+be checked</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>addmodel model</b></td>
+<td>adds a model.mdl to the list of skins to check. Up to 20 different models 
+can be checked</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>removeskins</b></td>
+<td> 
+<p>cleans the list of skins to check.</p>
+</td>
+</tr>
+<tr> 
+<td valign=top noWrap><b>removemodels</b></td>
+<td>cleans the list of models to check.</td>
+</tr>
+</tbody> 
+</table>
+<p>It is possible to automatically make a screenshot and download it from any 
+client to check him for cheating.</p>
+<h2>Who wrote all this madness?! ;)</h2>
+<p>Original sources (c) <a target=_top href="http://www.idsoftware.com/">Id software</a><br>
+Coding of following people was used:<br>
+<u>-=MD=-</u> (Alexander Pouchkov), <br>
+<u>Tonik</u> (Anton Gavrilov, tonik@vipmail.ru, <a target=_top href="http://zquake.frag.ru">ZQuake</a>), 
+<br>
+<u>HighlandeR</u> (Bartlomiej Rychtarski , highlander@gracz.net, <a target=_top href="http://www.wsb.poznan.pl/~pawel/q/q/ktpro/develop/">QW 
+Extended</a>),<br>
+<u>Sergio</u> (k_sergio@nm.ru)<br>
+<u>5AT0H</u> (5AT0H@aport.ru)<br>
+<u>don</u> (don@sztaki.hu, <a target=_top href="http://rc.sch.bme.hu/surmoclient/">surmoclient</a>)<br>
+<u>Vic</u> (Victor Luchits, vic@captured.com)<br>
+<u>fuh</u> (A. Nourai, fuhquake@hotmail.com, <a target=_top href="http://www.fuhquake.net">FuhQuake</a>.<br>
+<u>Azazello</u> , <a target=_top href="http://mqwcl.qhlan.org/">MQWCL</a></p>
+<p>Currently, QW262 is being developed by <u>[2WP]BorisU</u><br>
+(Boris Usievich, borisu@newmail.ru).</p>
+<h2>WAZZUP??</h2>
+<p>To download the most fresh version, complain about bugs, grab some scripts 
+and ask for implementation of new features - proceed to <a target=_top href="http://qw262.da.ru"> 
+QW262 homepage</a>.</p>
+<p>Partial manual translation by Bruttoid aka Baxta (brutt01d@by.ru).<br>
+&quot;This manual could be translated to english only with help of Grazer Spatzen 
+music :))&quot;</p>
+<p class=credits>Documentation is last updated 
+<!-- #BeginDate format:Ge1a -->29.12.2002 10:16 PM<!-- #EndDate -->
+</p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+Run "./configure --prefix=local-install-path".  The default value for --prefix
+parameter is /usr/local.
+
+If you are on FreeBSD, you may want to use kqueue(2) I/O instead of select(2),
+add --enable-kqueue to ./configure parameters.
+
+When configure is done, "make" or "make install" will build the stuff.
+
+"make install" also installs the server to $prefix/sbin and clients to
+$prefix/bin.
+
+ATTENTION: You must use GNU make for building QW. On Linux it is just make, on
+           other systems it might be gmake.

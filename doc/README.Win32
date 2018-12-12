@@ -1,0 +1,7 @@
+There is MSVC 6.0 project that in the source directory. Scitech and DirectX SDK 
+libs and headers are not included as they can be taken from the original Quake 
+sources or from Microsoft. The libpng, zlib, libjpeg libraries and 
+corresponding headers can be downloaded here: http://2wp.vei.ru/files/libs.rar
+Put the content of the archive into source/lib directory.
+
+MinGW and Cygwin can also be used. Run ./configure and make.
