@@ -76,13 +76,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define ULONG_PTR	unsigned long *
 #ifndef __GNUC__
-typedef struct {
-	DWORD	vkCode;
-	DWORD	scanCode;
-	DWORD	flags;
-	DWORD	time;
-	ULONG_PTR dwExtraInfo;
-} *PKBDLLHOOKSTRUCT;
+//typedef struct {
+//	DWORD	vkCode;
+//	DWORD	scanCode;
+//	DWORD	flags;
+//	DWORD	time;
+//	ULONG_PTR dwExtraInfo;
+//} *PKBDLLHOOKSTRUCT;
 #endif
 // <-- Fuh
 #ifdef __CYGWIN__

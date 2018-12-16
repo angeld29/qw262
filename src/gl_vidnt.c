@@ -294,7 +294,7 @@ qboolean VID_SetFullDIBMode (int modenum)
 				gdevmode.dmFields |= DM_DISPLAYFREQUENCY;
 			}
 			else
-				Sys_Error ("VID_Init: you must specify vertcal frequency in Hz after -freq");
+				Sys_Error ("VID_Init: you must specify vertical frequency in Hz after -freq");
 		}
 		// kazik <--
 
@@ -1258,14 +1258,14 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 	int		j, bpp, done;
 	BOOL	stat;
 
-// enumerate >8 bpp modes
+// enumerate 32 bpp modes
 	originalnummodes = nummodes;
 	modenum = 0;
 
 	do {
 		stat = EnumDisplaySettings (NULL, modenum, &devmode);
 
-		if ((devmode.dmBitsPerPel >= 15) &&
+		if ((devmode.dmBitsPerPel == 32) &&
 			(devmode.dmPelsWidth <= MAXWIDTH) &&
 			(devmode.dmPelsHeight <= MAXHEIGHT) &&
 			(nummodes < MAX_MODE_LIST))
@@ -1274,8 +1274,8 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 							   DM_PELSWIDTH |
 							   DM_PELSHEIGHT;
 
-			if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
-					DISP_CHANGE_SUCCESSFUL)
+	//		if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
+	//				DISP_CHANGE_SUCCESSFUL)
 			{
 				modelist[nummodes].type = MS_FULLDIB;
 				modelist[nummodes].width = devmode.dmPelsWidth;
@@ -1321,60 +1321,60 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 	} while (stat);
 
 // see if there are any low-res modes that aren't being reported
-	numlowresmodes = sizeof(lowresmodes) / sizeof(lowresmodes[0]);
-	bpp = 16;
-	done = 0;
+	//numlowresmodes = sizeof(lowresmodes) / sizeof(lowresmodes[0]);
+	//bpp = 16;
+	//done = 0;
 
-	do {
-		for (j=0 ; (j<numlowresmodes) && (nummodes < MAX_MODE_LIST) ; j++) {
-			devmode.dmBitsPerPel = bpp;
-			devmode.dmPelsWidth = lowresmodes[j].width;
-			devmode.dmPelsHeight = lowresmodes[j].height;
-			devmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	//do {
+	//	for (j=0 ; (j<numlowresmodes) && (nummodes < MAX_MODE_LIST) ; j++) {
+	//		devmode.dmBitsPerPel = bpp;
+	//		devmode.dmPelsWidth = lowresmodes[j].width;
+	//		devmode.dmPelsHeight = lowresmodes[j].height;
+	//		devmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-			if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
-					DISP_CHANGE_SUCCESSFUL) {
-				modelist[nummodes].type = MS_FULLDIB;
-				modelist[nummodes].width = devmode.dmPelsWidth;
-				modelist[nummodes].height = devmode.dmPelsHeight;
-				modelist[nummodes].modenum = 0;
-				modelist[nummodes].halfscreen = 0;
-				modelist[nummodes].dib = 1;
-				modelist[nummodes].fullscreen = 1;
-				modelist[nummodes].bpp = devmode.dmBitsPerPel;
-				sprintf (modelist[nummodes].modedesc, "%dx%dx%d",
-						 devmode.dmPelsWidth, devmode.dmPelsHeight,
-						 devmode.dmBitsPerPel);
+	//		if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
+	//				DISP_CHANGE_SUCCESSFUL) {
+	//			modelist[nummodes].type = MS_FULLDIB;
+	//			modelist[nummodes].width = devmode.dmPelsWidth;
+	//			modelist[nummodes].height = devmode.dmPelsHeight;
+	//			modelist[nummodes].modenum = 0;
+	//			modelist[nummodes].halfscreen = 0;
+	//			modelist[nummodes].dib = 1;
+	//			modelist[nummodes].fullscreen = 1;
+	//			modelist[nummodes].bpp = devmode.dmBitsPerPel;
+	//			sprintf (modelist[nummodes].modedesc, "%dx%dx%d",
+	//					 devmode.dmPelsWidth, devmode.dmPelsHeight,
+	//					 devmode.dmBitsPerPel);
 
-				for (i=originalnummodes, existingmode = 0 ; i<nummodes ; i++) {
-					if ((modelist[nummodes].width == modelist[i].width)   &&
-						(modelist[nummodes].height == modelist[i].height) &&
-						(modelist[nummodes].bpp == modelist[i].bpp))
-					{
-						existingmode = 1;
-						break;
-					}
-				}
+	//			for (i=originalnummodes, existingmode = 0 ; i<nummodes ; i++) {
+	//				if ((modelist[nummodes].width == modelist[i].width)   &&
+	//					(modelist[nummodes].height == modelist[i].height) &&
+	//					(modelist[nummodes].bpp == modelist[i].bpp))
+	//				{
+	//					existingmode = 1;
+	//					break;
+	//				}
+	//			}
 
-				if (!existingmode)
-					nummodes++;
-			}
-		}
-		switch (bpp)
-		{
-			case 16:
-				bpp = 32;
-				break;
+	//			if (!existingmode)
+	//				nummodes++;
+	//		}
+	//	}
+	//	switch (bpp)
+	//	{
+	//		case 16:
+	//			bpp = 32;
+	//			break;
 
-			case 32:
-				bpp = 24;
-				break;
+	//		case 32:
+	//			bpp = 24;
+	//			break;
 
-			case 24:
-				done = 1;
-				break;
-		}
-	} while (!done);
+	//		case 24:
+	//			done = 1;
+	//			break;
+	//	}
+	//} while (!done);
 
 	if (nummodes == originalnummodes)
 		Con_SafePrintf ("No fullscreen DIB modes found\n");
@@ -1471,16 +1471,19 @@ void	VID_Init (unsigned char *palette)
 					width = 640;
 				}
 
-				if (COM_CheckParm("-bpp"))
-				{
-					bpp = Q_atoi(com_argv[COM_CheckParm("-bpp")+1]);
-					findbpp = 0;
-				}
-				else
-				{
-					bpp = 15;
-					findbpp = 1;
-				}
+				//if (COM_CheckParm("-bpp"))
+				//{
+				//	bpp = Q_atoi(com_argv[COM_CheckParm("-bpp")+1]);
+				//	findbpp = 0;
+				//}
+				//else
+				//{
+				//	bpp = 15;
+				//	findbpp = 1;
+				//}
+
+				bpp = 32;
+				findbpp = 0;
 
 				if (COM_CheckParm("-height"))
 					height = Q_atoi(com_argv[COM_CheckParm("-height")+1]);
