@@ -178,7 +178,7 @@ void Cbuf_AddTextEx (cbuf_t *cbuf, char *text)
 	// Calculate optimal position of text in buffer
 	new_start = (MAXCMDBUF - new_bufsize) / 2;
 
-	memcpy (cbuf->text_buf + new_start, cbuf->text_buf + cbuf->text_start, cbuf->text_end-cbuf->text_start);
+	memmove (cbuf->text_buf + new_start, cbuf->text_buf + cbuf->text_start, cbuf->text_end-cbuf->text_start);
 	memcpy (cbuf->text_buf + new_start + cbuf->text_end-cbuf->text_start, text, len);
 	cbuf->text_start = new_start;
 	cbuf->text_end = cbuf->text_start + new_bufsize;
