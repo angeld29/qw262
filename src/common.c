@@ -2130,7 +2130,7 @@ void Info_RemoveKey (char *s, char *key)
 
 		if (!strcmp (key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			strmove (start, s);	// remove this part
 			return;
 		}
 
