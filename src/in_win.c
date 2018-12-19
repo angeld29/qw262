@@ -130,8 +130,9 @@ cvar_t	m_rate		= {"m_rate",	"125"};
 cvar_t	m_showrate	= {"m_showrate", "0"};
 qboolean use_m_smooth;
 HANDLE m_event;
+HANDLE m_mutex; // BorisU
 
-#define	 M_HIST_SIZE  64
+#define	 M_HIST_SIZE  256
 #define	 M_HIST_MASK  (M_HIST_SIZE - 1)
 
 typedef	struct msnap_s {
@@ -183,6 +184,7 @@ DWORD WINAPI IN_SMouseProc(void * lpParameter)
 
 			time = Sys_DoubleTime();
 
+			ret = WaitForSingleObject(m_mutex, INFINITE);
 			while (1) {
 				DWORD dwElements = 1;
 
@@ -222,9 +224,9 @@ DWORD WINAPI IN_SMouseProc(void * lpParameter)
 								wheel_up_count++;
 						}
 						break;
-				
 				}
 			}
+			ReleaseMutex(m_mutex);
 		}
 	}
 }
@@ -235,6 +237,7 @@ void IN_SMouseRead(int *mx, int *my)
 	int				x = 0, y = 0;
 	double			t1, t2, maxtime, mintime;
 	HRESULT			hr;
+	DWORD			ret;
 
 	// acquire device
 	if (!dinput_acquired) {
@@ -242,6 +245,8 @@ void IN_SMouseRead(int *mx, int *my)
 		dinput_acquired = true;
 	}
 	
+	ret = WaitForSingleObject(m_mutex, INFINITE);
+
 	// gather data from last read seq to now
 	for ( ; m_history_x_rseq < m_history_x_wseq; m_history_x_rseq++)
 		x += m_history_x[m_history_x_rseq&M_HIST_MASK].data;
@@ -302,6 +307,7 @@ void IN_SMouseRead(int *mx, int *my)
 		if (t2 - t1 < maxtime)
 			acc_y = vel * (t2 - t1);
 	}
+	ReleaseMutex(m_mutex);
 
 	x += acc_x;
 	y += acc_y;
@@ -338,11 +344,20 @@ void IN_SMouseInit(void)
 
 	// create event	object
 	m_event = CreateEvent(
-				NULL,		   // NULL secutity	attributes
+				NULL,		  // NULL security	attributes
 				FALSE,		  // automatic reset
 				FALSE,		  // initial state = nonsignaled
 				NULL);		  // NULL name
-	if (m_event == NULL)
+
+	// create mutex	object
+	m_mutex = CreateMutex(
+		NULL,		  // NULL security	attributes
+		FALSE,		  // No initial ownership
+		NULL);		  // NULL name
+
+
+
+	if (m_event == NULL || m_mutex == NULL)
 		return;
 
 	// enable di notification
