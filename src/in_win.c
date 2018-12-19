@@ -142,19 +142,27 @@ typedef	struct msnap_s {
 
 msnap_t	 m_history_x[M_HIST_SIZE];	// history
 msnap_t	 m_history_y[M_HIST_SIZE];
+unsigned int m_history_b[M_HIST_SIZE]; // could be smaller
 int		 m_history_x_wseq = 0;		// write sequence
 int		 m_history_y_wseq = 0;
+int		 m_history_b_wseq = 0;
 int		 m_history_x_rseq = 0;		// read	sequence
 int		 m_history_y_rseq = 0;
+int		 m_history_b_rseq = 0;
 int		 wheel_up_count   = 0;
 int		 wheel_dn_count   = 0;
 
 #define INPUT_CASE_DIMOFS_BUTTON(NUM)	\
 	case (DIMOFS_BUTTON0 + NUM):		\
-		if (od.dwData & 0x80)			\
+		if (od.dwData & 0x80) {			\
 			mstate_di |= (1 << NUM);	\
-		else							\
+			m_history_b[m_history_b_wseq & M_HIST_MASK] = mstate_di;	\
+			m_history_b_wseq++;			\
+		} else {						\
 			mstate_di &= ~(1 << NUM);	\
+			m_history_b[m_history_b_wseq & M_HIST_MASK] = mstate_di;	\
+			m_history_b_wseq++;			\
+		}								\
 		break;
 
 #define INPUT_CASE_DINPUT_MOUSE_BUTTONS	\
@@ -214,7 +222,6 @@ DWORD WINAPI IN_SMouseProc(void * lpParameter)
 						break;
 
 					INPUT_CASE_DINPUT_MOUSE_BUTTONS;
-
 				
 					case DIMOFS_Z:
 						if (m_forcewheel.value) {
@@ -928,7 +935,12 @@ void IN_MouseMove (usercmd_t *cmd)
 		}
 
 		// perform button actions
-		IN_MouseButtons (mstate_di);
+//		IN_MouseButtons (mstate_di);
+		WaitForSingleObject(m_mutex, INFINITE);
+		for (; m_history_b_rseq < m_history_b_wseq; m_history_b_rseq++)
+			IN_MouseButtons(m_history_b[m_history_b_rseq&M_HIST_MASK]);
+		ReleaseMutex(m_mutex);
+
 	} else {
 		GetCursorPos (&current_pos);
 		mx = current_pos.x - window_center_x + mx_accum;
