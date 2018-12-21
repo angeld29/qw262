@@ -491,9 +491,73 @@ Responds with all the info that qplug or qspy can see
 This message can be up to around 5k with worst case string lengths.
 ================
 */
+#define STATUS_OLDSTYLE                 0
+#define STATUS_SERVERINFO               1
+#define STATUS_PLAYERS                  2
+#define STATUS_SPECTATORS               4
+#define STATUS_SPECTATORS_AS_PLAYERS    8 //for ASE - change only frags: show as "S"
+#define STATUS_SHOWTEAMS                16
+#define STATUS_SHOWQTV                  32
+
 
 qboolean qpluginCommand=false;
-void SVC_Status (void)
+static void SVC_Status (void)
+{
+	int top, bottom, ping, i, opt = 0;
+	char *name, *frags;
+	client_t *cl;
+
+
+	if (Cmd_Argc() > 1)
+		opt = Q_atoi(Cmd_Argv(1));
+
+	SV_BeginRedirect (RD_PACKET);
+	if (opt == STATUS_OLDSTYLE || (opt & STATUS_SERVERINFO))
+		Con_Printf ("%s\n", svs.info);
+	if (opt == STATUS_OLDSTYLE || (opt & (STATUS_PLAYERS | STATUS_SPECTATORS)))
+		for (i = 0; i < MAX_CLIENTS; i++)
+		{
+			cl = &svs.clients[i];
+			if ( (cl->state >= cs_preconnected/* || cl->state == cs_spawned */) &&
+				( (!cl->spectator && ((opt & STATUS_PLAYERS) || opt == STATUS_OLDSTYLE)) ||
+				  ( cl->spectator && ( opt & STATUS_SPECTATORS)) ) )
+			{
+				top    = atoi(Info_ValueForKey (&cl->userinfo, "topcolor"));
+				bottom = atoi(Info_ValueForKey (&cl->userinfo, "bottomcolor"));
+				top    = (top    < 0) ? 0 : ((top    > 13) ? 13 : top);
+				bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
+				ping   = SV_CalcPing (cl);
+				name   = cl->name;
+				if (cl->spectator)
+				{
+					if (opt & STATUS_SPECTATORS_AS_PLAYERS)
+						frags = "S";
+					else
+					{
+						ping  = -ping;
+						frags = "-9999";
+						name  = va("\\s\\%s", name);
+					}
+				}
+				else
+					frags = va("%i", cl->old_frags);
+
+				Con_Printf ("%i %s %i %i \"%s\" \"%s\" %i %i", cl->userid, frags,
+					    (int)(svs.realtime - cl->connection_started)/60, ping, name,
+					    Info_ValueForKey (&cl->userinfo, "skin"), top, bottom);
+
+				if (opt & STATUS_SHOWTEAMS)
+					Con_Printf (" \"%s\"\n", cl->team);
+				else
+					Con_Printf ("\n");
+			}
+		}
+
+	SV_EndRedirect ();
+}
+
+/*
+void SVC_Status_old (void)
 {
 	int		i;
 	client_t	*cl;
@@ -521,7 +585,7 @@ void SVC_Status (void)
 //	qpluginCommand=true;
 	SV_EndRedirect ();
 //	qpluginCommand=false;
-}
+}*/
 
 /*
 ===================
