@@ -2181,6 +2181,11 @@ void SV_ExtractFromUserinfo (client_t *cl, qboolean namechanged)
 			strlcpy (cl->name, val, CLIENT_NAME_LEN);
 
 	}
+        // team
+        val = Info_ValueForKey (cl->userinfo, "team");
+        if (strstr(val, "&c") || strstr(val, "&r"))
+                Info_SetValueForKey (cl->userinfo, "team", "none", MAX_INFO_STRING);
+        strlcpy (cl->team, Info_ValueForKey (cl->userinfo, "team"), sizeof(cl->team));
 
 	// rate command
 	if (cl->download) {
