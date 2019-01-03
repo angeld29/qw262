@@ -687,7 +687,7 @@ void Cmd_Alias_f (void)
 
 	cmd = Cmd_MakeArgs(2);
 
-	v = Cmd_Argv(2);
+	//v = Cmd_Argv(2);
 //	if ( Cmd_Argc() == 3 && !strchr(v, ' ') && !strchr(v, '\t') &&
 //		(Cmd_FindCommand(v) && a->value[0] != '+' && a->value[0] != '-') ) {
 //		// simple alias like "alias e echo"

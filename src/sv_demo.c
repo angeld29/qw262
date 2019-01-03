@@ -129,7 +129,7 @@ Message is cleared from demobuf after that
 
 void SV_DemoWriteToDisk(int type, int to, float time)
 {
-	int pos = 0, oldm, oldd;
+	int pos = 0; //, oldm, oldd;
 	header_t *p;
 	int	size;
 	sizebuf_t msg;
@@ -137,8 +137,8 @@ void SV_DemoWriteToDisk(int type, int to, float time)
 	p = (header_t *) demo.dbuf->data;
 	demo.dbuf->h = NULL;
 
-	oldm = demo.dbuf->bufsize;
-	oldd = demobuffer->start;
+	//oldm = demo.dbuf->bufsize;
+	//oldd = demobuffer->start;
 	while (pos < demo.dbuf->bufsize)
 	{
 		size = p->size;
@@ -1308,7 +1308,7 @@ void SV_Record_f (void)
 		return;
 	}
 
-	clean_name = SV_CleanName(Cmd_Argv(1));
+	clean_name = SV_CleanName((unsigned char*)Cmd_Argv(1));
 	strlcpy(newname, va("%s%s", sv_demoPrefix.string, clean_name), 
 		sizeof(newname) - strlen(sv_demoSuffix.string) - 5);
 	strcat(newname, sv_demoSuffix.string);
@@ -1544,7 +1544,7 @@ void SV_EasyRecord_f (void)
 	// <-
 
 // Make sure the filename doesn't contain illegal characters
-	strlcpy(name, va("%s%s", sv_demoPrefix.string, SV_CleanName(name)), MAX_DEMO_NAME - strlen(sv_demoSuffix.string) - 7);
+	strlcpy(name, va("%s%s", sv_demoPrefix.string, SV_CleanName((unsigned char*)name)), MAX_DEMO_NAME - strlen(sv_demoSuffix.string) - 7);
 	strcat(name, sv_demoSuffix.string);
 	sprintf (name, va("%s/%s/%s", com_gamedir, sv_demoDir.string, name));
 	Sys_mkdir(va("%s/%s", com_gamedir, sv_demoDir.string));

@@ -1018,7 +1018,7 @@ qboolean COM_CheckFilename (char *filename)
 
 //============================================================================
 
-char	com_token[1024];
+char	com_token[MAX_TOKEN_CHARS];
 int		com_argc;
 char	**com_argv;
 
@@ -1492,7 +1492,7 @@ void COM_CopyFile (char *netpath, char *cachepath)
 			count = remaining;
 		else
 			count = sizeof(buf);
-		fread (buf, 1, count, in);
+		if(fread (buf, 1, count, in));
 		fwrite (buf, 1, count, out);
 		remaining -= count;
 	}
@@ -1623,7 +1623,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 #ifndef SERVERONLY
 	Draw_BeginDisc ();
 #endif
-	fread (buf, 1, len, h);
+	if(fread (buf, 1, len, h));
 	fclose (h);
 #ifndef SERVERONLY
 	Draw_EndDisc ();
@@ -1684,7 +1684,7 @@ pack_t *COM_LoadPackFile (char *packfile)
 	if (COM_FileOpenRead (packfile, &packhandle) == -1)
 		return NULL;
 
-	fread (&header, 1, sizeof(header), packhandle);
+	if(fread (&header, 1, sizeof(header), packhandle));
 	if (header.id[0] != 'P' || header.id[1] != 'A'
 	|| header.id[2] != 'C' || header.id[3] != 'K')
 		Sys_Error ("%s is not a packfile", packfile);
@@ -1702,7 +1702,7 @@ pack_t *COM_LoadPackFile (char *packfile)
 	newfiles = Z_Malloc (numpackfiles * sizeof(packfile_t));
 
 	fseek (packhandle, header.dirofs, SEEK_SET);
-	fread (&info, 1, header.dirlen, packhandle);
+	if(fread (&info, 1, header.dirlen, packhandle));
 
 // crc the directory to check for modifications
 	crc = CRC_Block((byte *)info, header.dirlen);

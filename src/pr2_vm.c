@@ -26,6 +26,8 @@
   runaway loop protection
   reenterable vmMain
 */
+#define SAFE_QVM
+#define QVM_RUNAWAY_PROTECTION
 
 #ifdef SERVERONLY
 #include "qwsvdef.h"

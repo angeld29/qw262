@@ -30,6 +30,20 @@ typedef unsigned char 		byte;
 
 typedef enum {false, true}	qboolean;
 
+#ifdef _MSC_VER
+	#include <io.h>
+	typedef __int64 int64_t;
+	typedef __int32 int32_t;
+	typedef __int16 int16_t;
+	typedef __int8 int8_t;
+	typedef unsigned __int64 uint64_t;
+	typedef unsigned __int32 uint32_t;
+	typedef unsigned __int16 uint16_t;
+	typedef unsigned __int8 uint8_t;
+#else
+	#include <stdint.h>
+#endif
+
 #define	MAX_INFO_STRING	        255
 #define	MAX_SERVERINFO_STRING	512
 #define	MAX_LOCALINFO_STRING	32768
@@ -171,8 +185,11 @@ extern size_t strlcat(char *dst, const char *src, size_t size);
 void Q_snprintfz (char *dest, size_t size, const char *fmt, ...); // Tonik
 
 //============================================================================
+//#define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
+//#define	MAX_STRING_TOKENS	1024	// max tokens resulting from Cmd_TokenizeString
+#define	MAX_TOKEN_CHARS		1024	// max length of an individual token
 
-extern	char		com_token[1024];
+extern	char		com_token[MAX_TOKEN_CHARS];
 extern	qboolean	com_eof;
 
 char *COM_Parse (char *data);

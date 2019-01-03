@@ -1196,9 +1196,9 @@ vector aim(entity, missilespeed)
 */
 void PF_aim (void)
 {
-	edict_t	*ent;
+//	edict_t	*ent;
 
-	ent = G_EDICT(OFS_PARM0);
+//	ent = G_EDICT(OFS_PARM0);
 
 // noiam stuff removed
 // good player can aim themselves :)

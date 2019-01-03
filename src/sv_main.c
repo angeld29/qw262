@@ -522,8 +522,8 @@ static void SVC_Status (void)
 				( (!cl->spectator && ((opt & STATUS_PLAYERS) || opt == STATUS_OLDSTYLE)) ||
 				  ( cl->spectator && ( opt & STATUS_SPECTATORS)) ) )
 			{
-				top    = atoi(Info_ValueForKey (&cl->userinfo, "topcolor"));
-				bottom = atoi(Info_ValueForKey (&cl->userinfo, "bottomcolor"));
+				top    = atoi(Info_ValueForKey (&cl->userinfo[0], "topcolor"));
+				bottom = atoi(Info_ValueForKey (&cl->userinfo[0], "bottomcolor"));
 				top    = (top    < 0) ? 0 : ((top    > 13) ? 13 : top);
 				bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
 				ping   = SV_CalcPing (cl);
@@ -544,7 +544,7 @@ static void SVC_Status (void)
 
 				Con_Printf ("%i %s %i %i \"%s\" \"%s\" %i %i", cl->userid, frags,
 					    (int)(svs.realtime - cl->connection_started)/60, ping, name,
-					    Info_ValueForKey (&cl->userinfo, "skin"), top, bottom);
+					    Info_ValueForKey (&cl->userinfo[0], "skin"), top, bottom);
 
 				if (opt & STATUS_SHOWTEAMS)
 					Con_Printf (" \"%s\"\n", cl->team);
