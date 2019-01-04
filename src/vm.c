@@ -1295,4 +1295,126 @@ void VM_Clear( void ) {
 		VM_Free( &vmTable[ i ] );
 	}
 }
+
+//=================================================================
+
+static int EXPORT_FN VM_ProfileSort( const void *a, const void *b ) {
+	vmSymbol_t	*sa, *sb;
+
+	sa = *(vmSymbol_t **)a;
+	sb = *(vmSymbol_t **)b;
+
+	if ( sa->profileCount < sb->profileCount ) {
+		return -1;
+	}
+	if ( sa->profileCount > sb->profileCount ) {
+		return 1;
+	}
+	return 0;
+}
+
+/*
+==============
+VM_VmProfile_f
+
+==============
+*/
+void VM_VmProfile_f( void ) {
+	vm_t		*vm;
+	vmSymbol_t	**sorted, *sym;
+	int			i;
+	double		total;
+
+    vm = &vmTable[VM_GAME];
+
+	if ( !vm->name ) {
+		Con_Printf( " VM is not running.\n" );
+		return;
+	}
+	if ( vm == NULL ) {
+		return;
+	}
+
+	if ( !vm->numSymbols ) {
+		return;
+	}
+
+	sorted = Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
+	sorted[0] = vm->symbols;
+	total = sorted[0]->profileCount;
+	for ( i = 1 ; i < vm->numSymbols ; i++ ) {
+		sorted[i] = sorted[i-1]->next;
+		total += sorted[i]->profileCount;
+	}
+
+	qsort( sorted, vm->numSymbols, sizeof( *sorted ), VM_ProfileSort );
+
+	for ( i = 0 ; i < vm->numSymbols ; i++ ) {
+		int		perc;
+
+		sym = sorted[i];
+
+		perc = 100 * (float) sym->profileCount / total;
+		Con_Printf( "%2i%% %9i %s\n", perc, sym->profileCount, sym->symName );
+		sym->profileCount = 0;
+	}
+
+	Con_Printf("    %9.0f total\n", total );
+
+	Z_Free( sorted );
+}
+
+/*
+==============
+VM_VmInfo_f
+==============
+*/
+void VM_VmInfo_f( void ) {
+	vm_t	*vm;
+	int		i;
+
+	Con_Printf( "Registered virtual machines:\n" );
+	for ( i = 0 ; i < VM_COUNT ; i++ ) {
+		vm = &vmTable[i];
+		if ( !vm->name ) {
+			continue;
+		}
+		Con_Printf( "%s : ", vm->name );
+		if ( vm->dllHandle ) {
+			Con_Printf( "native\n" );
+			continue;
+		}
+		if ( vm->compiled ) {
+			Con_Printf( "compiled on load\n" );
+		} else {
+			Con_Printf( "interpreted\n" );
+		}
+		Con_Printf( "    code length : %7i\n", vm->codeLength );
+		Con_Printf( "    table length: %7i\n", vm->instructionCount*4 );
+		Con_Printf( "    data length : %7i\n", vm->dataMask + 1 );
+	}
+}
+
+/*
+===============
+VM_LogSyscalls
+
+Insert calls to this while debugging the vm compiler
+===============
+*/
+void VM_LogSyscalls( int *args ) {
+#if 0
+	static	int		callnum;
+	static	FILE	*f;
+
+	if ( !f ) {
+		f = Sys_FOpen( "syscalls.log", "w" );
+		if ( !f ) {
+			return;
+		}
+	}
+	callnum++;
+	fprintf( f, "%i: %p (%i) = %i %i %i %i\n", callnum, (void*)(args - (int *)currentVM->dataBase),
+		args[0], args[1], args[2], args[3], args[4] );
+#endif
 #endif				/* USE_PR2 */
