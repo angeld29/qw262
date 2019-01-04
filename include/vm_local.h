@@ -143,6 +143,7 @@ typedef struct vmSymbol_s {
 } vmSymbol_t;
 
 typedef enum {
+	VMI_NONE,
 	VMI_NATIVE,
 	VMI_BYTECODE,
 	VMI_COMPILED
@@ -165,13 +166,6 @@ typedef union vmFunc_u {
 typedef intptr_t (*syscall_t)( intptr_t *parms );
 typedef intptr_t (EXPORT_FN *dllSyscall_t)( intptr_t callNum, ... );
 typedef void (EXPORT_FN *dllEntry_t)( dllSyscall_t syscallptr );
-
-typedef enum vm_type_e
-{
-	VM_NONE,
-	VM_NATIVE,
-	VM_BYTECODE
-} vm_type_t;
 
 #define	VM_MAGIC	0x12721444
 #define	VM_MAGIC_VER2	0x12721445
@@ -213,7 +207,7 @@ struct vm_s {
 
 	//------------------------------------
    
-	char	*name;
+	const char	*name;
 	vmIndex_t	index;
 
 	// for dynamic linked modules
@@ -252,8 +246,8 @@ struct vm_s {
 	uint32_t	crc32sum;
 
 	qboolean	forceDataMask;
-
-	int			privateFlag;
+    vmInterpret_t type;
+	//int			privateFlag;
 };
 
 extern	int		vm_debugLevel;
@@ -290,7 +284,7 @@ typedef struct opcode_info_s
 opcode_info_t ops[ OP_MAX ];
 
 void	VM_Init( void );
-vm_t	*VM_Create( vmIndex_t index, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret );
+vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret );
 
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 
