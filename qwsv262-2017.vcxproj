@@ -381,6 +381,7 @@
     </ClCompile>
     <ClCompile Include="src\vm.c" />
     <ClCompile Include="src\vm_interpreted.c" />
+    <ClCompile Include="src\vm_x86.c" />
     <ClCompile Include="src\world.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">Full</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
