@@ -30,6 +30,15 @@ typedef unsigned char 		byte;
 
 typedef enum {false, true}	qboolean;
 
+typedef union floatint_u
+{
+	int i;
+	unsigned int u;
+	float f;
+	byte b[4];
+}
+floatint_t;
+
 #ifdef _MSC_VER
 	#include <io.h>
 	typedef __int64 int64_t;
@@ -43,6 +52,8 @@ typedef enum {false, true}	qboolean;
 #else
 	#include <stdint.h>
 #endif
+
+#define ARRAY_LEN(x)		(sizeof(x) / sizeof(*(x)))
 
 #define	MAX_INFO_STRING	        255
 #define	MAX_SERVERINFO_STRING	512

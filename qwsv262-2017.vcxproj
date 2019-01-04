@@ -380,6 +380,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="src\vm.c" />
+    <ClCompile Include="src\vm_interpreted.c" />
     <ClCompile Include="src\world.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">Full</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
