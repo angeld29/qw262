@@ -2544,7 +2544,8 @@ pr2_trapcall_t pr2_API[] = {
 };
 int     pr2_numAPI = sizeof( pr2_API ) / sizeof( pr2_API[0] );
 
-int sv_syscall( int arg, ... )	//must passed ints
+//static intptr_t SV_GameSystemCalls( intptr_t *args ) {
+int sv_syscall( int arg, ... )	//must passed ints dll
 {
 	va_list ap;
 	pr2val_t ret;
@@ -2559,7 +2560,7 @@ int sv_syscall( int arg, ... )	//must passed ints
 	return ret._int;
 }
 
-int sv_sys_callex( byte * data, unsigned int mask, int fn, pr2val_t * arg )
+int sv_sys_callex( byte * data, unsigned int mask, int fn, pr2val_t * arg )//vm
 {
 	pr2val_t ret;
 
@@ -2569,30 +2570,28 @@ int sv_sys_callex( byte * data, unsigned int mask, int fn, pr2val_t * arg )
 	pr2_API[fn] ( data, mask, arg, &ret );
 	return ret._int;
 }
+/*
+====================
+SV_DllSyscall
+====================
+*/
+/*static intptr_t QDECL SV_DllSyscall( intptr_t arg, ... ) {
+#if !id386 || defined __clang__
+	intptr_t	args[14]; // max.count for qagame
+	va_list	ap;
+	int i;
 
-extern gameData_t *gamedata;
-extern field_t *fields;
+	args[0] = arg;
+	va_start( ap, arg );
+	for (i = 1; i < ARRAY_LEN( args ); i++ )
+		args[ i ] = va_arg( ap, intptr_t );
+	va_end( ap );
 
-void PR2_InitProg(  )
-{
-	PR2_FS_Restart(  );
+	return SV_GameSystemCalls( args );
+#else
+	return SV_GameSystemCalls( &arg );
+#endif
+}*/
 
-	gamedata = ( gameData_t * ) VM_Call( sv_vm, GAME_INIT, ( int ) ( sv.time * 1000 ),
-					     ( int ) ( Sys_DoubleTime(  ) * 100000 ), 0, 0, 0, 0, 0, 0, 0, 0,
-					     0, 0 );
 
-	if ( !gamedata )
-		SV_Error( "PR2_InitProg gamedata == NULL" );
-
-	gamedata = ( gameData_t * ) PR2_GetString( ( int ) gamedata );
-	if ( gamedata->APIversion < 8 || gamedata->APIversion > GAME_API_VERSION )
-		SV_Error( "PR2_InitProg: Incorrect API version" );
-
-	sv.edicts = ( edict_t * ) PR2_GetString( ( int ) gamedata->ents );
-	pr_global_struct = ( globalvars_t * ) PR2_GetString( ( int ) gamedata->global );
-
-	pr_globals = ( float * ) pr_global_struct;
-	fields = ( field_t * ) PR2_GetString( ( int ) gamedata->fields );
-	pr_edict_size = gamedata->sizeofent;
-}
 #endif				/* USE_PR2 */

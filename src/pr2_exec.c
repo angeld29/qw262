@@ -315,5 +315,30 @@ void PR2_GameConsoleCommand(void)
         	pr_global_struct->other = old_other;
         }
 }
+extern field_t *fields;
+void PR2_FS_Restart();
+
+void PR2_InitProg(  )
+{
+	PR2_FS_Restart(  );
+
+	gamedata = ( gameData_t * ) VM_Call( sv_vm, GAME_INIT, ( int ) ( sv.time * 1000 ),
+					     ( int ) ( Sys_DoubleTime(  ) * 100000 ), 0, 0, 0, 0, 0, 0, 0, 0,
+					     0, 0 );
+
+	if ( !gamedata )
+		SV_Error( "PR2_InitProg gamedata == NULL" );
+
+	gamedata = ( gameData_t * ) PR2_GetString( ( int ) gamedata );
+	if ( gamedata->APIversion < 8 || gamedata->APIversion > GAME_API_VERSION )
+		SV_Error( "PR2_InitProg: Incorrect API version" );
+
+	sv.edicts = ( edict_t * ) PR2_GetString( ( int ) gamedata->ents );
+	pr_global_struct = ( globalvars_t * ) PR2_GetString( ( int ) gamedata->global );
+
+	pr_globals = ( float * ) pr_global_struct;
+	fields = ( field_t * ) PR2_GetString( ( int ) gamedata->fields );
+	pr_edict_size = gamedata->sizeofent;
+}
 
 #endif /* USE_PR2 */

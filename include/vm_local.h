@@ -158,14 +158,14 @@ typedef union vmFunc_u {
 } vmFunc_t;
 
 #ifdef _WIN32
-#define EXPORT_FN __cdecl
+#define QDECL __cdecl
 #else
-#define EXPORT_FN
+#define QDECL
 #endif
 
 typedef intptr_t (*syscall_t)( intptr_t *parms );
-typedef intptr_t (EXPORT_FN *dllSyscall_t)( intptr_t callNum, ... );
-typedef void (EXPORT_FN *dllEntry_t)( dllSyscall_t syscallptr );
+typedef intptr_t (QDECL *dllSyscall_t)( intptr_t callNum, ... );
+typedef void (QDECL *dllEntry_t)( dllSyscall_t syscallptr );
 
 #define	VM_MAGIC	0x12721444
 #define	VM_MAGIC_VER2	0x12721445
@@ -294,7 +294,7 @@ void	VM_Forced_Unload_Start(void);
 void	VM_Forced_Unload_Done(void);
 vm_t	*VM_Restart( vm_t *vm );
 
-intptr_t	EXPORT_FN VM_Call( vm_t *vm, int nargs, int callNum, ... );
+intptr_t	QDECL VM_Call( vm_t *vm, int nargs, int callNum, ... );
 
 void	VM_Debug( int level );
 void	VM_CheckBounds( const vm_t *vm, unsigned int address, unsigned int length );

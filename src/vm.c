@@ -484,6 +484,66 @@ static void VM_SwapLongs( void *data, int length )
 }
 
 /*
+============
+VM_DllSyscall
+
+Dlls will call this directly
+
+ rcg010206 The horror; the horror.
+
+  The syscall mechanism relies on stack manipulation to get its args.
+   This is likely due to C's inability to pass "..." parameters to
+   a function in one clean chunk. On PowerPC Linux, these parameters
+   are not necessarily passed on the stack, so while (&arg[0] == arg)
+   is true, (&arg[1] == 2nd function parameter) is not necessarily
+   accurate, as arg's value might have been stored to the stack or
+   other piece of scratch memory to give it a valid address, but the
+   next parameter might still be sitting in a register.
+
+  Quake's syscall system also assumes that the stack grows downward,
+   and that any needed types can be squeezed, safely, into a signed int.
+
+  This hack below copies all needed values for an argument to a
+   array in memory, so that Quake can get the correct values. This can
+   also be used on systems where the stack grows upwards, as the
+   presumably standard and safe stdargs.h macros are used.
+
+  As for having enough space in a signed int for your datatypes, well,
+   it might be better to wait for DOOM 3 before you start porting.  :)
+
+  The original code, while probably still inherently dangerous, seems
+   to work well enough for the platforms it already works on. Rather
+   than add the performance hit for those platforms, the original code
+   is still in use there.
+
+  For speed, we just grab 15 arguments, and don't worry about exactly
+   how many the syscall actually needs; the extra is thrown away.
+ 
+============
+*/
+#if 0 // - disabled because now is different for each module
+intptr_t QDECL VM_DllSyscall( intptr_t arg, ... ) {
+#if !id386 || defined __clang__
+  // rcg010206 - see commentary above
+  intptr_t	args[16];
+  va_list	ap;
+  int i;
+  
+  args[0] = arg;
+  
+  va_start( ap, arg );
+  for (i = 1; i < ARRAY_LEN( args ); i++ )
+    args[ i ] = va_arg( ap, intptr_t );
+  va_end( ap );
+  
+  return currentVM->systemCall( args );
+#else // original id code
+	return currentVM->systemCall( &arg );
+#endif
+}
+#endif
+
+/*
 =================
 VM_ValidateHeader
 =================
@@ -591,7 +651,7 @@ static vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc ) {
 	char    num[32];
 
 	// load the image
-	Q_snprintfz( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	Q_snprintfz( filename, sizeof( filename ), "%s.qvm", vm->name );
 	Con_Printf( "Loading vm file %s...\n", filename );
 	header = ( vmHeader_t*)COM_LoadTempFile( filename );
     length = com_filesize;
@@ -1298,7 +1358,7 @@ void VM_Clear( void ) {
 
 //=================================================================
 
-static int EXPORT_FN VM_ProfileSort( const void *a, const void *b ) {
+static int QDECL VM_ProfileSort( const void *a, const void *b ) {
 	vmSymbol_t	*sa, *sb;
 
 	sa = *(vmSymbol_t **)a;
@@ -1402,19 +1462,20 @@ VM_LogSyscalls
 Insert calls to this while debugging the vm compiler
 ===============
 */
-void VM_LogSyscalls( int *args ) {
+void VM_LogSyscalls(int *args) {
 #if 0
 	static	int		callnum;
 	static	FILE	*f;
 
-	if ( !f ) {
-		f = Sys_FOpen( "syscalls.log", "w" );
-		if ( !f ) {
+	if (!f) {
+		f = Sys_FOpen("syscalls.log", "w");
+		if (!f) {
 			return;
 		}
 	}
 	callnum++;
-	fprintf( f, "%i: %p (%i) = %i %i %i %i\n", callnum, (void*)(args - (int *)currentVM->dataBase),
-		args[0], args[1], args[2], args[3], args[4] );
+	fprintf(f, "%i: %p (%i) = %i %i %i %i\n", callnum, (void*)(args - (int *)currentVM->dataBase),
+		args[0], args[1], args[2], args[3], args[4]);
 #endif
+}
 #endif				/* USE_PR2 */
