@@ -259,6 +259,46 @@ void PR2_Profile_f (void);
 void ED2_PrintEdict_f (void);
 void ED_Count (void);
 void PR_CleanLogText_Init(); 
+vm_t	*currentVM = NULL; // bk001212
+vm_t	*lastVM    = NULL; // bk001212
+int     vm_debugLevel;
+
+
+void *VM_ArgPtr( int intValue ) {
+	if ( !intValue ) {
+		return NULL;
+	}
+	// bk001220 - currentVM is missing on reconnect
+	if ( currentVM==NULL )
+	  return NULL;
+
+	if ( currentVM->entryPoint ) {
+		return (void *)(currentVM->dataBase + intValue);
+	}
+	else {
+		return (void *)(currentVM->dataBase + (intValue & currentVM->dataMask));
+	}
+}
+
+void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
+	if ( !intValue ) {
+		return NULL;
+	}
+
+	// bk010124 - currentVM is missing on reconnect here as well?
+	if ( currentVM==NULL )
+	  return NULL;
+
+	//
+	if ( vm->entryPoint ) {
+		return (void *)(vm->dataBase + intValue);
+	}
+	else {
+		return (void *)(vm->dataBase + (intValue & vm->dataMask));
+	}
+}
+
+
 
 void VM_Init( void ) {
 	int p;
@@ -1345,6 +1385,8 @@ void VM_Free( vm_t *vm ) {
 		Z_Free( vm->instructionPointers );
 	}
 #endif
+	currentVM = NULL;
+	lastVM = NULL;
 	memset( vm, 0, sizeof( *vm ) );
 }
 
@@ -1354,7 +1396,107 @@ void VM_Clear( void ) {
 	for ( i = 0; i < VM_COUNT; i++ ) {
 		VM_Free( &vmTable[ i ] );
 	}
+	currentVM = NULL;
+	lastVM = NULL;
 }
+
+/*
+==============
+VM_Call
+
+
+Upon a system call, the stack will look like:
+
+sp+32	parm1
+sp+28	parm0
+sp+24	return value
+sp+20	return address
+sp+16	local1
+sp+14	local0
+sp+12	arg1
+sp+8	arg0
+sp+4	return stack
+sp		return address
+
+An interpreted function will immediately execute
+an OP_ENTER instruction, which will subtract space for
+locals from sp
+==============
+*/
+
+intptr_t QDECL VM_Call( vm_t *vm, int nargs, int callnum, ... )
+{
+	vm_t	*oldVM;
+	intptr_t r;
+	int i;
+
+	if ( !vm ) {
+		SV_Error( "VM_Call with NULL vm" );
+	}
+
+
+	oldVM = currentVM;
+	currentVM = vm;
+	lastVM = vm;
+
+	if ( vm_debugLevel ) {
+	  Con_Printf( "VM_Call( %d )\n", callnum );
+	}
+
+#ifdef DEBUG
+	if ( nargs >= MAX_VMMAIN_CALL_ARGS ) {
+		SV_Error( "VM_Call: nargs >= MAX_VMMAIN_CALL_ARGS" );
+	}
+#endif
+
+	++vm->callLevel;
+	// if we have a dll loaded, call it directly
+	if ( vm->entryPoint ) 
+	{
+		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+		int args[MAX_VMMAIN_CALL_ARGS-1];
+		va_list ap;
+		va_start( ap, callnum );
+		for ( i = 0; i < nargs; i++ ) {
+			args[i] = va_arg( ap, int );
+		}
+		va_end(ap);
+
+		// add more agruments if you're changed MAX_VMMAIN_CALL_ARGS:
+		r = vm->entryPoint( callnum, args[0], args[1], args[2] );
+	} else {
+#if id386 && !defined __clang__ // calling convention doesn't need conversion in some cases
+#ifndef NO_VM_COMPILED
+		if ( vm->compiled )
+			r = VM_CallCompiled( vm, nargs+1, (int*)&callnum );
+		else
+#endif
+			r = VM_CallInterpreted2( vm, nargs+1, (int*)&callnum );
+#else
+		int args[MAX_VMMAIN_CALL_ARGS];
+		va_list ap;
+
+		args[0] = callnum;
+		va_start( ap, callnum );
+		for ( i = 0; i < nargs; i++ ) {
+			args[i+1] = va_arg( ap, int );
+		}
+		va_end(ap);
+#ifndef NO_VM_COMPILED
+		if ( vm->compiled )
+			r = VM_CallCompiled( vm, nargs+1, &args[0] );
+		else
+#endif
+			r = VM_CallInterpreted2( vm, nargs+1, &args[0] );
+#endif
+	}
+	--vm->callLevel;
+	if ( oldVM != NULL ) // bk001220 - assert(currentVM!=NULL) for oldVM==NULL
+	  currentVM = oldVM;
+
+	return r;
+}
+
 
 //=================================================================
 

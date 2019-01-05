@@ -35,6 +35,8 @@ typedef enum {
 	VM_GAME = 0,
 	VM_COUNT
 } vmIndex_t;
+
+extern  vm_t    *currentVM;
 typedef intptr_t (*syscall_t)( intptr_t *parms );
 typedef intptr_t (QDECL *dllSyscall_t)( intptr_t callNum, ... );
 typedef void (QDECL *dllEntry_t)( dllSyscall_t syscallptr );
@@ -42,6 +44,8 @@ typedef void (QDECL *dllEntry_t)( dllSyscall_t syscallptr );
 
 void	VM_Init( void );
 vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret );
+
+extern  vm_t    *currentVM;
 
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 
@@ -75,5 +79,6 @@ static inline float _vmf(intptr_t x)
 	return v.f;
 }
 #define	VMF(x)	_vmf(args[x])
+#define	VMV(x)	(args[x], args[x+1], args[x+2])
 
 #endif
