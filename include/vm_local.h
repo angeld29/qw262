@@ -19,12 +19,7 @@
 #ifndef VM_LOCAL_H
 #define VM_LOCAL_H
 
-#ifdef SERVERONLY
-#include "qwsvdef.h"
-#else
-#include "quakedef.h"
-#endif
-
+#include "vm.h"
 #define	MAX_OPSTACK_SIZE	512
 #define	PROC_OPSTACK_SIZE	30
 
@@ -142,13 +137,6 @@ typedef struct vmSymbol_s {
 	char	symName[1];		// variable sized
 } vmSymbol_t;
 
-typedef enum {
-	VMI_NONE,
-	VMI_NATIVE,
-	VMI_BYTECODE,
-	VMI_COMPILED
-} vmInterpret_t;
-
 
 //typedef void(*vmfunc_t)(void);
 
@@ -156,16 +144,6 @@ typedef union vmFunc_u {
 	byte		*ptr;
 	void (*func)(void);
 } vmFunc_t;
-
-#ifdef _WIN32
-#define QDECL __cdecl
-#else
-#define QDECL
-#endif
-
-typedef intptr_t (*syscall_t)( intptr_t *parms );
-typedef intptr_t (QDECL *dllSyscall_t)( intptr_t callNum, ... );
-typedef void (QDECL *dllEntry_t)( dllSyscall_t syscallptr );
 
 #define	VM_MAGIC	0x12721444
 #define	VM_MAGIC_VER2	0x12721445
@@ -185,12 +163,6 @@ typedef struct
     	//!!! below here is VM_MAGIC_VER2 !!!
 	int		jtrgLength;			// number of jump table targets
 } vmHeader_t;
-
-typedef enum {
-	VM_BAD = -1,
-	VM_GAME = 0,
-	VM_COUNT
-} vmIndex_t;
 
 
 typedef struct vm_s vm_t;
