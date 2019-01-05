@@ -28,6 +28,11 @@ and one exported function: Perform
 
 */
 #ifdef USE_PR2a
+#ifdef SERVERONLY
+#include "qwsvdef.h"
+#else
+#include "quakedef.h"
+#endif
 #include "vm_local.h"
 
 opcode_info_t ops[ OP_MAX ] = 
@@ -295,6 +300,21 @@ void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
 	}
 	else {
 		return (void *)(vm->dataBase + (intValue & vm->dataMask));
+	}
+}
+
+int VM_Ptr2VM( void* ptr ) {
+	if ( !ptr ) {
+		return 0;
+	}
+	// bk001220 - currentVM is missing on reconnect
+	if ( currentVM==NULL )
+	  return 0;
+
+	if ( currentVM->entryPoint ) {
+		return (int)((byte*)ptr - currentVM->dataBase);
+	} else {
+		return ((int)((byte*)ptr - currentVM->dataBase )) & currentVM->dataMask;
 	}
 }
 

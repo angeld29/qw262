@@ -14,6 +14,11 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #ifdef USE_PR2a
+#ifdef SERVERONLY
+#include "qwsvdef.h"
+#else
+#include "quakedef.h"
+#endif
 #include "vm_local.h"
 
 

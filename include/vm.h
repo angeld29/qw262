@@ -1,11 +1,6 @@
 #ifndef VM_H
 #define VM_H
 
-#ifdef SERVERONLY
-#include "qwsvdef.h"
-#else
-#include "quakedef.h"
-#endif
 /*
 ==============================================================
 
@@ -70,6 +65,7 @@ void	VM_CheckBounds2( const vm_t *vm, unsigned int addr1, unsigned int addr2, un
 #endif
 
 void	*VM_ArgPtr( intptr_t intValue );
+int      VM_Ptr2VM( void* ptr ) ;
 
 #define	VMA(x) VM_ArgPtr(args[x])
 static inline float _vmf(intptr_t x)

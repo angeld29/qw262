@@ -17,6 +17,11 @@
  */
 
 #ifdef USE_PR2a
+#ifdef SERVERONLY
+#include "qwsvdef.h"
+#else
+#include "quakedef.h"
+#endif
 #include "vm_local.h"
 qboolean VM_Compile( vm_t *vm, vmHeader_t *header ) {
     return false;

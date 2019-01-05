@@ -75,6 +75,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // <-- Angel
 #endif
 
+#ifdef USE_PR2a
+// Angel -->
+#include "vm.h"
+// <-- Angel
+#endif
+
 #ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
