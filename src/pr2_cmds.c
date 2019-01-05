@@ -75,46 +75,6 @@ void PR2_CheckEmptyString( char *s )
 		PR2_RunError( "Bad string" );
 }
 
-void PF2_GetApiVersion( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	retval->_int = GAME_API_VERSION;
-}
-
-void PF2_GetEntityToken( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-
-	pr2_ent_data_ptr = COM_Parse( pr2_ent_data_ptr );
-	strlcpy( VM_POINTER( base, mask, stack[0].string ), com_token, stack[1]._int );
-
-	retval->_int = pr2_ent_data_ptr != NULL;
-}
-
-void PF2_DPrint()
-{
-	Con_DPrintf( "%s", VM_POINTER( base, mask, stack[0].string ) );
-}
-
-void PF2_conprint( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	Sys_Printf( "%s", VM_POINTER( base, mask, stack[0].string ) );
-}
-
-void PF2_Error( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-        PR2_RunError( VM_POINTER( base, mask, stack->string ) );
-}
-
-void PF2_Spawn( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	retval->_int = NUM_FOR_EDICT( ED2_Alloc(  ) );
-}
-
-void PF2_Remove( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-
-	ED2_Free( EDICT_NUM( stack[0]._int ) );
-}
-
 void PF2_precache_sound( char*s )
 {
 	int     i;
@@ -247,20 +207,6 @@ void PF2_setmodel( edict_t* e, char*m)
 
 /*
 =================
-PF2_bprint
-
-broadcast print to everyone on server
-
-bprint(value)
-=================
-*/
-void PF2_bprint( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	SV_BroadcastPrintf( stack[0]._int, "%s", VM_POINTER( base, mask, stack[1].string ) );
-}
-
-/*
-=================
 PF2_sprint
 
 single print to a specific client
@@ -372,18 +318,6 @@ Larger attenuations will drop off.
 
 =================
 */
-void PF2_sound( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	edict_t *entity = EDICT_NUM( stack[0]._int );
-	int     channel = stack[1]._int;
-	char   *sample = VM_POINTER( base, mask, stack[2].string );
-	float   volume = stack[3]._float * 255;
-	float   attenuation = stack[4]._float;
-
-
-	SV_StartSound( entity, channel, sample, volume, attenuation );
-}
-
 /*
 =================
 PF2_traceline
@@ -646,20 +580,6 @@ void PF2_stuffcmd( int entnum, char* str)
 	}
 }
 
-/*
-=================
-PF2_localcmd
-
-Sends text over to the server's execution buffer
-
-localcmd (string)
-=================
-*/
-void PF2_localcmd( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	Cbuf_AddText( VM_POINTER( base, mask, stack[0].string ) );
-}
-
 void PF2_executecmd( )
 {
 	int     old_other, old_self;	// mod_consolecmd will be executed, so we need to store this
@@ -687,10 +607,6 @@ void PF2_readcmd( char*str, char*buf, int sizebuff)
 	extern char outputbuf[];
 	extern redirect_t sv_redirected;
 	redirect_t old;
-
-	str = VM_POINTER( base, mask, stack[0].string );
-	buf = VM_POINTER( base, mask, stack[1].string );
-	sizebuff = stack[2]._int;
 
 	Cbuf_Execute(  );
 	Cbuf_AddText( str );
@@ -728,7 +644,6 @@ void PF2_redirectcmd( int entnum, char* str )
 
 	extern redirect_t sv_redirected;
 
-	str = VM_POINTER( base, mask, stack[1].string );
 	if ( sv_redirected )
 	{
 		Cbuf_AddText( str );
@@ -749,66 +664,6 @@ void PF2_redirectcmd( int entnum, char* str )
 }
 
 /*
-=================
-PF2_cvar
-
-float   trap_cvar( const char *var );
-=================
-*/
-void PF2_cvar( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-
-	retval->_float = Cvar_VariableValue( VM_POINTER( base, mask, stack[0].string ) );
-}
-
-/*
-=================
-PF2_cvar_string
-
-void trap_cvar_string( const char *var, char *buffer, int bufsize )
-=================
-*/
-void PF2_cvar_string( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	int     buff_off = stack[1]._int;
-	int     buffsize = stack[2]._int;
-
-	if ( ( buff_off ) & ( ~mask ) )
-		return;
-
-	if ( ( buff_off + buffsize ) & ( ~mask ) )
-		return;
-
-	strlcpy( VM_POINTER( base, mask, buff_off ),
-		 Cvar_VariableString( VM_POINTER( base, mask, stack[0].string ) ), buffsize );
-}
-
-/*
-=================
-PF2_cvar_set
-
-void    trap_cvar_set( const char *var, const char *val );
-=================
-*/
-void PF2_cvar_set( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	Cvar_SetByName( VM_POINTER( base, mask, stack[0].string ),
-			VM_POINTER( base, mask, stack[1].string ) );
-}
-
-/*
-=================
-PF2_cvar_set_float
-
-void    trap_cvar_set_float( const char *var, float val );
-=================
-*/
-void PF2_cvar_set_float( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	Cvar_SetValueByName( VM_POINTER( base, mask, stack[0].string ), stack[1]._float );
-}
-
-/*
 ===============
 PF2_walkmove
 
@@ -820,13 +675,11 @@ void PF2_walkmove( edict_t* ent, float yaw, float dist )
 {
 	vec3_t  move;
     int ret;
-
 	int     oldself;
 
 	if ( !( ( int ) ent->v.flags & ( FL_ONGROUND | FL_FLY | FL_SWIM ) ) )
 	{
-		retval->_int = 0;
-		return;
+		return 0;
 
 	}
 
@@ -889,14 +742,11 @@ PF2_lightstyle
 void(int style, string value) lightstyle
 ===============
 */
-void PF2_lightstyle( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
+void PF2_lightstyle( int style, char* val)
 {
 	client_t *client;
 	int     j, style;
 	char   *val;
-
-	style = stack[0]._int;
-	val = VM_POINTER( base, mask, stack[1]._int );
 
 // change the string in sv
 	sv.lightstyles[style] = val;
@@ -920,16 +770,6 @@ void PF2_lightstyle( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t 
 		MSG_WriteChar( ( sizebuf_t * ) demo.dbuf, style );
 		MSG_WriteString( ( sizebuf_t * ) demo.dbuf, val );
 	}
-}
-
-/*
-=============
-PF2_checkbottom
-=============
-*/
-void PF2_checkbottom( byte * base, unsigned int mask, pr2val_t * stack, pr2val_t * retval )
-{
-	retval->_int = SV_CheckBottom( EDICT_NUM( stack[0]._int ) );
 }
 
 /*
@@ -988,7 +828,6 @@ void PF2_nextclient(int i)
 	int		i;
 	edict_t	*ent;
 
-	i = NUM_FOR_EDICT((edict_t *) VM_POINTER(base,mask,stack[0]._int));;
 	while (1)
 	{
 		i++;
@@ -1499,116 +1338,6 @@ void PF2_disable_updates( int entnum, float time )
 	client->disable_updates_stop = svs.realtime + time;
 }
 
-/*
-==============
-PR2_FlushSignon();
-==============
-*/
-void PR2_FlushSignon()
-{
-	SV_FlushSignon(  );
-}
-
-/*
-==============
-PF2_cmdargc
-==============
-*/
-void PF2_cmdargc()
-{
-	retval->_int = Cmd_Argc(  );
-}
-
-/*
-==============
-PF2_cmdargv
-==============
-*/
-void PF2_cmdargv()
-//(int arg, char *valbuff, int sizebuff)
-{
-	strlcpy( VM_POINTER( base, mask, stack[1].string ), Cmd_Argv( stack[0]._int ), stack[2]._int );
-}
-
-/*
-==============
-PF2_cmdargs
-==============
-*/
-void PF2_cmdargs()
-//(char *valbuff, int sizebuff)
-{
-	strlcpy(VM_POINTER(base,mask,stack[0].string), Cmd_Args(), stack[1]._int);
-}
-
-/*
-==============
-PF2_tokenize
-==============
-*/
-void PF2_tokenize()
-//(char *str)
-{
-	Cmd_TokenizeString(VM_POINTER(base,mask,stack[0].string));
-}
-
-void PF2_fixme()
-{
-
-}
-
-void PF2_memset()
-{
-	retval->_int =
-	    PR2_SetString( memset
-			   ( VM_POINTER( base, mask, stack[0].string ), stack[1]._int, stack[2]._int ) );
-}
-
-void PF2_memcpy()
-{
-	retval->_int = PR2_SetString( memcpy( VM_POINTER( base, mask, stack[0].string ),
-					      VM_POINTER( base, mask, stack[1].string ), stack[2]._int ) );
-}
-void PF2_strncpy()
-{
-	retval->_int = PR2_SetString( strncpy( VM_POINTER( base, mask, stack[0].string ),
-					       VM_POINTER( base, mask, stack[1].string ), stack[2]._int ) );
-}
-
-void PF2_sin()
-{
-	retval->_float = sin( stack[0]._float );
-}
-
-void PF2_cos()
-{
-	retval->_float = cos( stack[0]._float );
-}
-
-void PF2_atan2()
-{
-	retval->_float = atan2( stack[0]._float, stack[1]._float );
-}
-
-void PF2_sqrt()
-{
-	retval->_float = sqrt( stack[0]._float );
-}
-
-void PF2_floor()
-{
-	retval->_float = floor( stack[0]._float );
-}
-void PF2_ceil()
-{
-	retval->_float = ceil( stack[0]._float );
-}
-
-void PF2_acos()
-{
-	retval->_float = acos( stack[0]._float );
-}
-
 
 #define MAX_PR2_FILES 8
 
@@ -1861,22 +1590,7 @@ void PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int bufsize)
 #endif
 	int     numfiles = 0;
 
-	retval->_int = 0;
 
-	if ( ( listbuffoffset ) & ( ~mask ) )
-		return;
-
-	if ( ( listbuffoffset + buffsize ) & ( ~mask ) )
-		return;
-	if ( ( extoffset ) & ( ~mask ) )
-		return;
-	if ( ( pathoffset ) & ( ~mask ) )
-		return;
-
-	path = ( char * ) VM_POINTER( base, mask, pathoffset );
-	ext = ( char * ) VM_POINTER( base, mask, extoffset );;
-
-	listbuff = ( char * ) VM_POINTER( base, mask, listbuffoffset );
 	dirptr = listbuff;
 	*dirptr = 0;
 	gamedir = Info_ValueForKey( svs.info, "*gamedir" );
@@ -1893,7 +1607,7 @@ void PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int bufsize)
 	if ( !( d = opendir( fname ) ) )
 	{
 #endif
-		return;
+		return 0;
 	}
 #ifndef _WIN32
 	dstruct = readdir( d );
@@ -1944,10 +1658,9 @@ void PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int bufsize)
    -1	not found
    -2	cannot map
 */
-extern int pr2_numAPI;
 void PF2_Map_Extension(char* name, int mapto)
 {
-	if ( mapto < pr2_numAPI )
+	if ( mapto < _G__LASTAPI )
 	{
 
 		retval->_int = -2;
@@ -1955,44 +1668,6 @@ void PF2_Map_Extension(char* name, int mapto)
 	}
 
 	return -1;
-}
-
-////////////////////
-//
-// timewaster functions
-//
-////////////////////
-void PF2_strcmp()
-{
-	retval->_int = strcmp( VM_POINTER( base, mask, stack[0].string ),
-			       VM_POINTER( base, mask, stack[1].string ) );
-}
-
-void PF2_strncmp()
-{
-	retval->_int = strncmp( VM_POINTER( base, mask, stack[0].string ),
-				VM_POINTER( base, mask, stack[1].string ), stack[2]._int );
-}
-
-void PF2_stricmp()
-{
-	retval->_int = Q_stricmp( VM_POINTER( base, mask, stack[0].string ),
-				  VM_POINTER( base, mask, stack[1].string ) );
-}
-
-void PF2_strnicmp()
-{
-	retval->_int = Q_strnicmp( VM_POINTER( base, mask, stack[0].string ),
-				   VM_POINTER( base, mask, stack[1].string ), stack[2]._int );
-}
-void PF2_strlcpy()
-{ // (char *dst, char *src, size_t siz)
-	retval->_int = strlcpy( VM_POINTER(base,mask,stack[0].string), VM_POINTER(base,mask,stack[1].string), stack[2]._int );
-}
-
-void PF2_strlcat()
-{ // (char *dst, char *src, size_t siz)
-	retval->_int = strlcat( VM_POINTER(base,mask,stack[0].string), VM_POINTER(base,mask,stack[1].string), stack[2]._int );
 }
 
 /////////Bot Functions
@@ -2267,112 +1942,10 @@ void PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 	}
 }
 
-void PF2_makevectors()
-//(char *valbuff, int sizebuff)
-{
-        AngleVectors (VM_POINTER(base,mask,stack[0].string), pr_global_struct->v_forward, pr_global_struct->v_right, pr_global_struct->v_up);
-}
-
 //===========================================================================
 // SysCalls
 //===========================================================================
 
-
-#define GETVEC3_T(x, y)		{ y[0] = va_arg(x, double); \
-							y[1] = va_arg(x, double); \
-							y[2] = va_arg(x, double); }
-pr2_trapcall_t pr2_API[] = {
-	PF2_GetApiVersion,	//G_GETAPIVERSION
-	PF2_DPrint,		//G_DPRINT
-	PF2_Error,		//G_ERROR
-	PF2_GetEntityToken,	//G_GetEntityToken,
-	PF2_Spawn,		//G_SPAWN_ENT,
-	PF2_Remove,		//G_REMOVE_ENT,
-	PF2_precache_sound,	//G_PRECACHE_SOUND,
-	PF2_precache_model,	//G_PRECACHE_MODEL,
-	PF2_lightstyle,		//G_LIGHTSTYLE,
-	PF2_setorigin,		//G_SETORIGIN,
-	PF2_setsize,		//G_SETSIZE,
-	PF2_setmodel,		//G_SETMODEL,
-	PF2_bprint,		//G_BPRINT,
-	PF2_sprint,		//G_SPRINT,
-	PF2_centerprint,	//G_CENTERPRINT,
-	PF2_ambientsound,	//G_AMBIENTSOUND,
-	PF2_sound,		//G_SOUND,
-	PF2_traceline,		//G_TRACELINE,
-	PF2_checkclient,	//G_CHECKCLIENT,
-	PF2_stuffcmd,		//G_STUFFCMD,
-	PF2_localcmd,		//G_LOCALCMD,
-	PF2_cvar,		//G_CVAR,
-	PF2_cvar_set,		//G_CVAR_SET,
-	PF2_FindRadius,
-	PF2_walkmove,
-	PF2_droptofloor,	//G_DROPTOFLOOR,
-	PF2_checkbottom,	//G_CHECKBOTTOM,
-	PF2_pointcontents,	//G_POINTCONTENTS,
-	PF2_nextent,		//G_NEXTENT,
-	PF2_fixme,		//G_AIM,
-	PF2_makestatic,		//G_MAKESTATIC,
-	PF2_setspawnparms,	//G_SETSPAWNPARAMS,
-	PF2_changelevel,	//G_CHANGELEVEL,
-	PF2_logfrag,		//G_LOGFRAG,
-	PF2_infokey,		//G_GETINFOKEY,
-	PF2_multicast,		//G_MULTICAST,
-	PF2_disable_updates,	//G_DISABLEUPDATES,
-	PF2_WriteByte,		//G_WRITEBYTE,     
-	PF2_WriteChar,		//G_WRITECHAR,     
-	PF2_WriteShort,		//G_WRITESHORT,    
-	PF2_WriteLong,		//G_WRITELONG,     
-	PF2_WriteAngle,		//G_WRITEANGLE,    
-	PF2_WriteCoord,		//G_WRITECOORD,    
-	PF2_WriteString,	//G_WRITESTRING,   
-	PF2_WriteEntity,	//G_WRITEENTITY,
-	PR2_FlushSignon,	//G_FLUSHSIGNON,
-	PF2_memset,		//g_memset,
-	PF2_memcpy,		//g_memcpy,             
-	PF2_strncpy,		//g_strncpy,            
-	PF2_sin,		//g_sin,        
-	PF2_cos,		//g_cos,        
-	PF2_atan2,		//g_atan2,      
-	PF2_sqrt,		//g_sqrt,       
-	PF2_floor,		//g_floor,      
-	PF2_ceil,		//g_ceil,       
-	PF2_acos,		//g_acos,
-	PF2_cmdargc,		//G_CMD_ARGC,
-	PF2_cmdargv,		//G_CMD_ARGV
-	PF2_TraceCapsule,
-	PF2_FS_OpenFile,
-	PF2_FS_CloseFile,
-	PF2_FS_ReadFile,
-	PF2_FS_WriteFile,
-	PF2_FS_SeekFile,
-	PF2_FS_TellFile,
-	PF2_FS_GetFileList,
-	PF2_cvar_set_float,
-	PF2_cvar_string,
-	PF2_Map_Extension,
-	PF2_strcmp,
-	PF2_strncmp,
-	PF2_stricmp,
-	PF2_strnicmp,
-	PF2_Find,
-	PF2_executecmd,
-	PF2_conprint,
-	PF2_readcmd,
-	PF2_redirectcmd,
-	PF2_Add_Bot,
-	PF2_Remove_Bot,
-	PF2_SetBotUserInfo,
-	PF2_SetBotCMD,
-	PF2_QVMstrftime,	//G_QVMstrftime
-	PF2_cmdargs,		//G_CMD_ARGS
-	PF2_tokenize,		//G_CMD_TOKENIZE
-	PF2_strlcpy,		//g_strlcpy
-	PF2_strlcat,			//g_strlcat
-	PF2_makevectors,	//G_MAKEVECTORS
-	PF2_nextclient		//G_NEXTCLIENT
-};
-int     pr2_numAPI = sizeof( pr2_API ) / sizeof( pr2_API[0] );
 
 #define	VME(x)	EDICT_NUM(args[x])
 static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
@@ -2401,6 +1974,7 @@ static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
 			PF2_precache_model(VMA(1));
             return 0;
         case G_LIGHTSTYLE:
+            PF2_lightstyle( args[1], VMA(2) );
             return 0;
         case G_SETORIGIN:
             PF2_setorigin( EDICT_NUM(args[1]), VMV(2));
@@ -2614,7 +2188,7 @@ static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
     }
     return 0;
 }
-int sv_syscall( int arg, ... )	//must passed ints dll
+/*int sv_syscall( int arg, ... )	//must passed ints dll
 {
 	va_list ap;
 	pr2val_t ret;
@@ -2638,7 +2212,7 @@ int sv_sys_callex( byte * data, unsigned int mask, int fn, pr2val_t * arg )//vm
 
 	pr2_API[fn] ( data, mask, arg, &ret );
 	return ret._int;
-}
+}*/
 /*
 ====================
 SV_DllSyscall

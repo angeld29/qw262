@@ -136,7 +136,8 @@ typedef enum
 	g_strlcpy,
 	g_strlcat,
 	G_MAKEVECTORS,
-	G_NEXTCLIENT
+	G_NEXTCLIENT,
+	_G__LASTAPI
 } gameImport_t;
 
 
