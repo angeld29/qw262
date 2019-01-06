@@ -16,7 +16,7 @@
  *
  */
 
-#ifdef USE_PR2a
+#ifdef USE_PR2
 #ifdef SERVERONLY
 #include "qwsvdef.h"
 #else

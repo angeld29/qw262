@@ -42,6 +42,8 @@ void PR2_Profile_f (void);
 void ED2_PrintEdict_f (void);
 void ED_Count (void);
 void PR_CleanLogText_Init(); 
+void VM_VmInfo_f( void );
+void VM_VmProfile_f( void );
 void PR2_Init(void)
 {
 	int p;
@@ -49,7 +51,7 @@ void PR2_Init(void)
 	Cvar_RegisterVariable(&sv_progtype);
 	Cvar_RegisterVariable(&sv_progsname);
 #ifdef QVM_PROFILE
-	Cvar_RegisterVariable(&sv_enableprofile);
+	//Cvar_RegisterVariable(&sv_enableprofile);
 #endif	
 
 	p = COM_CheckParm ("-progtype");
@@ -58,8 +60,8 @@ void PR2_Init(void)
 	{
 		usedll = atoi(com_argv[p + 1]);
 
-		if (usedll > 2)
-			usedll = VM_NONE;
+		if (usedll > VMI_COMPILED)
+			usedll = VMI_NONE;
 		Cvar_SetValue(&sv_progtype,usedll);
 	}
 
@@ -67,8 +69,12 @@ void PR2_Init(void)
 	Cmd_AddCommand ("edict", ED2_PrintEdict_f);
 	Cmd_AddCommand ("edicts", ED2_PrintEdicts);
 	Cmd_AddCommand ("edictcount", ED_Count);
-	Cmd_AddCommand ("profile", PR2_Profile_f);
+//	Cmd_AddCommand ("profile", PR2_Profile_f);
+    
 	Cmd_AddCommand ("mod", PR2_GameConsoleCommand);
+	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
+	Cmd_AddCommand( "vminfo", VM_VmInfo_f );
+
 
 	PR_CleanLogText_Init();
 

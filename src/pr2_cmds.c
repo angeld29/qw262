@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef USE_PR2a
+#ifdef USE_PR2
 
 #include "vm.h"
 
@@ -62,8 +62,8 @@ void PR2_RunError( char *error, ... )
 	va_end( argptr );
 
         sv_error = true;
-	if ( sv_vm->type == VM_BYTECODE )
-		QVM_StackTrace( sv_vm->hInst );
+/*	if ( sv_vm->type == VM_BYTECODE )
+		QVM_StackTrace( sv_vm->hInst );*/
 
 	Con_Printf( "%s\n", string );
 
@@ -542,7 +542,6 @@ stuffcmd (clientent, value)
 */
 void PF2_stuffcmd( int entnum, char* str)
 {
-	char   *str;
 	client_t *cl;
 	char   *buf;
 
@@ -669,7 +668,7 @@ PF2_walkmove
 float(float yaw, float dist) walkmove
 ===============
 */
-void PF2_walkmove( edict_t* ent, float yaw, float dist )
+int PF2_walkmove( edict_t* ent, float yaw, float dist )
 //(int entn, float yaw, float dist)
 {
 	vec3_t  move;
@@ -708,7 +707,7 @@ PF2_droptofloor
 void(entnum) droptofloor
 ===============
 */
-void PF2_droptofloor( edict_t* ent )
+int PF2_droptofloor( edict_t* ent )
 {
 	vec3_t  end;
 	trace_t trace;
@@ -742,8 +741,7 @@ void(int style, string value) lightstyle
 void PF2_lightstyle( int style, char* val)
 {
 	client_t *client;
-	int     j, style;
-	char   *val;
+	int     j;
 
 // change the string in sv
 	sv.lightstyles[style] = val;
@@ -820,9 +818,8 @@ fast walk over spawned clients
 entity nextclient(entity)
 =============
 */
-void PF2_nextclient(int i)
+intptr_t PF2_nextclient(int i)
 {
-	int		i;
 	edict_t	*ent;
 
 	while (1)
@@ -850,7 +847,7 @@ PF2_find
 entity find(start,fieldoff,str)
 =============
 */
-void PF2_Find( edict_t* ed, int fofs, char*str)
+intptr_t PF2_Find( edict_t* ed, int fofs, char*str)
 {
 	int     e;
 	char   *t;
@@ -886,7 +883,7 @@ gedict_t *findradius( gedict_t * start, vec3_t org, float rad );
 =================
 */
 
-void PF2_FindRadius( int e, float* org, float rad )
+static intptr_t PF2_FindRadius( int e, float* org, float rad )
 {
 	int     j;
 
@@ -1290,7 +1287,6 @@ void PF2_multicast( float x, float y, float z, int to)
 //(vec3_t o, int to)
 {
 	vec3_t  o;
-	int     to;
 
 	o[0] = x;
 	o[1] = y;
@@ -1339,7 +1335,7 @@ char   *cmodes[] = { "rb", "r", "wb", "w", "ab", "a" };
 int	trap_FS_OpenFile(char*name, fileHandle_t* handle, fsMode_t fmode );
 */
 //FIX ME read from paks
-int PF2_FS_OpenFile(char name, fileHandle_t* handle, fsMode_t fmode)
+int PF2_FS_OpenFile(char* name, fileHandle_t* handle, fsMode_t fmode)
 {
 	int     i;
 	char    fname[MAX_OSPATH];
@@ -1446,20 +1442,20 @@ int     seek_origin[] = { SEEK_CUR, SEEK_END, SEEK_SET };
 int	trap_FS_SeekFile( fileHandle_t handle, int offset, int type );
 */
 
-void PF2_FS_SeekFile(fileHandle_t fnum, int offset, fsOrigin_t type)
+int PF2_FS_SeekFile(fileHandle_t fnum, int offset, fsOrigin_t type)
 {
 	fnum--;
 
 	if ( fnum < 0 || fnum >= MAX_PR2_FILES )
-		return;		//out of range
+		return -1;		//out of range
 
 	if ( !pr2_num_open_files )
-		return;
+		return -1;
 
 	if ( !( pr2_fopen_files[fnum].handle ) )
-		return;
+		return -1;
 	if ( type < 0 || type > 2 )
-		return;
+		return -1;
 	return fseek( pr2_fopen_files[fnum].handle, offset, seek_origin[type] );
 }
 
@@ -1467,40 +1463,35 @@ void PF2_FS_SeekFile(fileHandle_t fnum, int offset, fsOrigin_t type)
 int	trap_FS_TellFile( fileHandle_t handle );
 */
 
-void PF2_FS_TellFile(fileHandle_t fnum)
+int PF2_FS_TellFile(fileHandle_t fnum)
 {
 	fnum--;
 
 	if ( fnum < 0 || fnum >= MAX_PR2_FILES )
-		return;		//out of range
+		return -1;		//out of range
 
 	if ( !pr2_num_open_files )
-		return;
+		return -1;
 
 	if ( !( pr2_fopen_files[fnum].handle ) )
-		return;
+		return -1;
 	return ftell( pr2_fopen_files[fnum].handle );
 }
 
 /*
 int	trap_FS_WriteFile( char*src, int quantity, fileHandle_t handle );
 */
-void PF2_FS_WriteFile(char*dest, int quantity, fileHandle_t fnum)
+int PF2_FS_WriteFile(char*dest, int quantity, fileHandle_t fnum)
 {
 	fnum--;
 	if ( fnum < 0 || fnum >= MAX_PR2_FILES )
-		return;		//out of range
+		return 0;		//out of range
 
 	if ( !pr2_num_open_files )
-		return;
+		return 0;
 
 	if ( !( pr2_fopen_files[fnum].handle ) )
-		return;
-	if ( ( memoffset ) & ( ~mask ) )
-		return;
-
-	if ( ( memoffset + quantity ) & ( ~mask ) )
-		return;
+		return 0;
 
 	return fwrite( dest, quantity, 1, pr2_fopen_files[fnum].handle );
 
@@ -1509,18 +1500,18 @@ void PF2_FS_WriteFile(char*dest, int quantity, fileHandle_t fnum)
 /*
 int	trap_FS_ReadFile( char*dest, int quantity, fileHandle_t handle );
 */
-void PF2_FS_ReadFile(char*dest, int quantity, fileHandle_t fnum)
+int PF2_FS_ReadFile(char*dest, int quantity, fileHandle_t fnum)
 {
 
 	fnum--;
 	if ( fnum < 0 || fnum >= MAX_PR2_FILES )
-		return;		//out of range
+		return 0;		//out of range
 
 	if ( !pr2_num_open_files )
-		return;
+		return 0;
 
 	if ( !( pr2_fopen_files[fnum].handle ) )
-		return;
+		return 0;
 
 	return fread( dest, quantity, 1, pr2_fopen_files[fnum].handle );
 }
@@ -1550,7 +1541,7 @@ void PR2_FS_Restart(  )
 /*
 int 	trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
 */
-void PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int bufsize)
+int PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int buffsize)
 {
 	char    fname[MAX_OSPATH];
 	char    *dirptr;
@@ -1634,7 +1625,7 @@ void PF2_FS_GetFileList(char* path, char*ext, char* listbuff, int bufsize)
    -1	not found
    -2	cannot map
 */
-void PF2_Map_Extension(char* name, int mapto)
+int PF2_Map_Extension(char* name, int mapto)
 {
 	if ( mapto < _G__LASTAPI )
 	{
@@ -1647,7 +1638,7 @@ void PF2_Map_Extension(char* name, int mapto)
 
 /////////Bot Functions
 extern cvar_t maxclients, maxspectators;
-void PF2_Add_Bot(char *name, int bottomcolor, int topcolor, char*skin)
+int PF2_Add_Bot(char *name, int bottomcolor, int topcolor, char*skin)
 {
 	client_t *cl, *newcl = NULL;
 	int     edictnum;
@@ -1887,7 +1878,7 @@ void PF2_SetBotCMD(int entnum, int msec, float a1,float a2, float a3, int forwar
 PF2_QVMstrftime
 ==============
 */
-void PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
+int PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 {
 	struct tm *newtime;
 	time_t long_time;
@@ -1895,7 +1886,7 @@ void PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 
 	if (sizebuff <= 0 || !valbuff) {
 		Con_DPrintf("PF2_QVMstrftime: wrong buffer\n");
-		return;
+		return 0;
 	}
 
 	time(&long_time);
@@ -1905,7 +1896,7 @@ void PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 	if (!newtime)
 	{
 		valbuff[0] = 0; // or may be better set to "#bad date#" ?
-		return;
+		return 0;
 	}
 
 	ret = strftime(valbuff, sizebuff-1, fmt, newtime);
@@ -1923,6 +1914,7 @@ void PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 //===========================================================================
 
 
+#define	VMV(x)	args[x], args[x+1], args[x+2]
 #define	VME(x)	EDICT_NUM(args[x])
 static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
 	switch( args[0] ) {
@@ -1932,7 +1924,7 @@ static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             Con_DPrintf( "%s", (const char*)VMA(1) );
             return 0;
         case G_ERROR:
-			PR2_RunError( (const char*)VMA(1) );
+			PR2_RunError( VMA(1) );
             return 0;
         case G_GetEntityToken:
 			pr2_ent_data_ptr = COM_Parse( pr2_ent_data_ptr );
@@ -1956,7 +1948,7 @@ static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_setorigin( EDICT_NUM(args[1]), VMV(2));
             return 0;
         case G_SETSIZE:
-            PF2_setsize( EDICT_NUM(args[1]), VMV(2), VMF(5));
+            PF2_setsize( EDICT_NUM(args[1]), VMV(2), VMV(5));
             return 0;
         case G_SETMODEL:
             PF2_setmodel( EDICT_NUM(args[1]), VMA(2));
@@ -2138,11 +2130,10 @@ static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_SetBotUserInfo( args[1], VMA(2), VMA(3));
             return 0;
         case G_SetBotCMD:
-            PF2_SetBotCMD( args[1], args[2], VMA(3), VMA(4), VMA(5), args[6], args[7], args[8], args[9], args[10], 
+            PF2_SetBotCMD( args[1], args[2], VMV(3), args[6], args[7], args[8], args[9], args[10]); 
             return 0;
         case G_QVMstrftime:
-            PF2_QVMstrftime( VMA(1), args[2], VMA(3), args[4]);
-            return 0;
+            return PF2_QVMstrftime( VMA(1), args[2], VMA(3), args[4]);
         case G_CMD_ARGS:
             strlcpy(VMA(1), Cmd_Args(), args[2]);
             return 0;

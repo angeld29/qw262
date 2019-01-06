@@ -27,7 +27,7 @@ and one exported function: Perform
 
 
 */
-#ifdef USE_PR2a
+#ifdef USE_PR2
 #ifdef SERVERONLY
 #include "qwsvdef.h"
 #else
@@ -255,9 +255,9 @@ void VM_CheckBounds2( const vm_t *vm, unsigned int addr1, unsigned int addr2, un
 VM_Init
 ==============
 */
-cvar_t	sv_progtype = {"sv_progtype","0"};	// bound the size of the
-cvar_t	sv_enableprofile = {"sv_enableprofile","0"};	
-cvar_t	sv_progsname = {"sv_progsname", "qwprogs"};
+//cvar_t	sv_progtype = {"sv_progtype","0"};	// bound the size of the
+//cvar_t	sv_enableprofile = {"sv_enableprofile","0"};	
+//cvar_t	sv_progsname = {"sv_progsname", "qwprogs"};
 
 void ED2_PrintEdicts (void);
 void PR2_Profile_f (void);
@@ -303,7 +303,7 @@ void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
 	}
 }
 
-int VM_Ptr2VM( void* ptr ) {
+intptr_t VM_Ptr2VM( void* ptr ) {
 	if ( !ptr ) {
 		return 0;
 	}
@@ -312,15 +312,15 @@ int VM_Ptr2VM( void* ptr ) {
 	  return 0;
 
 	if ( currentVM->entryPoint ) {
-		return (int)((byte*)ptr - currentVM->dataBase);
+		return (intptr_t)ptr;
 	} else {
-		return ((int)((byte*)ptr - currentVM->dataBase )) & currentVM->dataMask;
+		return (((byte*)ptr - currentVM->dataBase )) & currentVM->dataMask;
 	}
 }
 
 
 
-void VM_Init( void ) {
+/*void VM_Init( void ) {
 	int p;
 	int usedll;
 	Cvar_RegisterVariable(&sv_progtype);
@@ -349,7 +349,7 @@ void VM_Init( void ) {
 	//Cmd_AddCommand ("mod", PR2_GameConsoleCommand);
 
 	PR_CleanLogText_Init();
-}
+}*/
 
 /*
 ===============
