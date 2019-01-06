@@ -28,6 +28,7 @@
 
 #ifdef USE_PR2
 
+#include "vm_local.h"
 
 gameData_t *gamedata;
 
@@ -83,69 +84,56 @@ void PR2_Init(void)
 //===========================================================================
 // PR2_GetString
 //===========================================================================
-char *PR2_GetString(int num)
+char *PR2_GetString(intptr_t num)
 {
-    qvm_t *qvm;
 
-        if(!sv_vm)
-        	return PR_GetString(num);
+    if(!sv_vm)
+        return PR_GetString(num);
 
-	switch (sv_vm->type)
-	{
-	case VM_NONE:
-		return PR_GetString(num);
-			
-	case VM_NATIVE:
-		if (num)
-			return (char *) num;
-		else
-			return "";
+    switch (sv_vm->type)
+    {
+        case VMI_NONE:
+            return PR_GetString(num);
 
-	case VM_BYTECODE:
-		if (!num)
-			return "";
-		qvm = (qvm_t*)(sv_vm->hInst);
-		if ( num & ( ~qvm->ds_mask) )
-		{
-			Con_DPrintf("PR2_GetString error off %8x/%8x\n", num, qvm->len_ds );
-			return "";
-		}
-		return (char *) (qvm->ds+ num);
-	}
+        case VMI_NATIVE:
+            if (num)
+                return (char *) num;
+            else
+                return "";
 
-	return NULL;
+        case VMI_BYTECODE:
+        case VMI_COMPILED:
+            if (num<=0)
+                return "";
+            return VM_ExplicitArgPtr( sv_vm, num );
+    }
+
+    return NULL;
 }
 
 //===========================================================================
 // PR2_SetString
 // FIXME for VM 
 //===========================================================================
-int PR2_SetString(char *s) 
+intptr_t PR2_SetString(char *s) 
 {
-    qvm_t *qvm;
-    int off;
-        if(!sv_vm)
-        	return PR_SetString(s);
-        	
-	switch (sv_vm->type)
-	{
-	case VM_NONE:
-		return PR_SetString(s);
-			
-	case VM_NATIVE:
-		return (int) s;
+    if(!sv_vm)
+        return PR_SetString(s);
 
-	case VM_BYTECODE:
-		qvm = (qvm_t*)(sv_vm->hInst);
-		off = (byte*)s - qvm->ds;
-		if (off &(~qvm->ds_mask))
-			return 0;
+    switch (sv_vm->type)
+    {
+        case VMI_NONE:
+            return PR_SetString(s);
 
-		return off;
-		break;
-	}
-	
-	return 0;
+        case VMI_NATIVE:
+            return (int) s;
+
+        case VMI_BYTECODE:
+        case VMI_COMPILED:
+            return VM_ExplicitPtr2VM( sv_vm, s );
+    }
+
+    return 0;
 }
 
 /*
@@ -160,7 +148,7 @@ void PR2_LoadEnts(char *data)
 	pr2_ent_data_ptr = data;
 
 	//Init parse
-	VM_Call(sv_vm, GAME_LOADENTS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_LOADENTS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -168,7 +156,7 @@ void PR2_LoadEnts(char *data)
 //===========================================================================
 void PR2_GameStartFrame()
 {
-	VM_Call(sv_vm, GAME_START_FRAME, (int) (sv.time * 1000), 0, 0, 0, 0, 0, 0, 0, 0,
+	VM_Call(sv_vm, 1, GAME_START_FRAME, (int) (sv.time * 1000), 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0);
 }
 
@@ -177,7 +165,7 @@ void PR2_GameStartFrame()
 //===========================================================================
 void PR2_GameClientConnect(int spec)
 {
-	VM_Call(sv_vm, GAME_CLIENT_CONNECT, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 1, GAME_CLIENT_CONNECT, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -185,7 +173,7 @@ void PR2_GameClientConnect(int spec)
 //===========================================================================
 void PR2_GamePutClientInServer(int spec)
 {
-	VM_Call(sv_vm, GAME_PUT_CLIENT_IN_SERVER, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 1, GAME_PUT_CLIENT_IN_SERVER, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -193,7 +181,7 @@ void PR2_GamePutClientInServer(int spec)
 //===========================================================================
 void PR2_GameClientDisconnect(int spec)
 {
-	VM_Call(sv_vm, GAME_CLIENT_DISCONNECT, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 1, GAME_CLIENT_DISCONNECT, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -201,7 +189,7 @@ void PR2_GameClientDisconnect(int spec)
 //===========================================================================
 void PR2_GameClientPreThink(int spec)
 {
-	VM_Call(sv_vm, GAME_CLIENT_PRETHINK, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 1, GAME_CLIENT_PRETHINK, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -209,7 +197,7 @@ void PR2_GameClientPreThink(int spec)
 //===========================================================================
 void PR2_GameClientPostThink(int spec)
 {
-	VM_Call(sv_vm, GAME_CLIENT_POSTTHINK, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 1, GAME_CLIENT_POSTTHINK, spec, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -217,7 +205,7 @@ void PR2_GameClientPostThink(int spec)
 //===========================================================================
 qboolean PR2_ClientCmd()
 {
-	return VM_Call(sv_vm, GAME_CLIENT_COMMAND, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return VM_Call(sv_vm, 0, GAME_CLIENT_COMMAND, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 
@@ -226,7 +214,7 @@ qboolean PR2_ClientCmd()
 //===========================================================================
 void PR2_GameSetNewParms()
 {
-	VM_Call(sv_vm, GAME_SETNEWPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_SETNEWPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -234,7 +222,7 @@ void PR2_GameSetNewParms()
 //===========================================================================
 void PR2_GameSetChangeParms()
 {
-	VM_Call(sv_vm, GAME_SETCHANGEPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_SETCHANGEPARMS, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 
@@ -243,7 +231,7 @@ void PR2_GameSetChangeParms()
 //===========================================================================
 void PR2_EdictTouch()
 {
-	VM_Call(sv_vm, GAME_EDICT_TOUCH, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_EDICT_TOUCH, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -251,7 +239,7 @@ void PR2_EdictTouch()
 //===========================================================================
 void PR2_EdictThink()
 {
-	VM_Call(sv_vm, GAME_EDICT_THINK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_EDICT_THINK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -259,7 +247,7 @@ void PR2_EdictThink()
 //===========================================================================
 void PR2_EdictBlocked()
 {
-	VM_Call(sv_vm, GAME_EDICT_BLOCKED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_EDICT_BLOCKED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -267,7 +255,7 @@ void PR2_EdictBlocked()
 //===========================================================================
 qboolean PR2_UserInfoChanged()
 {
-	return VM_Call(sv_vm, GAME_CLIENT_USERINFO_CHANGED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	return VM_Call(sv_vm, 0, GAME_CLIENT_USERINFO_CHANGED, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //===========================================================================
@@ -275,7 +263,7 @@ qboolean PR2_UserInfoChanged()
 //===========================================================================
 void PR2_GameShutDown()
 {
-	VM_Call(sv_vm, GAME_SHUTDOWN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	VM_Call(sv_vm, 0, GAME_SHUTDOWN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 //=========================================================================== 
@@ -283,7 +271,7 @@ void PR2_GameShutDown()
 //=========================================================================== 
 qboolean PR2_ClientSay(int isTeamSay) 
 { 
-        return VM_Call(sv_vm, GAME_CLIENT_SAY, isTeamSay, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); 
+        return VM_Call(sv_vm, 1, GAME_CLIENT_SAY, isTeamSay, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); 
 } 
 
 //===========================================================================
@@ -315,7 +303,7 @@ void PR2_GameConsoleCommand(void)
 			}
 		}
 
-		VM_Call(sv_vm, GAME_CONSOLE_COMMAND, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		VM_Call(sv_vm, 0, GAME_CONSOLE_COMMAND, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         	pr_global_struct->self = old_self;
         	pr_global_struct->other = old_other;
@@ -328,7 +316,7 @@ void PR2_InitProg(  )
 {
 	PR2_FS_Restart(  );
 
-	gamedata = ( gameData_t * ) VM_Call( sv_vm, GAME_INIT, ( int ) ( sv.time * 1000 ),
+	gamedata = ( gameData_t * ) VM_Call( sv_vm, 2, GAME_INIT, ( int ) ( sv.time * 1000 ),
 					     ( int ) ( Sys_DoubleTime(  ) * 100000 ), 0, 0, 0, 0, 0, 0, 0, 0,
 					     0, 0 );
 

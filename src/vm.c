@@ -291,7 +291,7 @@ void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
 	}
 
 	// bk010124 - currentVM is missing on reconnect here as well?
-	if ( currentVM==NULL )
+	if ( vm==NULL )
 	  return NULL;
 
 	//
@@ -319,6 +319,20 @@ intptr_t VM_Ptr2VM( void* ptr ) {
 }
 
 
+intptr_t VM_ExplicitPtr2VM( vm_t *vm, void* ptr ) {
+	if ( !ptr ) {
+		return 0;
+	}
+	// bk001220 - currentVM is missing on reconnect
+	if ( vm==NULL )
+	  return 0;
+
+	if ( vm->entryPoint ) {
+		return (intptr_t)ptr;
+	} else {
+		return (((byte*)ptr - vm->dataBase )) & vm->dataMask;
+	}
+}
 
 /*void VM_Init( void ) {
 	int p;
