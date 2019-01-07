@@ -242,6 +242,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Full</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\pr_cmds.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='PR2Release|Win32'">Full</Optimization>

@@ -392,6 +392,7 @@ void SV_SpawnServer (char *server)
 #ifdef USE_PR2
 	sv.time = 1.0;
 
+//vm_t *VM_Create( vmIndex_t index, const char	*name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret ) {
 	sv_vm = VM_Load(sv_vm, sv_progtype.value, sv_progsname.string, sv_syscall ,sv_sys_callex); 
 	if( !sv_vm )
 	{
