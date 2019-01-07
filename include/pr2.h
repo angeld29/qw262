@@ -63,4 +63,5 @@ void		ED2_ClearEdict(edict_t *e);
 eval_t*		PR2_GetEdictFieldValue(edict_t *ed, char *field);
 void 		PR2_InitProg();
 
+intptr_t PR2_GameSystemCalls( intptr_t *args ); 
 #endif /* !__PR2_H__ */

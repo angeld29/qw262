@@ -264,6 +264,7 @@ qboolean PR2_UserInfoChanged()
 void PR2_GameShutDown()
 {
 	VM_Call(sv_vm, 0, GAME_SHUTDOWN, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    VM_Free(sv_vm);
 }
 
 //=========================================================================== 

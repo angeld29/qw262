@@ -121,7 +121,7 @@ qboolean VM_PrepareInterpreter2( vm_t *vm, vmHeader_t *header )
 		return false;
 	}
 
-	VM_ReplaceInstructions( vm, buf );
+	//VM_ReplaceInstructions( vm, buf );
 
 	VM_FindMOps( buf, vm->instructionCount );
 

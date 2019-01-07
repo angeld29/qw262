@@ -241,7 +241,7 @@ const char *VM_CheckInstructions( instruction_t *buf, int instructionCount,
 								 int numJumpTableTargets, 
 								 int dataLength );
 
-void VM_ReplaceInstructions( vm_t *vm, instruction_t *buf );
+//void VM_ReplaceInstructions( vm_t *vm, instruction_t *buf );
 
 #define JUMP	(1<<0)
 
@@ -256,7 +256,7 @@ typedef struct opcode_info_s
 opcode_info_t ops[ OP_MAX ];
 
 void	VM_Init( void );
-vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret );
+vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, /*dllSyscall_t dllSyscalls,*/ vmInterpret_t interpret );
 
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
 

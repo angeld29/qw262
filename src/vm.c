@@ -595,7 +595,7 @@ Dlls will call this directly
  
 ============
 */
-#if 0 // - disabled because now is different for each module
+#if 1 // - disabled because now is different for each module
 intptr_t QDECL VM_DllSyscall( intptr_t arg, ... ) {
 #if !id386 || defined __clang__
   // rcg010206 - see commentary above
@@ -1275,7 +1275,7 @@ If image ends in .qvm it will be interpreted, otherwise
 it will attempt to load as a system dll
 ================
 */
-vm_t *VM_Create( vmIndex_t index, const char	*name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret ) {
+vm_t *VM_Create( vmIndex_t index, const char	*name, syscall_t systemCalls, /*dllSyscall_t dllSyscalls,*/ vmInterpret_t interpret ) {
 	//int			remaining;
 	vmHeader_t	*header;
 	vm_t		*vm;
@@ -1304,7 +1304,7 @@ vm_t *VM_Create( vmIndex_t index, const char	*name, syscall_t systemCalls, dllSy
 	vm->name = name;
 	vm->index = index;
 	vm->systemCall = systemCalls;
-	vm->dllSyscall = dllSyscalls;
+	vm->dllSyscall = VM_DllSyscall;//dllSyscalls;
 	//vm->privateFlag = CVAR_PRIVATE;
 
 	// never allow dll loading with a demo

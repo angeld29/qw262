@@ -1916,7 +1916,7 @@ int PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 
 #define	VMV(x)	args[x], args[x+1], args[x+2]
 #define	VME(x)	EDICT_NUM(args[x])
-static intptr_t PR2_GameSystemCalls( intptr_t *args ) {
+intptr_t PR2_GameSystemCalls( intptr_t *args ) {
 	switch( args[0] ) {
         case G_GETAPIVERSION:
             return GAME_API_VERSION;

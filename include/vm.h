@@ -38,7 +38,7 @@ typedef void (QDECL *dllEntry_t)( dllSyscall_t syscallptr );
 
 
 void	VM_Init( void );
-vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret );
+vm_t	*VM_Create( vmIndex_t index, const char* name, syscall_t systemCalls, /*dllSyscall_t dllSyscalls,*/ vmInterpret_t interpret );
 
 extern  vm_t    *currentVM;
 

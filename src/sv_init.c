@@ -393,7 +393,8 @@ void SV_SpawnServer (char *server)
 	sv.time = 1.0;
 
 //vm_t *VM_Create( vmIndex_t index, const char	*name, syscall_t systemCalls, dllSyscall_t dllSyscalls, vmInterpret_t interpret ) {
-	sv_vm = VM_Load(sv_vm, sv_progtype.value, sv_progsname.string, sv_syscall ,sv_sys_callex); 
+    sv_vm = VM_Create(VM_GAME, sv_progsname.string, PR2_GameSystemCalls, sv_progtype.value );
+	//sv_vm = VM_Load(sv_vm, sv_progtype.value, sv_progsname.string, sv_syscall ,sv_sys_callex); 
 	if( !sv_vm )
 	{
 #endif
