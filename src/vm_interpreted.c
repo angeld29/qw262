@@ -262,6 +262,7 @@ nextInstruction2:
 					}
 					v0 = vm->systemCall( &argarr[0] );
 #else
+                    //VM_LogSyscalls( (int *)&image[ programStack + 4 ] );
 					v0 = vm->systemCall( (intptr_t *)&image[ programStack + 4 ] );
 #endif
 				}

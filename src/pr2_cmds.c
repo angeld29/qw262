@@ -1927,13 +1927,14 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
 			PR2_RunError( VMA(1) );
             return 0;
         case G_GetEntityToken:
+            VM_CheckBounds( sv_vm, args[1], args[2]);
 			pr2_ent_data_ptr = COM_Parse( pr2_ent_data_ptr );
 			strlcpy( VMA(1), com_token, args[2]);
             return pr2_ent_data_ptr != NULL;
         case G_SPAWN_ENT:
             return NUM_FOR_EDICT( ED2_Alloc(  ) );
         case G_REMOVE_ENT:
-			ED2_Free( EDICT_NUM( args[1] ) );
+			ED2_Free( VME(1) );
             return 0;
         case G_PRECACHE_SOUND:
 			PF2_precache_sound(VMA(1));
@@ -1948,10 +1949,10 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_setorigin( EDICT_NUM(args[1]), VMV(2));
             return 0;
         case G_SETSIZE:
-            PF2_setsize( EDICT_NUM(args[1]), VMV(2), VMV(5));
+            PF2_setsize( VME(1), VMV(2), VMV(5));
             return 0;
         case G_SETMODEL:
-            PF2_setmodel( EDICT_NUM(args[1]), VMA(2));
+            PF2_setmodel( VME(1), VMA(2));
             return 0;
         case G_BPRINT:
             SV_BroadcastPrintf( args[1], "%s", VMA(2) );
@@ -1966,7 +1967,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_ambientsound( VMV(1), VMA(4), VMF(5), VMF(6));
             return 0;
         case G_SOUND:
-            SV_StartSound( EDICT_NUM( args[1]), args[2], VMA(3), VMF(4), VMF(4) );
+            SV_StartSound( VME(1), args[2], VMA(3), VMF(4), VMF(5) );
             return 0;
         case G_TRACELINE:
             PF2_traceline( VMV(1), VMV(4), args[7], EDICT_NUM( args[8] ) );
@@ -1980,8 +1981,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             Cbuf_AddText( VMA(1) );
             return 0;
         case G_CVAR:
-            PASSFLOAT( Cvar_VariableValue( VMA(1) ));
-            return 0;
+            return PASSFLOAT( Cvar_VariableValue( VMA(1) ));
         case G_CVAR_SET:
             Cvar_SetByName( VMA(1), VMA(2) );
             return 0;
@@ -1990,8 +1990,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
         case G_WALKMOVE:
             return PF2_walkmove( VME(1), VMF(2), VMF(3));
         case G_DROPTOFLOOR:
-            PF2_droptofloor( VME(1));
-            return 0;
+            return PF2_droptofloor( VME(1));
         case G_CHECKBOTTOM:
             return  SV_CheckBottom( VME(1));
         case G_POINTCONTENTS:
@@ -2013,13 +2012,14 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_logfrag( args[1], args[2] );
             return 0;
         case G_GETINFOKEY:
+            VM_CheckBounds( sv_vm, args[3], args[4]);
             PF2_infokey( args[1], VMA(2), VMA(3), args[4] );
             return 0;
         case G_MULTICAST:
             PF2_multicast( VMV(1), args[4] );
             return 0;
         case G_DISABLEUPDATES:
-            PF2_disable_updates( args[1], VMF(1) );
+            PF2_disable_updates( args[1], VMF(2) );
             return 0;
         case G_WRITEBYTE:
             PF2_WriteByte( args[1], args[2] );
@@ -2049,10 +2049,13 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             SV_FlushSignon(  );
             return 0;
         case g_memset:
+            VM_CheckBounds(sv_vm, args[1], args[3]);
             return PR2_SetString( memset( VMA(1), args[2], args[3]));
         case g_memcpy:
+            VM_CheckBounds2(sv_vm, args[1], args[2], args[3]);
             return PR2_SetString( memcpy( VMA(1), VMA(2), args[3]));
         case g_strncpy:
+            VM_CheckBounds2(sv_vm, args[1], args[2], args[3]);
             return PR2_SetString( strncpy( VMA(1), VMA(2), args[3]));
         case g_sin:
             return PASSFLOAT( sin( VMF(1)));
@@ -2071,10 +2074,11 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
         case G_CMD_ARGC:
             return Cmd_Argc();
         case G_CMD_ARGV:
-            strlcpy( VMA(1), Cmd_Argv( args[2]), args[3]);
+            VM_CheckBounds( sv_vm, args[2], args[3]);
+            strlcpy( VMA(2), Cmd_Argv( args[1]), args[3]);
             return 0;
         case G_TraceCapsule:
-            PF2_TraceCapsule( VMV(1), VMV(4), args[7], EDICT_NUM( args[8] ), VMV(9), VMV(12) );
+            PF2_TraceCapsule( VMV(1), VMV(4), args[7], VME(8), VMV(9), VMV(12) );
             return 0;
         case G_FSOpenFile:
             return PF2_FS_OpenFile(VMA(1), (fileHandle_t*) VMA(2), (fsMode_t)args[3]);
@@ -2082,20 +2086,24 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_FS_CloseFile( (fileHandle_t) args[1]);
             return 0;
         case G_FSReadFile:
+            VM_CheckBounds( sv_vm, args[1], args[2]);
             return PF2_FS_ReadFile( VMA(1), args[2], (fileHandle_t)args[3]);
         case G_FSWriteFile:
+            VM_CheckBounds( sv_vm, args[1], args[2]);
             return PF2_FS_WriteFile( VMA(1), args[2], (fileHandle_t)args[3]);
         case G_FSSeekFile:
             return PF2_FS_SeekFile((fileHandle_t) args[1], args[2], (fsOrigin_t) args[3]);
         case G_FSTellFile:
             return PF2_FS_TellFile( (fileHandle_t) args[1]);
         case G_FSGetFileList:
+            VM_CheckBounds( sv_vm, args[3], args[4]);
             return PF2_FS_GetFileList(VMA(1), VMA(2), VMA(3), args[4]);
         case G_CVAR_SET_FLOAT:
             Cvar_SetValueByName( VMA(1), VMF(2) );
             return 0;
         case G_CVAR_STRING:
-            strlcpy( VMA(1), Cvar_VariableString( VMA(3) ), args[2] );
+            VM_CheckBounds( sv_vm, args[2], args[3]);
+            strlcpy( VMA(2), Cvar_VariableString( VMA(1) ), args[3] );
             return 0;
         case G_Map_Extension:
             return PF2_Map_Extension(VMA(1), args[2]);
@@ -2116,6 +2124,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             Sys_Printf( "%s", VMA(1) );
             return 0;
         case G_readcmd:
+            VM_CheckBounds( sv_vm, args[2], args[3]);
             PF2_readcmd( VMA(1), VMA(2), args[3]);
             return 0;
         case G_redirectcmd:
@@ -2133,23 +2142,26 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_SetBotCMD( args[1], args[2], VMV(3), args[6], args[7], args[8], args[9], args[10]); 
             return 0;
         case G_QVMstrftime:
+            VM_CheckBounds( sv_vm, args[1], args[2]);
             return PF2_QVMstrftime( VMA(1), args[2], VMA(3), args[4]);
         case G_CMD_ARGS:
+            VM_CheckBounds( sv_vm, args[1], args[2]);
             strlcpy(VMA(1), Cmd_Args(), args[2]);
             return 0;
         case G_CMD_TOKENIZE:
             Cmd_TokenizeString(VMA(1));
             return 0;
         case g_strlcpy:
+            VM_CheckBounds( sv_vm, args[1], args[3]);
             return strlcpy( VMA(1), VMA(2), args[3]);
         case g_strlcat:
+            VM_CheckBounds( sv_vm, args[1], args[3]);
             return strlcat( VMA(1), VMA(2), args[3]);
         case G_MAKEVECTORS:
             AngleVectors (VMA(1), pr_global_struct->v_forward, pr_global_struct->v_right, pr_global_struct->v_up);
             return 0;
         case G_NEXTCLIENT:
-            PF2_nextclient( NUM_FOR_EDICT( VMA(1)));
-            return 0;
+            return PF2_nextclient( NUM_FOR_EDICT( VMA(1)));
         default:
             SV_Error( "Bad game system trap: %ld", (long int) args[0] );
     }

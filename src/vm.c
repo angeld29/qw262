@@ -1639,12 +1639,12 @@ Insert calls to this while debugging the vm compiler
 ===============
 */
 void VM_LogSyscalls(int *args) {
-#if 0
+#if 1
 	static	int		callnum;
 	static	FILE	*f;
 
 	if (!f) {
-		f = Sys_FOpen("syscalls.log", "w");
+		f = fopen("syscalls.log", "w");
 		if (!f) {
 			return;
 		}
