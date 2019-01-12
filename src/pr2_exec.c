@@ -44,7 +44,7 @@ void ED2_PrintEdict_f (void);
 void ED_Count (void);
 void PR_CleanLogText_Init(); 
 void VM_VmInfo_f( void );
-void VM_VmProfile_f( void );
+//void VM_VmProfile_f( void );
 void PR2_Init(void)
 {
 	int p;
@@ -70,10 +70,10 @@ void PR2_Init(void)
 	Cmd_AddCommand ("edict", ED2_PrintEdict_f);
 	Cmd_AddCommand ("edicts", ED2_PrintEdicts);
 	Cmd_AddCommand ("edictcount", ED_Count);
-//	Cmd_AddCommand ("profile", PR2_Profile_f);
+	Cmd_AddCommand ("profile", PR2_Profile_f);
     
 	Cmd_AddCommand ("mod", PR2_GameConsoleCommand);
-	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
+//	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
 	Cmd_AddCommand( "vminfo", VM_VmInfo_f );
 
 
@@ -81,6 +81,14 @@ void PR2_Init(void)
 
 }
 
+void PR2_Profile_f()
+{
+    if(!sv_vm)
+    {
+        PR_Profile_f();
+        return;
+    }
+}
 //===========================================================================
 // PR2_GetString
 //===========================================================================

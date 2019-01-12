@@ -22,6 +22,8 @@
 #include "vm.h"
 #define	MAX_OPSTACK_SIZE	512
 #define	PROC_OPSTACK_SIZE	30
+#define	STACK_MASK	(MAX_OPSTACK_SIZE-1)
+#define	DEBUGSTR va("%s%i", VM_Indent(vm), opStack-stack )
 
 // we don't need more than 4 arguments (counting callnum) for vmMain, at least in Quake3
 #define MAX_VMMAIN_CALL_ARGS 4
