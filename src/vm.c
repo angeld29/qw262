@@ -334,37 +334,6 @@ intptr_t VM_ExplicitPtr2VM( vm_t *vm, void* ptr ) {
 	}
 }
 
-/*void VM_Init( void ) {
-	int p;
-	int usedll;
-	Cvar_RegisterVariable(&sv_progtype);
-	Cvar_RegisterVariable(&sv_progsname);
-	Cvar_RegisterVariable(&sv_enableprofile);
-
-	p = COM_CheckParm ("-progtype");
-
-	if (p && p < com_argc)
-	{
-		usedll = atoi(com_argv[p + 1]);
-
-		if (usedll > 2)
-			usedll = VMI_NONE;
-		Cvar_SetValue(&sv_progtype,usedll);
-	}
-
-
-	Cmd_AddCommand ("edict", ED2_PrintEdict_f);
-	Cmd_AddCommand ("edicts", ED2_PrintEdicts);
-	Cmd_AddCommand ("edictcount", ED_Count);
-    
-	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
-	Cmd_AddCommand( "vminfo", VM_VmInfo_f );
-
-	//Cmd_AddCommand ("mod", PR2_GameConsoleCommand);
-
-	PR_CleanLogText_Init();
-}*/
-
 /*
 ===============
 VM_ValueToSymbol
@@ -468,13 +437,12 @@ VM_LoadSymbols
 ===============
 */
 void VM_LoadSymbols( vm_t *vm ) {
-    return;
-	/*union {
+	union {
 		char	*c;
 		void	*v;
 	} mapfile;
-	const char *text_p, *token;
-	char	name[MAX_QPATH];
+	char *text_p;
+	//char	name[MAX_QPATH];
 	char	symbols[MAX_QPATH];
 	vmSymbol_t	**prev, *sym;
 	int		count;
@@ -486,9 +454,9 @@ void VM_LoadSymbols( vm_t *vm ) {
 	// don't load symbols if not developer
 	//if ( !com_developer->integer ) { return; }
 
-	COM_StripExtension(vm->name, name);
-    Q_snprintfz( symbols, sizeof( symbols ), "vm/%s.map", name );
-	mapfile.v = COM_LoadTempFile( name );
+	//COM_StripExtension((char*)vm->name, name);
+    Q_snprintfz( symbols, sizeof( symbols ), "%s.map", vm->name );
+	mapfile.v = COM_LoadTempFile( symbols );
 	if ( !mapfile.c ) {
 		Con_Printf( "Couldn't load symbol file: %s\n", symbols );
 		return;
@@ -526,7 +494,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 			break;
 		}
 		chars = strlen( com_token );
-		sym = Hunk_Alloc( sizeof( *sym ) + chars, h_high );
+		sym = Hunk_Alloc( sizeof( *sym ) + chars);
 		*prev = sym;
 		prev = &sym->next;
 		sym->next = NULL;
@@ -544,7 +512,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 
 	vm->numSymbols = count;
 	Con_Printf( "%i symbols parsed from %s\n", count, symbols );
-    */
+    
 }
 
 static void VM_SwapLongs( void *data, int length )
