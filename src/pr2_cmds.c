@@ -45,6 +45,13 @@ int PASSFLOAT( float f )
 	return fi.i;
 }
 
+float GETFLOAT( int i )
+{
+	floatint_t fi;
+	fi.i = i;
+	return fi.f;
+}
+
 /*
 ============
 PR2_RunError
@@ -1914,7 +1921,7 @@ int PF2_QVMstrftime(char *valbuff, int sizebuff, char *fmt, int offset)
 //===========================================================================
 
 
-#define	VMV(x)	args[x], args[x+1], args[x+2]
+#define	VMV(x)	GETFLOAT(args[x]), GETFLOAT(args[x+1]), GETFLOAT(args[x+2])
 #define	VME(x)	EDICT_NUM(args[x])
 intptr_t PR2_GameSystemCalls( intptr_t *args ) {
 	switch( args[0] ) {
@@ -1946,7 +1953,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             PF2_lightstyle( args[1], VMA(2) );
             return 0;
         case G_SETORIGIN:
-            PF2_setorigin( EDICT_NUM(args[1]), VMV(2));
+            PF2_setorigin( VME(1), VMV(2));
             return 0;
         case G_SETSIZE:
             PF2_setsize( VME(1), VMV(2), VMV(5));
@@ -1970,7 +1977,7 @@ intptr_t PR2_GameSystemCalls( intptr_t *args ) {
             SV_StartSound( VME(1), args[2], VMA(3), VMF(4), VMF(5) );
             return 0;
         case G_TRACELINE:
-            PF2_traceline( VMV(1), VMV(4), args[7], EDICT_NUM( args[8] ) );
+            PF2_traceline( VMV(1), VMV(4), args[7], VME(8) );
             return 0;
         case G_CHECKCLIENT:
             return PF2_checkclient();
